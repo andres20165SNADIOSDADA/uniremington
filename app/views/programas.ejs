@@ -1,0 +1,94 @@
+<%- include('partials/head') %>
+
+<% var pre = (typeof preset !== 'undefined' && preset) ? preset : {tipo:'',facultad:'',sede:'',modalidad:'',q:''}; %>
+<main>
+<section class="prog-listhead"><div class="wrap">
+  <span class="eyebrow">Oferta académica</span>
+  <h1><%= (typeof heading !== 'undefined' && heading) ? heading : 'Encuentra tu programa' %></h1>
+  <p>Explora la oferta académica de la Corporación Universitaria Remington y filtra por facultad, tipo de programa, modalidad y sede.</p>
+</div></section>
+
+<div class="wrap prog-wrap">
+
+  <div class="filtros" id="filtros"
+       data-tipo="<%= pre.tipo %>" data-fac="<%= pre.facultad %>" data-sede="<%= pre.sede %>"
+       data-mod="<%= pre.modalidad %>" data-q="<%= pre.q %>">
+    <div class="filtros-row">
+      <div class="fld fld-q">
+        <label for="f-q">Buscar</label>
+        <input type="search" id="f-q" placeholder="Nombre del programa…" autocomplete="off">
+      </div>
+      <div class="fld">
+        <label for="f-fac">Facultad</label>
+        <select id="f-fac">
+          <option value="">Todas</option>
+          <% opts.facultades.forEach(function(f){ %><option value="<%= f.slug %>"<%= pre.facultad === f.slug ? ' selected' : '' %>><%= f.nombre %></option><% }) %>
+        </select>
+      </div>
+      <div class="fld">
+        <label for="f-tipo">Tipo de programa</label>
+        <select id="f-tipo">
+          <option value="">Todos</option>
+          <% opts.tipos.forEach(function(t){ %><option value="<%= t.v %>"<%= pre.tipo === t.v ? ' selected' : '' %>><%= t.n %></option><% }) %>
+        </select>
+      </div>
+      <div class="fld">
+        <label for="f-mod">Modalidad</label>
+        <select id="f-mod">
+          <option value="">Todas</option>
+          <% opts.modalidades.forEach(function(m){ %><option value="<%= m %>"><%= m %></option><% }) %>
+        </select>
+      </div>
+      <div class="fld">
+        <label for="f-sede">Sede</label>
+        <select id="f-sede">
+          <option value="">Todas</option>
+          <% opts.sedes.forEach(function(s){ %><option value="<%= s %>"<%= pre.sede === s ? ' selected' : '' %>><%= s %></option><% }) %>
+        </select>
+      </div>
+      <button class="f-clear" id="f-clear" type="button" title="Limpiar filtros">Limpiar</button>
+    </div>
+    <div class="filtros-meta">
+      <span><strong id="f-count"><%= (typeof count !== 'undefined' ? count : items.length) %></strong> programas encontrados</span>
+    </div>
+  </div>
+
+  <div class="prog-grid" id="prog-grid">
+    <% items.forEach(function(p){ %>
+      <a class="pcard" href="<%= p.url %>"
+         style="--c:<%= p.color %>;--c2:<%= p.colorDark %>"
+         data-fac="<%= p.facultadSlug %>"
+         data-mod="<%= p.modalidad %>"
+         data-niv="<%= p.nivel %>"
+         data-tipo="<%= p.tipo %>"
+         data-sedes="<%= p.sedes.join('|') %>"
+         data-search="<%= p.title.toLowerCase() %>">
+        <span class="cap">
+          <span class="ico"><span class="msi"><%= p.ico %></span></span>
+          <% if (p.nivel){ %><span class="niv"><%= p.nivel %></span><% } %>
+        </span>
+        <span class="bd">
+          <span class="fac"><%= p.facultad %></span>
+          <h3><%= p.title %></h3>
+          <span class="chips">
+            <% if (p.modalidad){ %><span class="c-mod"><%= p.modalidad %></span><% } %>
+          </span>
+          <span class="sede">
+            <% if (p.sedes.length){ %><span class="msi">location_on</span> <%= p.sedes.length === 1 ? p.sedes[0] : p.sedes.length + ' sedes' %><% } else { %>&nbsp;<% } %>
+          </span>
+          <span class="go">Ver programa →</span>
+        </span>
+      </a>
+    <% }) %>
+  </div>
+
+  <div class="prog-empty" id="f-empty" style="display:none">
+    <p>No hay programas que coincidan con los filtros seleccionados.</p>
+    <button class="btn btn-oro" type="button" onclick="document.getElementById('f-clear').click()">Ver todos los programas</button>
+  </div>
+
+</div>
+
+</main>
+<script src="/js/filtros.js"></script>
+<%- include('partials/foot') %>

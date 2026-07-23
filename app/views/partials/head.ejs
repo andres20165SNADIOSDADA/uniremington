@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title><%= title %></title>
+<meta name="description" content="<%= typeof desc !== 'undefined' ? desc : 'Corporación Universitaria Remington' %>">
+<% if (typeof noindex !== 'undefined' && noindex){ %><meta name="robots" content="noindex,follow"><% } %>
+<% if (typeof canonical !== 'undefined' && canonical){ %><link rel="canonical" href="<%= canonical %>"><% } %>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Corporación Universitaria Remington">
+<meta property="og:title" content="<%= title %>">
+<meta property="og:description" content="<%= typeof desc !== 'undefined' ? desc : 'Corporación Universitaria Remington' %>">
+<% if (typeof canonical !== 'undefined' && canonical){ %><meta property="og:url" content="<%= canonical %>"><% } %>
+<% if (typeof ogImage !== 'undefined' && ogImage){ %><meta property="og:image" content="<%= ogImage %>"><meta name="twitter:card" content="summary_large_image"><% } else { %><meta name="twitter:card" content="summary"><% } %>
+<% if (typeof jsonld !== 'undefined' && jsonld){ %><script type="application/ld+json"><%- JSON.stringify(jsonld) %></script><% } %>
+<link rel="preconnect" href="https://www.uniremington.edu.co">
+<link rel="stylesheet" href="/css/fonts.css">
+<link rel="stylesheet" href="/css/menu.css">
+<link rel="stylesheet" href="/css/site.css">
+</head>
+<body>
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
+<%- include('navbar') %>
+<span id="contenido" tabindex="-1"></span>

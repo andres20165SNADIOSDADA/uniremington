@@ -1,0 +1,55 @@
+<%- include('partials/head') %>
+
+<div class="crumbs"><div class="wrap">
+  <a href="/">Inicio</a> ›
+  <% (typeof trail !== 'undefined' ? trail : []).forEach(function(t){ %>
+    <% if (t.url){ %><a href="<%= t.url %>"><%= t.label %></a><% } else { %><span><%= t.label %></span><% } %> ›
+  <% }) %>
+  <span>Nuestro equipo</span>
+</div></div>
+
+<main>
+<section class="fac-hero eq-hero" style="--c:<%= color %>;--c2:<%= colorDark %>"><div class="wrap">
+  <span class="eyebrow">Nuestro equipo</span>
+  <h1><%= facNombre %></h1>
+  <div class="fac-hero-meta">
+    <% if (total){ %><span><strong><%= total %></strong> integrantes</span><% } %>
+    <% if (facUrl){ %><span><a href="<%= facUrl %>" style="color:#fff;text-decoration:underline">← Volver a <%= typeof backLabel !== 'undefined' ? backLabel : 'la facultad' %></a></span><% } %>
+  </div>
+</div></section>
+
+<div class="wrap eq-wrap" style="--c:<%= color %>;--c2:<%= colorDark %>">
+  <% if (secciones && secciones.length){ %>
+    <% secciones.forEach(function(sec){ %>
+      <section class="eq-sec">
+        <% if (sec.heading){ %><h2 class="eq-h"><%= sec.heading %></h2><div class="eq-rule"></div><% } %>
+        <div class="eq-grid">
+          <% sec.members.forEach(function(m){ %>
+            <article class="member<%= m.photo ? '' : ' member--noimg' %>">
+              <div class="member-photo">
+                <% if (m.photo){ %>
+                  <img src="<%= m.photo %>" alt="<%= m.name %>" loading="lazy" decoding="async">
+                <% } else { %>
+                  <span class="member-ini"><%= m.name.split(' ').filter(Boolean).slice(0,2).map(function(w){return w[0]}).join('').toUpperCase() %></span>
+                <% } %>
+              </div>
+              <div class="member-bd">
+                <h3><%= m.name %></h3>
+                <% if (m.role){ %><p class="member-role"><%= m.role %></p><% } %>
+                <% if (m.email){ %><a class="member-mail" href="mailto:<%= m.email %>"><span class="msi">mail</span><%= m.email %></a><% } %>
+              </div>
+            </article>
+          <% }) %>
+        </div>
+      </section>
+    <% }) %>
+    <% if (typeof extraHtml !== 'undefined' && extraHtml){ %>
+      <div class="article eq-extra"><%- extraHtml %></div>
+    <% } %>
+  <% } else { %>
+    <div class="article eq-raw"><%- rawHtml %></div>
+  <% } %>
+</div>
+</main>
+
+<%- include('partials/foot') %>

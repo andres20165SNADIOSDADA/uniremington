@@ -1,0 +1,211 @@
+<%- include('partials/head') %>
+<% var col = (typeof color !== 'undefined' ? color : '#00457c'); var col2 = (typeof colorDark !== 'undefined' ? colorDark : '#012a50'); %>
+<% var inscUrl = (ficha && ficha.inscripcion) ? ficha.inscripcion : inscripcionUrl; %>
+<% var _txt = (item.content_html || '').replace(/<[^>]+>/g, '').trim(); %>
+
+<div class="crumbs"><div class="wrap">
+  <a href="/">Inicio</a> › <a href="/programas">Programas</a> ›
+  <% if (facultadNombre){ %><a href="/facultad/<%= item.facultad_slug %>"><%= facultadNombre %></a> › <% } %>
+  <span><%= item.title %></span>
+</div></div>
+
+<main>
+<!-- ══════════ HERO COMERCIAL ══════════ -->
+<section class="phero" style="--c:<%= col %>;--c2:<%= col2 %>"><div class="wrap phero-grid">
+  <div class="phero-main">
+    <% if (facultadNombre){ %><span class="eyebrow"><%= facultadNombre %></span><% } %>
+    <h1><%= item.title %></h1>
+    <div class="pbadges">
+      <% if (item.nivel){ %><span class="pbadge"><span class="msi">school</span> <%= item.nivel %></span><% } %>
+      <% if (item.modalidad){ %><span class="pbadge"><span class="msi">computer</span> <%= item.modalidad %></span><% } %>
+      <% if (ficha && ficha.duracion){ %><span class="pbadge"><span class="msi">schedule</span> <%= ficha.duracion %></span><% } %>
+      <% if (ficha && ficha.snies){ %><span class="pbadge"><span class="msi">label</span> SNIES <%= ficha.snies %></span><% } %>
+    </div>
+    <p class="phero-pitch">Forma parte de una institución con más de 110 años de historia y registro calificado del Ministerio de Educación. Da el primer paso hacia tu futuro profesional.</p>
+    <div class="phero-cta">
+      <a class="btn btn-oro" href="<%= inscUrl %>"<% if (inscUrl.startsWith('http')){ %> target="_blank" rel="noopener"<% } %>>Inscríbete ahora</a>
+      <a class="btn btn-ghost" href="#plan">Ver plan de estudios</a>
+    </div>
+  </div>
+
+  <aside class="phero-form" id="solicitar">
+    <h3>Recibe información</h3>
+    <p class="sub">Gratis y sin compromiso. Te contactamos hoy.</p>
+    <form method="post" action="/solicitar-info" class="pf js-lead">
+      <input type="hidden" name="programa" value="<%= item.title %>">
+      <input type="hidden" name="snies" value="<%= ficha && ficha.snies ? ficha.snies : '' %>">
+      <input name="nombre" placeholder="Nombre completo" required aria-label="Nombre completo" autocomplete="name">
+      <input name="correo" type="email" placeholder="Correo electrónico" required aria-label="Correo electrónico" autocomplete="email">
+      <input name="telefono" type="tel" inputmode="tel" placeholder="Teléfono / WhatsApp" required aria-label="Teléfono o WhatsApp" autocomplete="tel">
+      <select name="sede" aria-label="Sede de interés">
+        <option value="">Sede de interés</option>
+        <% (item.sedes || []).forEach(function(s){ %><option><%= s %></option><% }) %>
+      </select>
+      <button class="btn btn-oro" type="submit">Quiero que me contacten</button>
+      <span class="pf-fine"><span class="msi">lock</span> Tus datos están protegidos conforme a la política de tratamiento de datos.</span>
+    </form>
+  </aside>
+</div></section>
+
+<!-- ══════════ FRANJA DE DATOS CLAVE ══════════ -->
+<div class="pfacts"><div class="wrap pfacts-row">
+  <% if (item.nivel){ %><div class="pfact"><span class="pf-ico"><span class="msi">school</span></span><span class="pf-k">Nivel</span><span class="pf-v"><%= item.nivel %></span></div><% } %>
+  <% if (item.modalidad){ %><div class="pfact"><span class="pf-ico"><span class="msi">computer</span></span><span class="pf-k">Modalidad</span><span class="pf-v"><%= item.modalidad %></span></div><% } %>
+  <% if (ficha && ficha.duracion){ %><div class="pfact"><span class="pf-ico"><span class="msi">schedule</span></span><span class="pf-k">Duración</span><span class="pf-v"><%= ficha.duracion %></span></div><% } %>
+  <% if (item.sedes && item.sedes.length){ %><div class="pfact"><span class="pf-ico"><span class="msi">location_on</span></span><span class="pf-k">Sedes</span><span class="pf-v"><%= item.sedes.length %> <%= item.sedes.length === 1 ? 'ciudad' : 'ciudades' %></span></div><% } %>
+  <% if (ficha && ficha.snies){ %><div class="pfact"><span class="pf-ico"><span class="msi">label</span></span><span class="pf-k">Código SNIES</span><span class="pf-v"><%= ficha.snies %></span></div><% } %>
+</div></div>
+
+<!-- ══════════ POR QUÉ UNIREMINGTON ══════════ -->
+<section class="pbenef"><div class="wrap">
+  <div class="head-2"><div class="t"><div class="k">Razones para elegirnos</div><h2>¿Por qué estudiar en Uniremington?</h2></div></div>
+  <div class="benef-grid">
+    <div class="benef-card"><span class="bc-ico" style="--c:<%= col %>"><span class="msi">verified</span></span><h3>Registro calificado</h3><p>Programa con registro calificado otorgado por el Ministerio de Educación Nacional.</p></div>
+    <div class="benef-card"><span class="bc-ico" style="--c:<%= col %>"><span class="msi">account_balance</span></span><h3>+110 años de historia</h3><p>Más de un siglo formando profesionales íntegros comprometidos con el país.</p></div>
+    <div class="benef-card"><span class="bc-ico" style="--c:<%= col %>"><span class="msi">computer</span></span><h3>Modalidad <%= item.modalidad || 'flexible' %></h3><p>Estudia con un modelo pensado para adaptarse a tu ritmo y a tu proyecto de vida.</p></div>
+    <div class="benef-card"><span class="bc-ico" style="--c:<%= col %>"><span class="msi">location_on</span></span><h3><%= (item.sedes && item.sedes.length) ? (item.sedes.length + (item.sedes.length === 1 ? ' sede' : ' sedes')) : 'Cobertura nacional' %></h3><p>Presencia en las principales ciudades del país para que estudies cerca de ti.</p></div>
+  </div>
+</div></section>
+
+<!-- ══════════ CONTENIDO DEL PROGRAMA ══════════ -->
+<div class="layout" id="plan">
+    <article class="article">
+      <% if (typeof item.toc !== 'undefined' && item.toc && item.toc.length >= 2){ %>
+      <nav class="toc" aria-label="En esta página">
+        <span class="toc-t"><span class="msi">menu_book</span> En esta página</span>
+        <ul>
+          <% item.toc.forEach(function(h){ %><li class="toc-l<%= h.level %>"><a href="#<%= h.id %>"><%= h.text %></a></li><% }) %>
+        </ul>
+      </nav>
+      <% } %>
+      <% if (_txt.length > 40){ %>
+        <h2>Plan de estudios y perfil</h2>
+        <%- item.content_html %>
+      <% } else { %>
+        <h2>Sobre el programa</h2>
+        <p>La <strong><%= item.title %></strong><% if (facultadNombre){ %> pertenece a la <%= facultadNombre %><% } %>. Es un programa de nivel <strong><%= item.nivel || 'superior' %></strong><% if (item.modalidad){ %> en modalidad <strong><%= item.modalidad %></strong><% } %><% if (ficha && ficha.duracion){ %> con una duración de <strong><%= ficha.duracion %></strong><% } %>.</p>
+        <% if (item.sedes && item.sedes.length){ %><p>Se ofrece en <strong><%= item.sedes.length %></strong> <%= item.sedes.length === 1 ? 'sede' : 'sedes' %>. Consulta la ficha técnica y solicita información de admisiones a través del formulario.</p><% } %>
+      <% } %>
+    </article>
+
+    <aside class="side">
+      <div class="ficha">
+        <div class="ficha-h"><span class="msi">verified</span> Ficha técnica</div>
+        <% if (ficha.titulo){ %>
+        <div class="ficha-top" style="--c:<%= col %>">
+          <span class="ft-k">Título que obtienes</span>
+          <span class="ft-titulo"><%= ficha.titulo %></span>
+        </div>
+        <% } %>
+        <dl>
+          <% if (ficha.snies){ %><dt>Código SNIES</dt><dd class="snies"><%= ficha.snies %></dd><% } %>
+          <% if (item.nivel){ %><dt>Nivel de formación</dt><dd><%= item.nivel %></dd><% } %>
+          <% if (item.modalidad){ %><dt>Modalidad</dt><dd><%= item.modalidad %></dd><% } %>
+          <% if (ficha.duracion){ %><dt>Duración</dt><dd><%= ficha.duracion %></dd><% } %>
+          <% if (facultadNombre){ %><dt>Facultad</dt><dd><%= facultadNombre %></dd><% } %>
+          <% if (ficha.resolucion){ %><dt>Registro calificado (MEN)</dt><dd class="reso"><%= ficha.resolucion %></dd><% } %>
+          <% if (ficha.registro_unico){ %><dt>Registro único</dt><dd class="reso"><%= ficha.registro_unico %></dd><% } %>
+          <% if (ficha.resolucion_pdf){ %><dd><a class="pdf" href="<%= ficha.resolucion_pdf %>" target="_blank" rel="noopener"><span class="msi">picture_as_pdf</span> Ver resolución (PDF)</a></dd><% } %>
+        </dl>
+        <% if (_txt.length > 40){ %>
+        <a class="ficha-dl" href="/plan/<%= item.slug %>?print=1" target="_blank" rel="noopener"><span class="msi">picture_as_pdf</span> Descargar plan de estudios</a>
+        <% } %>
+      </div>
+      <div class="cta-box" style="--c:<%= col %>;--c2:<%= col2 %>">
+        <span class="cta-ico"><span class="msi">school</span></span>
+        <h4>¿Listo para empezar?</h4>
+        <p>Asegura tu cupo para el próximo periodo académico.</p>
+        <a class="cta-btn" href="<%= inscUrl %>"<% if (inscUrl.startsWith('http')){ %> target="_blank" rel="noopener"<% } %>>Inscríbete ahora</a>
+        <a class="cta-alt" href="#solicitar">o solicita información →</a>
+      </div>
+      <% if (relacionadas && relacionadas.length){ %>
+      <div class="box">
+        <h4>Otros programas de la facultad</h4>
+        <% relacionadas.forEach(function(r){ %><a href="<%= r.url %>"><%= r.title %></a><% }) %>
+      </div>
+      <% } %>
+    </aside>
+</div>
+
+<!-- ══════════ SEDES ══════════ -->
+<% if (item.sedes && item.sedes.length){ %>
+<section class="psedes"><div class="wrap">
+  <div class="head-2"><div class="t"><div class="k">Cobertura nacional</div><h2>Estudia cerca de ti</h2>
+    <p>Este programa está disponible en <strong><%= item.sedes.length %></strong> <%= item.sedes.length === 1 ? 'sede' : 'sedes' %>.</p></div></div>
+  <div class="sede-chips">
+    <% item.sedes.forEach(function(s){ %><span class="sede-chip"><span class="msi">location_on</span> <%= s %></span><% }) %>
+  </div>
+</div></section>
+<% } %>
+
+<!-- ══════════ PREGUNTAS FRECUENTES (SEO + GEO) ══════════ -->
+<% if (typeof faqs !== 'undefined' && faqs.length){ %>
+<section class="pfaq"><div class="wrap">
+  <div class="head-2"><div class="t"><div class="k">Preguntas frecuentes</div><h2>Resuelve tus dudas sobre <%= item.title %></h2></div></div>
+  <div class="faq-list">
+    <% faqs.forEach(function(f, i){ %>
+      <details class="acc"<%= i === 0 ? ' open' : '' %>><summary><%= f.q %></summary><div class="acc-body"><p><%= f.a %></p></div></details>
+    <% }) %>
+  </div>
+</div></section>
+<% } %>
+
+<!-- ══════════ NOTICIAS RELACIONADAS (enlazado interno) ══════════ -->
+<% if (typeof noticias !== 'undefined' && noticias && noticias.length){ %>
+<section class="blk alt"><div class="wrap">
+  <div class="head-2">
+    <div class="t"><div class="k">Actualidad</div><h2>Noticias relacionadas</h2></div>
+    <a class="verlink" href="/noticias">Ver todas las noticias →</a>
+  </div>
+  <div class="news">
+    <% noticias.forEach(function(n){ %>
+      <a class="post" href="<%= n.url %>">
+        <span class="bd">
+          <span class="fecha"><%= n.fecha %></span>
+          <h3><%= n.title %></h3>
+          <p><%= n.resumen %></p>
+          <span class="go">Leer más →</span>
+        </span>
+      </a>
+    <% }) %>
+  </div>
+</div></section>
+<% } %>
+
+<!-- ══════════ CTA FINAL ══════════ -->
+<section class="lead-band"><div class="wrap">
+  <div class="pitch">
+    <div class="k">Da el primer paso</div>
+    <h2>Estudia <%= item.title %> en Uniremington</h2>
+    <p>Déjanos tus datos y un asesor académico te contactará para resolver tus dudas sobre admisiones, financiación y fechas de inicio.</p>
+    <div class="lead-trust">
+      <span><span class="msi">check_circle</span> Registro calificado</span><span><span class="msi">check_circle</span> +110 años de experiencia</span><span><span class="msi">check_circle</span> Financiación disponible</span>
+    </div>
+  </div>
+  <form class="lead-form js-lead" method="post" action="/solicitar-info">
+    <h3>Solicita información</h3>
+    <p class="sub">Es gratis y sin compromiso.</p>
+    <input type="hidden" name="programa" value="<%= item.title %>">
+    <input type="hidden" name="snies" value="<%= ficha && ficha.snies ? ficha.snies : '' %>">
+    <div class="f">
+      <input name="nombre" placeholder="Nombre completo" required aria-label="Nombre completo" autocomplete="name">
+      <input name="correo" type="email" placeholder="Correo electrónico" required aria-label="Correo electrónico" autocomplete="email">
+      <input name="telefono" type="tel" inputmode="tel" placeholder="Teléfono / WhatsApp" required aria-label="Teléfono o WhatsApp" autocomplete="tel">
+      <select name="modalidad" aria-label="Modalidad de interés">
+        <option value="">Modalidad de interés</option>
+        <option>Presencial</option><option>Distancia</option><option>Virtual</option>
+      </select>
+      <button class="btn btn-oro" type="submit">Quiero que me contacten</button>
+    </div>
+    <p class="fine">Al enviar aceptas la política de tratamiento de datos personales de la Corporación Universitaria Remington.</p>
+  </form>
+</div></section>
+</main>
+
+<!-- ══════════ BARRA CTA FIJA (solo móvil) ══════════ -->
+<div class="cta-bar" style="--c:<%= col %>;--c2:<%= col2 %>">
+  <a class="cta-bar-btn ghost" href="#solicitar"><span class="msi">mail</span> Solicita info</a>
+  <a class="cta-bar-btn primary" href="<%= inscUrl %>"<% if (inscUrl.startsWith('http')){ %> target="_blank" rel="noopener"<% } %>><span class="msi">school</span> Inscríbete</a>
+</div>
+
+<%- include('partials/foot') %>

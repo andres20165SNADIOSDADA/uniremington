@@ -1,0 +1,89 @@
+<!-- ═══════════════ NAVBAR PRINCIPAL (Menú Principal del backup) ═══════════════ -->
+<%
+  // helpers de render del menú (árbol resuelto en el pipeline: label/href/external/children)
+  function attrs(x){ return x.external ? ' target="_blank" rel="noopener"' : ''; }
+  var chevron = '<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>';
+  var menuItems = (typeof menu !== 'undefined' && menu.length) ? menu : [];
+%>
+<nav class="navbar" id="navbar">
+  <div class="navbar-inner">
+    <button class="navbar-burger" id="hamburger" aria-label="Abrir menú" aria-expanded="false">
+      <svg class="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg>
+      <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+    </button>
+
+    <a href="/" class="navbar-logo" aria-label="Uniremington — Inicio">
+      <img src="https://www.uniremington.edu.co/wp-content/uploads/2025/05/logo-uniremington.svg" alt="Uniremington">
+    </a>
+
+    <div class="navbar-links">
+      <% menuItems.forEach(function(item, i){ %>
+        <% if ((item.label || '').trim().toUpperCase() === 'SOY') return; /* SOY: solo en el menú hamburguesa */ %>
+        <% if (item.children && item.children.length){
+             var cols = item.children.length > 12 ? 3 : (item.children.length > 5 ? 2 : 1); %>
+        <div class="nav-dropdown" data-dd="dd<%= i %>">
+          <button class="nav-btn" aria-haspopup="true" aria-expanded="false"><%= item.label %><%- chevron %></button>
+          <div class="nav-panel nav-panel--menu" role="menu">
+            <div class="mega-links" style="--cols:<%= cols %>">
+              <% item.children.forEach(function(c){ %>
+                <% if (c.children && c.children.length){ %>
+                  <span class="mega-eyebrow"><%= c.label %></span>
+                  <% c.children.forEach(function(g){ %>
+                    <a href="<%= g.href %>" role="menuitem"<%- attrs(g) %>><i class="dot blue"></i><%= g.label %></a>
+                  <% }) %>
+                <% } else { %>
+                  <a href="<%= c.href %>" role="menuitem"<%- attrs(c) %>><i class="dot blue"></i><%= c.label %></a>
+                <% } %>
+              <% }) %>
+            </div>
+          </div>
+        </div>
+        <% } else { %>
+        <a href="<%= item.href %>" class="nav-link"<%- attrs(item) %>><%= item.label %></a>
+        <% } %>
+      <% }) %>
+    </div>
+
+    <div class="navbar-actions">
+      <a href="<%= inscripcionUrl %>" target="_blank" rel="noopener" class="navbar-cta">Inscríbete Ahora</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Drawer móvil -->
+<div class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-main-menu">
+    <% menuItems.forEach(function(item){ %>
+      <% if ((item.label || '').trim().toUpperCase() === 'SOY') return; /* SOY va en la sección siempre visible de abajo */ %>
+      <% if (item.children && item.children.length){ %>
+      <div class="m-section">
+        <button class="m-acc" data-acc><%= item.label %><%- chevron %></button>
+        <div class="m-acc-panel">
+          <% item.children.forEach(function(c){ %>
+            <% if (c.children && c.children.length){ %>
+              <span class="m-subhead"><%= c.label %></span>
+              <% c.children.forEach(function(g){ %><a href="<%= g.href %>"<%- attrs(g) %>><%= g.label %></a><% }) %>
+            <% } else { %>
+              <a href="<%= c.href %>"<%- attrs(c) %>><%= c.label %></a>
+            <% } %>
+          <% }) %>
+        </div>
+      </div>
+      <% } else { %>
+      <a class="m-link" href="<%= item.href %>"<%- attrs(item) %>><%= item.label %></a>
+      <% } %>
+    <% }) %>
+  </div>
+
+  <!-- SOY / públicos objetivo: SIEMPRE visible (también en escritorio, al abrir la hamburguesa) -->
+  <% var soy = menuItems.find(function(x){ return (x.label || '').trim().toUpperCase() === 'SOY'; }); %>
+  <% if (soy && soy.children && soy.children.length){ %>
+  <span class="mega-eyebrow"><%= soy.label %></span>
+  <% soy.children.forEach(function(c){ %>
+  <a class="m-link" href="<%= c.href %>"<%- attrs(c) %>><%= c.label %></a>
+  <% }) %>
+  <% } %>
+
+  <a class="m-cta" href="/programas">Explorar Programas &rarr;</a>
+  <a class="m-cta" href="<%= inscripcionUrl %>" target="_blank" rel="noopener" style="background: var(--blue); margin-top: 8px;">Inscríbete Ahora</a>
+</div>

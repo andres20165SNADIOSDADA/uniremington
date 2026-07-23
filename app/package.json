@@ -1,0 +1,14 @@
+{
+  "name": "uniremington-web",
+  "version": "0.1.0",
+  "description": "Migración del sitio de la Corporación Universitaria Remington desde WordPress a Node/Express + EJS",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^4.21.2"
+  }
+}

@@ -1,0 +1,96 @@
+<%- include('partials/head') %>
+
+<div class="listhead"><div class="wrap">
+  <h1><%= heading %></h1>
+  <% if (typeof sub !== 'undefined'){ %><p><%= sub %></p><% } %>
+</div></div>
+
+<section class="blk"><div class="wrap">
+  <% if (kind === 'events'){ %>
+    <div class="agenda">
+      <% items.forEach(function(e){ %>
+        <a class="ev" href="<%= e.url %>">
+          <span class="cal"><span class="d"><%= e.dia %></span><span class="m"><%= e.mes %></span></span>
+          <span class="in"><h3><%= e.title %></h3><span><%= e.fechaTxt %></span></span>
+        </a>
+      <% }) %>
+    </div>
+  <% } else if (kind === 'news'){ %>
+    <% if (typeof cats !== 'undefined' && cats.length){ %>
+      <div class="cat-bar">
+        <a href="/noticias" class="<%= !activeCat ? 'on' : '' %>">Todas</a>
+        <% cats.forEach(function(c){ %><a href="/noticias?cat=<%= c.slug %>" class="<%= activeCat===c.slug ? 'on' : '' %>"><%= c.name %></a><% }) %>
+      </div>
+    <% } %>
+    <% if (typeof featured !== 'undefined' && featured){ %>
+      <a class="feat" href="<%= featured.url %>">
+        <span class="feat-media"><% if (featured.img){ %><img src="<%= featured.img %>" alt="<%= featured.title %>" loading="eager" decoding="async"><% } else { %><span class="ph"><span class="msi">newspaper</span><b><%= featured.cat %></b></span><% } %></span>
+        <span class="feat-bd">
+          <span class="chips"><span class="chip"><%= featured.cat %></span><time datetime="<%= featured.iso %>"><%= featured.fecha %></time></span>
+          <h2><%= featured.title %></h2>
+          <p><%= featured.resumen %></p>
+          <span class="go">Leer nota completa <span class="msi">arrow_forward</span></span>
+        </span>
+      </a>
+    <% } %>
+    <div class="news">
+      <% items.forEach(function(n){ %>
+        <a class="post" href="<%= n.url %>">
+          <span class="post-media"><% if (n.img){ %><img src="<%= n.img %>" alt="<%= n.title %>" loading="lazy" decoding="async"><% } else { %><span class="ph"><span class="msi">newspaper</span><b><%= n.cat %></b></span><% } %></span>
+          <span class="bd">
+            <span class="chips"><span class="chip"><%= n.cat %></span><time datetime="<%= n.iso %>"><%= n.fecha %></time></span>
+            <h3><%= n.title %></h3>
+            <p><%= n.resumen %></p>
+            <span class="go">Leer más <span class="msi">arrow_forward</span></span>
+          </span>
+        </a>
+      <% }) %>
+    </div>
+  <% } else if (kind === 'programs' && typeof groups !== 'undefined'){ %>
+    <% groups.forEach(function(g){ %>
+      <div class="facultad-blk" id="<%= g.slug %>">
+        <h2><%= g.nombre %> <span class="cnt"><%= g.items.length %></span></h2>
+        <div class="rule"></div>
+        <div class="grid">
+          <% g.items.forEach(function(p){ %>
+            <a class="card" href="<%= p.url %>">
+              <span class="top"></span>
+              <span class="bd">
+                <span class="ico"><%= p.ico %></span>
+                <span class="tag"><%= p.tag %></span>
+                <h3><%= p.title %></h3>
+                <p><%= p.resumen %></p>
+                <span class="go">Ver programa →</span>
+              </span>
+            </a>
+          <% }) %>
+        </div>
+      </div>
+    <% }) %>
+  <% } else { %>
+    <div class="grid">
+      <% items.forEach(function(p){ %>
+        <a class="card" href="<%= p.url %>">
+          <span class="top"></span>
+          <span class="bd">
+            <span class="ico"><%= p.ico %></span>
+            <span class="tag"><%= p.tag %></span>
+            <h3><%= p.title %></h3>
+            <p><%= p.resumen %></p>
+            <span class="go">Ver más →</span>
+          </span>
+        </a>
+      <% }) %>
+    </div>
+  <% } %>
+
+  <% if (typeof pages !== 'undefined' && pages > 1){ %>
+    <div class="pagenav">
+      <% if (page > 1){ %><a href="?p=<%= page-1 %>">← Anterior</a><% } %>
+      <span class="cur"><%= page %> / <%= pages %></span>
+      <% if (page < pages){ %><a href="?p=<%= page+1 %>">Siguiente →</a><% } %>
+    </div>
+  <% } %>
+</div></section>
+
+<%- include('partials/foot') %>
