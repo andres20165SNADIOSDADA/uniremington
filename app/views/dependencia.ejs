@@ -1,0 +1,64 @@
+<%- include('partials/head') %>
+
+<div class="crumbs"><div class="wrap">
+  <a href="/">Inicio</a> › <a href="/facultades">Facultades</a> › <a href="<%= facUrl %>"><%= facNombre %></a> › <span><%= item.title %></span>
+</div></div>
+
+<section class="dep-hero" style="--c:<%= color %>;--c2:<%= colorDark %>"><div class="wrap">
+  <span class="eyebrow"><%= facNombre %></span>
+  <h1><%= item.title %></h1>
+</div></section>
+
+<div class="wrap dep-layout" style="--c:<%= color %>;--c2:<%= colorDark %>">
+  <main class="dep-main">
+    <% if (pdf){ %>
+      <div class="pdf-card">
+        <div class="pdf-head">
+          <span class="msi">menu_book</span>
+          <div><strong>Cartilla digital</strong><span>Visualiza la cartilla en línea o descárgala en PDF.</span></div>
+          <a class="btn btn-oro" href="<%= pdf %>" target="_blank" rel="noopener"><span class="msi">download</span> Descargar</a>
+        </div>
+        <iframe class="pdf-frame" src="<%= pdf %>#view=FitH" title="<%= item.title %>" loading="lazy"></iframe>
+      </div>
+    <% } else if (contentHtml && contentHtml.replace(/<[^>]+>/g,'').trim().length > 0){ %>
+      <div class="article dep-content"><%- contentHtml %></div>
+    <% } else { %>
+      <div class="dep-empty">
+        <span class="msi">description</span>
+        <h2>Contenido en actualización</h2>
+        <p>Esta dependencia de la <%= facNombre %> está siendo actualizada. Mientras tanto, puedes escribirnos o explorar la facultad.</p>
+        <div class="dep-empty-cta">
+          <a class="btn btn-oro" href="<%= facUrl %>">Ir a la facultad</a>
+          <a class="btn btn-ghost" href="/contacto">Contactar</a>
+        </div>
+      </div>
+    <% } %>
+
+    <a class="dep-back" href="<%= facUrl %>"><span class="msi">arrow_back</span> Volver a <%= facNombre %></a>
+  </main>
+
+  <aside class="dep-aside">
+    <div class="aside-inner">
+      <% if (hermanas && hermanas.length){ %>
+      <div class="widget dep-siblings">
+        <h4 class="widget-t">Más de esta facultad</h4>
+        <ul class="reclist">
+          <% if (teamUrl){ %><li><a href="<%= teamUrl %>"><span class="msi">groups</span><span>Nuestro equipo</span></a></li><% } %>
+          <% hermanas.forEach(function(h){ %>
+            <li><a href="<%= h.url %>"><span class="msi">chevron_right</span><span><%= h.title %></span></a></li>
+          <% }) %>
+        </ul>
+      </div>
+      <% } %>
+      <div class="widget cta-widget">
+        <span class="msi cta-ic">school</span>
+        <h4><%= facNombre %></h4>
+        <p>Conoce los programas y servicios de la facultad.</p>
+        <a class="btn btn-oro" href="/programas#<%= facSlug %>">Ver programas</a>
+        <a class="btn btn-ghost" href="<%= inscripcionUrl %>" target="_blank" rel="noopener">Inscríbete</a>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<%- include('partials/foot') %>

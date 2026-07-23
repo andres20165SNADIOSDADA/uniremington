@@ -1,0 +1,60 @@
+{
+  "facultad-de-diseno": [
+    {
+      "name": "Juan Manuel Bustamante",
+      "photo": "https://www.uniremington.edu.co/wp-content/uploads/2022/07/JUAN-MANUEL-BUSTAMANTE.jpg",
+      "bio": "Diseñador Gráfico, Comunicador Audiovisual y Multimedial, creativo independiente desde el 2006 y docente universitario desde el 2014. Creador de contenidos con alto impacto visual, apreciación estética, imaginación y originalidad, apasionado por la tecnología, la comunicación digital."
+    },
+    {
+      "name": "Alejandro Mesa",
+      "photo": "https://www.uniremington.edu.co/wp-content/uploads/2022/07/ALEJANDRO-MESA.jpg",
+      "bio": "Magíster en Tecnologías de la Información y la Comunicación en Educación y Formación de la Universidad Autónoma de Madrid, España. Comunicador Audiovisual y Multimedial de la Universidad de Antioquia, Colombia. Tecnólogo en Producción de TV del Politécnico Jaime Isaza Cadavid, Colombia."
+    },
+    {
+      "name": "Juan Diego López Medina",
+      "photo": "https://www.uniremington.edu.co/wp-content/uploads/2022/07/JUAN-DIEGO-LOPEZ.jpg",
+      "bio": "Publicista, Magíster en Administración de Negocios con especialidad en gestión integrada de la calidad, seguridad y medio ambiente; doctor degree in visual communication. Docente universitario desde 1997, vinculado a la facultad de Diseño y al grupo Asimétrico."
+    },
+    {
+      "name": "Johanna Osorio Ríos",
+      "photo": "https://www.uniremington.edu.co/wp-content/uploads/2022/07/JOHANNA-OSORIO.jpg",
+      "bio": "Diseñadora visual con énfasis en sistemas ambientales, Magister en Gestión de la Tecnología Educativa y docente hace 9 años de la facultad de Diseño. Poseo gran interés por la enseñanza y por descubrir metodologías adecuadas para explotar al máximo el potencial de mis estudiantes."
+    },
+    {
+      "name": "Carlos Andrés Parrado",
+      "photo": "https://www.uniremington.edu.co/wp-content/uploads/2022/07/CARLOS-PARRADO.jpg",
+      "bio": "Artista plástico, diseñador gráfico, licenciado en educación artística y abogado. Por medio del arte he logrado descubrir alternativas en la concepción de la imagen en el diseño, Cuento con una experiencia de 15 años en diseño y docencia, donde he colaborado en diferentes proyectos."
+    },
+    {
+      "name": "Marcelo Buccella",
+      "photo": "https://www.uniremington.edu.co/wp-content/uploads/2022/07/MARCELO-BUCCELLA.jpg",
+      "bio": "Profesional en diseño crossmedia y tecnólogo en diseño por computador, 19 años de experiencia trabajando en el medio como diseñador editorial, identidad corporativa y diseño de piezas gráficas publicitarias. director creativo en la agencia de publicidad Morales Ircom Colombia"
+    },
+    {
+      "name": "Elizabeth Betancur",
+      "photo": "https://www.uniremington.edu.co/wp-content/uploads/2022/07/ELIZABETH-BETANCUR.jpg",
+      "bio": "Diseñadora Visual de Bellas Artes, Artista Plástica de la Universidad de Antioquia y Gráfica Digital de IDEARTES, inició su carrera docente en el año 2011. Posee habilidad para el desarrollo de productos gráficos y digitales, experiencia en el área de impresos y diferentes técnicas plásticas."
+    },
+    {
+      "name": "Edwin Alberto Marín Cantillo",
+      "photo": "https://www.uniremington.edu.co/wp-content/uploads/2022/08/EDWIN-MARIN.jpg",
+      "bio": "Ingeniero en Diseño Industrial, Ilustrador y docente académico con más de 5 años de experiencia en el desarrollo de productos de la industria del mobiliario, diseño de empaques y comunicación gráfica publicitaria. con interés por la investigación enfocada en el pensamiento sistemático."
+    },
+    {
+      "name": "Juan Manuel Mesa Posada",
+      "photo": "https://www.uniremington.edu.co/wp-content/uploads/2022/08/JUAN-MANUEL-MESA.jpg",
+      "bio": "Profesional en Diseño Gráfico con maestría en Educación y Entornos Virtuales de Aprendizaje. 22 años de experiencia en la docencia del diseño gráfico en las áreas de editorial, marca, tipografía y la fundamentación. Como freelance he desarrollado productos."
+    },
+    {
+      "name": "Valentina Restrepo Serna",
+      "photo": "https://www.uniremington.edu.co/wp-content/uploads/2024/08/Valentina_Restrepo_Diseno.jpg",
+      "bio": "Tecnóloga en Diseño para la industria de la moda y maestra en Artes Visuales. En su vocación docente combina sus conocimientos en arte y tecnología para inspirar y guiar a sus estudiantes en su desarrollo creativo y profesional. Presente en el equipo de trabajo para la facultad de diseño."
+    },
+    {
+      "name": "Miguel Ángel Brand Gallego",
+      "photo": "https://www.uniremington.edu.co/wp-content/uploads/2023/06/Sin-t%C3%ADtulo-1.jpg",
+      "bio": "Ingeniero en Diseño Industrial. Experiencia en el diseño de espacios y diseño gráfico. Competente en la estructuración de proyectos de diseño incluyente y diseño social. Tutor líder del Semillero de Investigación de Diseño de Experiencias de la Facultad de Diseño de Uniremington."
+    }
+  ],
+  "investigacion-coordinadores": "<h3>Coordinadores de investigación por Facultades / Dependencias</h3><div style=\"overflow-x:auto\"><table><thead><tr><th>N°</th><th>Facultad / Dependencia</th><th>Coordinador(a)</th><th>Correo</th></tr></thead><tbody><tr><td>1</td><td>Diseño</td><td>Edwin Alejandro Mesa Moreno</td><td><a href=\"mailto:edwin.mesa@uniremington.edu.co\">edwin.mesa@uniremington.edu.co</a></td></tr><tr><td>2</td><td>Ciencias Contables</td><td>Nestor Enrique Amaris Lopez</td><td><a href=\"mailto:nestor.amaris@uniremington.edu.co\">nestor.amaris@uniremington.edu.co</a></td></tr><tr><td>3</td><td>Ciencias de la Salud</td><td>Aníbal Vicente Arteaga Noriega</td><td><a href=\"mailto:anibal.arteaga@uniremington.edu.co\">anibal.arteaga@uniremington.edu.co</a></td></tr><tr><td>4</td><td>Ciencias Empresariales</td><td>Andrés Felipe Cuervo Díaz</td><td><a href=\"mailto:andres.cuervo@uniremington.edu.co\">andres.cuervo@uniremington.edu.co</a></td></tr><tr><td>5</td><td>Ciencias Jurídicas y Políticas</td><td>Santiago Agudelo Taborda</td><td><a href=\"mailto:santiago.agudelo@uniremington.edu.co\">santiago.agudelo@uniremington.edu.co</a></td></tr><tr><td>6</td><td>Ingenierías</td><td>Alejandro Arango Correa</td><td><a href=\"mailto:alejandro.arango@uniremington.edu.co\">alejandro.arango@uniremington.edu.co</a></td></tr><tr><td>7</td><td>Medicina Veterinaria</td><td>Juan Felipe Zapata Martínez</td><td><a href=\"mailto:juan.zapata@uniremington.edu.co\">juan.zapata@uniremington.edu.co</a></td></tr><tr><td>8</td><td>Dirección de Humanidades</td><td>Juan Jacobo Agudelo Galeano</td><td><a href=\"mailto:juan.agudelo@uniremington.edu.co\">juan.agudelo@uniremington.edu.co</a></td></tr></tbody></table></div>"
+}

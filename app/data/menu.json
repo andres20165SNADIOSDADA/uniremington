@@ -1,0 +1,495 @@
+{
+ "principal": [
+  {
+   "label": "SOY",
+   "href": "https://www.uniremington.edu.co/",
+   "external": true,
+   "children": [
+    {
+     "label": "ASPIRANTE",
+     "href": "/soy-aspirante-uniremington/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "ESTUDIANTE",
+     "href": "/soy-estudiante-uniremington/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "EGRESADOS",
+     "href": "/soy-egresado-uniremington/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "PROFESOR",
+     "href": "/soy-docente-uniremington/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "EMPLEADO UNIREMINGTON",
+     "href": "/soy-empleado-uniremington/",
+     "external": false,
+     "children": []
+    }
+   ]
+  },
+  {
+   "label": "INSTITUCIONAL",
+   "href": "https://www.uniremington.edu.co/",
+   "external": true,
+   "children": [
+    {
+     "label": "SÚMATE - ACREDITACIÓN",
+     "href": "/acreditacion-institucional/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "TRAYECTORIA Y RECONOCIMIENTO",
+     "href": "/nuestra-institucion/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "DIRECCIONAMIENTO ESTRATÉGICO",
+     "href": "/direccionamiento-estrategico/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "PROYECTO EDUCATIVO INSTITUCIONAL",
+     "href": "/proyecto-educativo-institucional-pei-uniremington/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "SOSTENIBILIDAD",
+     "href": "/sostenibilidad/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "SIAC",
+     "href": "/sistema-interno-aseguramiento-calidad/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "TALENTO HUMANO",
+     "href": "/direccion-talento-humano/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "INVESTIGACIONES",
+     "href": "/investigacion/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "MODALIDADES DE FORMACIÓN",
+     "href": "https://www.uniremington.edu.co/",
+     "external": true,
+     "children": [
+      {
+       "label": "PRESENCIAL",
+       "href": "/presencial/",
+       "external": false,
+       "children": []
+      },
+      {
+       "label": "DISTANCIA",
+       "href": "/distancia/",
+       "external": false,
+       "children": []
+      },
+      {
+       "label": "CAMPUS VIRTUAL",
+       "href": "https://virtual.uniremington.edu.co/",
+       "external": true,
+       "children": []
+      }
+     ]
+    },
+    {
+     "label": "NORMATIVAS",
+     "href": "/normativa-institucional/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "COMUNICACIONES",
+     "href": "https://www.uniremington.edu.co/",
+     "external": true,
+     "children": [
+      {
+       "label": "DIRECTORIO DE EMPLEADOS",
+       "href": "/directorio-telefonico-de-empleados-uniremington/",
+       "external": false,
+       "children": []
+      },
+      {
+       "label": "PERIÓDICO ENTORNO",
+       "href": "/periodico-en-torno/",
+       "external": false,
+       "children": []
+      },
+      {
+       "label": "BLOG",
+       "href": "http://blog.uniremington.edu.co/",
+       "external": true,
+       "children": []
+      }
+     ]
+    },
+    {
+     "label": "COBERTURA NACIONAL",
+     "href": "/donde-estamos/",
+     "external": false,
+     "children": []
+    }
+   ]
+  },
+  {
+   "label": "VIDA ACADÉMICA",
+   "href": "https://www.uniremington.edu.co/",
+   "external": true,
+   "children": [
+    {
+     "label": "BIENESTAR INSTITUCIONAL",
+     "href": "/bienestar/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "DIRECCIÓN DE HUMANIDADES",
+     "href": "/humanidades/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "BIBLIOTECAS",
+     "href": "/biblioteca/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "RELACIONES INTERNACIONALES",
+     "href": "/internacionalizacion/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "PRÁCTICAS FORMATIVAS",
+     "href": "/practicas-formativas/",
+     "external": false,
+     "children": []
+    }
+   ]
+  },
+  {
+   "label": "SEDES",
+   "href": "https://www.uniremington.edu.co/",
+   "external": true,
+   "children": [
+    {
+     "label": "APARTADÓ",
+     "href": "/apartado/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "ARMENIA",
+     "href": "/armenia/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "BUCARAMANGA",
+     "href": "/bucaramanga/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "CALI",
+     "href": "/cali/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "CAUCASIA",
+     "href": "/caucasia/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "CÚCUTA",
+     "href": "/cucuta/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "IBAGUÉ",
+     "href": "/ibague/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "IPIALES",
+     "href": "/ipiales/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "MANIZALES",
+     "href": "/manizales/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "MEDELLÍN",
+     "href": "/medellin/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "MONTERÍA",
+     "href": "/monteria/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "PALMIRA",
+     "href": "/palmira/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "PASTO",
+     "href": "/pasto/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "PEREIRA",
+     "href": "/pereira/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "RIONEGRO",
+     "href": "/rionegro/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "SAHAGÚN",
+     "href": "/sahagun/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "SINCELEJO",
+     "href": "/sincelejo/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "TULUÁ",
+     "href": "/tulua/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "YOPAL",
+     "href": "/yopal/",
+     "external": false,
+     "children": []
+    }
+   ]
+  },
+  {
+   "label": "ÁREAS DE ESTUDIO",
+   "href": "https://www.uniremington.edu.co/",
+   "external": true,
+   "children": [
+    {
+     "label": "MEDICINA VETERINARIA",
+     "href": "/facultad/facultad-medicina-veterinaria",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "CIENCIAS EMPRESARIALES",
+     "href": "/facultad/facultad-de-ciencias-empresariales",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "CIENCIAS JURÍDICAS Y POLÍTICAS",
+     "href": "/facultad/facultad-de-ciencias-juridicas-y-politicas",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "CIENCIAS DE LA SALUD",
+     "href": "/facultad/facultad-de-ciencias-de-la-salud",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "CIENCIAS CONTABLES",
+     "href": "/facultad/facultad-de-ciencias-contables",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "INGENIERÍAS",
+     "href": "/facultad/facultad-de-ingenierias",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "DISEÑO",
+     "href": "/facultad/facultad-de-diseno",
+     "external": false,
+     "children": []
+    }
+   ]
+  },
+  {
+   "label": "POSGRADOS",
+   "href": "https://www.uniremington.edu.co/",
+   "external": true,
+   "children": [
+    {
+     "label": "ESPECIALIZACIONES",
+     "href": "/especializaciones/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "MAESTRÍAS",
+     "href": "/maestrias/",
+     "external": false,
+     "children": []
+    }
+   ]
+  },
+  {
+   "label": "SERVICIOS",
+   "href": "https://www.uniremington.edu.co/",
+   "external": true,
+   "children": [
+    {
+     "label": "PQRSF",
+     "href": "https://mejoramiso.com/mejoramisosql/loginPQRSRemington.asp",
+     "external": true,
+     "children": []
+    },
+    {
+     "label": "INSCRIPCIONES Y MATRÍCULAS",
+     "href": "/soy-estudiante-uniremington/admisiones/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "PORTAL ACADÉMICO",
+     "href": "https://class.uniremington.edu.co/academico/",
+     "external": true,
+     "children": []
+    },
+    {
+     "label": "SOLICITUD DE CERTIFICADOS",
+     "href": "/certificados/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "CONSULTORIOS JURÍDICOS - UGIS",
+     "href": "/facultades/facultad-de-ciencias-juridicas-y-politicas/ugis-unidad-de-gestion-e-impacto-social/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "CENTROS DE CONCILIACIÓN",
+     "href": "/facultades/facultad-de-ciencias-juridicas-y-politicas/centros-de-conciliacion-uniremington/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "CONSULTORIOS CONTABLES",
+     "href": "/facultades/facultad-de-ciencias-contables/consultorio-contable/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "OBSERVATORIOS",
+     "href": "https://www.uniremington.edu.co/#",
+     "external": true,
+     "children": [
+      {
+       "label": "OBSERVATORIO DE GÉNERO, EQUIDAD Y JUSTICIA",
+       "href": "/facultades/facultad-de-ciencias-juridicas-y-politicas/observatorio-de-genero-equidad-y-justicia/",
+       "external": false,
+       "children": []
+      },
+      {
+       "label": "OBSERVATORIO EN DELITOS CORPORATIVOS",
+       "href": "/facultades/facultad-de-ciencias-contables/observatorio-de-delitos-corporativos/",
+       "external": false,
+       "children": []
+      }
+     ]
+    },
+    {
+     "label": "FONDO EDITORIAL",
+     "href": "/fondo-editorial/",
+     "external": false,
+     "children": []
+    },
+    {
+     "label": "MESA DE SERVICIOS",
+     "href": "https://remington.helppeoplecloud.com/container/",
+     "external": true,
+     "children": []
+    },
+    {
+     "label": "CORREO INSTITUCIONAL",
+     "href": "https://login.microsoftonline.com/common/oauth2/authorize?client_id=00000002-0000-0ff1-ce00-000000000000&redirect_uri=https%3a%2f%2foutlook.office365.com%2fowa%2f&resource=00000002-0000-0ff1-ce00-000000000000&response_mode=form_post&response_type=code+id_token&scope=openid&msafed=0&client-request-id=4d8a4cc9-5272-417f-b6a9-2afb99e8231e&protectedtoken=true&nonce=636784127086789396.4a79cd8b-e477-43b8-9c13-6ec308ba1b10&state=DYtJEoAwCMCojs_BUmFYnlOqZ49-Xw7J5JIGAHuxFY1KYMpqLuMy8org0FOmxbo98REzFE7HWINRn8XkOUcOavUe_f1m_wE&sso_reload=true",
+     "external": true,
+     "children": []
+    },
+    {
+     "label": "GESTIÓN DOCUMENTAL",
+     "href": "/gestion-documental/",
+     "external": false,
+     "children": []
+    }
+   ]
+  },
+  {
+   "label": "EDUCACIÓN CONTINUA",
+   "href": "https://www.uniremington.edu.co/",
+   "external": true,
+   "children": [
+    {
+     "label": "E-COMERCIO",
+     "href": "https://educacioncontinuavirtual.uniremington.edu.co/",
+     "external": true,
+     "children": []
+    },
+    {
+     "label": "EXTENSIÓN Y PROYECCIÓN SOCIAL",
+     "href": "/extension-y-posgrados/",
+     "external": false,
+     "children": []
+    }
+   ]
+  }
+ ]
+}

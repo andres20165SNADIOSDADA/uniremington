@@ -1,0 +1,81 @@
+<%- include('partials/head') %>
+
+<div class="blog-top"><div class="wrap-wide">
+  <nav class="blog-crumbs"><a href="/">Inicio</a> · <a href="<%= backUrl %>"><%= backLabel %></a></nav>
+</div></div>
+
+<% if (lead){ %>
+  <figure class="blog-lead"><div class="wrap-wide"><img src="<%= lead %>" alt="<%= item.title %>" loading="eager" decoding="async"></div></figure>
+<% } %>
+
+<div class="wrap-wide">
+  <div class="blog-layout">
+    <main class="blog-main">
+      <header class="post-header">
+        <span class="chips"><span class="chip"><%= cat %></span></span>
+        <h1><%= item.title %></h1>
+        <div class="blog-meta">
+          <% if (fecha){ %><time datetime="<%= iso %>"><span class="msi">calendar_today</span><%= fecha %></time><% } %>
+          <% if (lectura){ %><span><span class="msi">schedule</span><%= lectura %> min de lectura</span><% } %>
+        </div>
+      </header>
+
+      <div class="article blog-body">
+        <%- contentHtml %>
+      </div>
+
+      <footer class="blog-foot">
+        <a class="back-link" href="<%= backUrl %>"><span class="msi">arrow_back</span> <%= backLabel %></a>
+        <div class="share">
+          <span>Compartir</span>
+          <a href="https://api.whatsapp.com/send?text=<%= encodeURIComponent(item.title + ' ' + canonical) %>" target="_blank" rel="noopener" aria-label="Compartir en WhatsApp"><span class="msi">chat</span></a>
+          <a href="https://www.facebook.com/sharer/sharer.php?u=<%= encodeURIComponent(canonical) %>" target="_blank" rel="noopener" aria-label="Compartir en Facebook"><span class="msi">thumb_up</span></a>
+          <a href="https://twitter.com/intent/tweet?url=<%= encodeURIComponent(canonical) %>&text=<%= encodeURIComponent(item.title) %>" target="_blank" rel="noopener" aria-label="Compartir en X"><span class="msi">share</span></a>
+        </div>
+      </footer>
+    </main>
+
+    <aside class="blog-aside">
+      <div class="aside-inner">
+        <div class="widget cta-widget">
+          <span class="msi cta-ic">school</span>
+          <h4>Corporación Universitaria Remington</h4>
+          <p>Más de 100 años formando profesionales en Colombia.</p>
+          <a class="btn btn-oro" href="/programas">Ver programas</a>
+          <a class="btn btn-ghost" href="<%= inscripcionUrl %>" target="_blank" rel="noopener">Inscríbete</a>
+        </div>
+
+        <% if (recientes && recientes.length){ %>
+        <div class="widget">
+          <h4 class="widget-t">Últimas noticias</h4>
+          <div class="minis">
+            <% recientes.forEach(function(n){ %>
+              <a class="mini" href="<%= n.url %>">
+                <span class="mini-media"><% if (n.img){ %><img src="<%= n.img %>" alt="<%= n.title %>" loading="lazy" decoding="async"><% } else { %><span class="ph mini-ph"><span class="msi">newspaper</span></span><% } %></span>
+                <span class="mini-bd"><time datetime="<%= n.iso %>"><%= n.fecha %></time><b><%= n.title %></b></span>
+              </a>
+            <% }) %>
+          </div>
+        </div>
+        <% } %>
+
+        <% if (eventos && eventos.length){ %>
+        <div class="widget">
+          <h4 class="widget-t">Próximos eventos</h4>
+          <div class="evs">
+            <% eventos.forEach(function(e){ %>
+              <a class="ev-mini" href="<%= e.url %>">
+                <span class="ev-cal"><span class="d"><%= e.dia %></span><span class="m"><%= e.mes %></span></span>
+                <span class="ev-tt"><%= e.title %></span>
+              </a>
+            <% }) %>
+          </div>
+          <a class="widget-more" href="/eventos">Ver toda la agenda <span class="msi">arrow_forward</span></a>
+        </div>
+        <% } %>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<%- include('partials/foot') %>

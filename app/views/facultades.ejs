@@ -1,0 +1,29 @@
+<%- include('partials/head') %>
+
+<main>
+<section class="prog-listhead"><div class="wrap">
+  <span class="eyebrow">Nuestra estructura académica</span>
+  <h1>Facultades</h1>
+  <p>Conoce las facultades de la Corporación Universitaria Remington, sus programas académicos y sus dependencias de extensión, investigación y servicio.</p>
+</div></section>
+
+<div class="wrap prog-wrap">
+  <div class="fac-grid">
+    <% facultades.forEach(function(f){ %>
+      <a class="fac-card" href="/facultad/<%= f.slug %>" style="--c:<%= f.color %>;--c2:<%= f.colorDark %>">
+        <span class="fc-cap"></span>
+        <span class="fc-bd">
+          <h3><%= f.nombre %></h3>
+          <span class="fc-meta">
+            <span><strong><%= f.nProg %></strong> programas</span>
+            <% if (f.nRec){ %><span><strong><%= f.nRec %></strong> dependencias</span><% } %>
+          </span>
+          <span class="go">Ver facultad →</span>
+        </span>
+      </a>
+    <% }) %>
+  </div>
+</div>
+</main>
+
+<%- include('partials/foot') %>

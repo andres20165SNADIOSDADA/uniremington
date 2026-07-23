@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Plan de estudios — <%= item.title %> | Uniremington</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="/css/fonts.css">
+<style>
+  :root{
+    --c:<%= typeof color !== 'undefined' ? color : '#00457c' %>;
+    --c2:<%= typeof colorDark !== 'undefined' ? colorDark : '#012a50' %>;
+    --azul:#00457c;--azul2:#0a5aa8;--rojo:#e30613;
+    --tinta:#1b2733;--texto:#38434f;--suave:#6a7683;--linea:#e2e8f0;--gris:#f6f8fb;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{margin:0;font-family:'PT Sans',system-ui,'Segoe UI',Arial,sans-serif;color:var(--texto);line-height:1.6;background:#e9edf3;font-size:15px}
+  .sheet{max-width:860px;margin:26px auto;background:#fff;box-shadow:0 10px 40px rgba(0,25,60,.14)}
+
+  /* barra de acciones (no se imprime) */
+  .actions{position:sticky;top:0;z-index:5;display:flex;gap:10px;justify-content:flex-end;padding:12px 18px;background:rgba(255,255,255,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--linea)}
+  .btn{border:0;border-radius:9px;padding:11px 20px;font:inherit;font-weight:800;cursor:pointer;text-decoration:none;font-size:.9rem;display:inline-flex;align-items:center;gap:7px}
+  .btn-print{background:var(--rojo);color:#fff}.btn-print:hover{background:#b0050f}
+  .btn-back{background:var(--gris);color:var(--azul);border:1px solid var(--linea)}
+
+  /* ===== portada: imagen + título grande ===== */
+  .cover{position:relative;min-height:340px;display:flex;flex-direction:column;justify-content:flex-end;color:#fff;overflow:hidden;background:var(--c2)}
+  .cover .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+  .cover::after{content:"";position:absolute;inset:0;z-index:1;
+    background:linear-gradient(180deg,rgba(0,0,0,.15) 0%,rgba(0,0,0,.05) 34%,color-mix(in srgb,var(--c2) 80%,transparent) 78%,var(--c2) 100%),
+               linear-gradient(115deg,color-mix(in srgb,var(--c) 62%,transparent) 0%,transparent 60%)}
+  .cover .top{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:26px 46px 0}
+  .cover .top img{height:44px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.35))}
+  .cover .doc-label{text-align:right;font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;font-weight:700;opacity:.95}
+  .cover .title{position:relative;z-index:2;padding:22px 46px 30px}
+  .cover .eyebrow{font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700;opacity:.92;margin:0 0 8px;display:inline-block;border-left:3px solid var(--rojo);padding-left:10px}
+  .cover h1{margin:0;font-weight:700;font-size:2.5rem;line-height:1.08;letter-spacing:-.01em;max-width:20ch;text-shadow:0 2px 12px rgba(0,0,0,.28)}
+  .cover .sub{margin:12px 0 0;font-size:1rem;font-weight:600;color:rgba(255,255,255,.92)}
+
+  /* franja de datos clave del programa */
+  .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));border-bottom:2px solid var(--c);background:#fff}
+  .facts .f{padding:14px 18px;border-right:1px solid var(--linea)}
+  .facts .f:last-child{border-right:0}
+  .facts .k{font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--suave);font-weight:800}
+  .facts .v{font-weight:700;color:var(--azul);font-size:1.02rem;line-height:1.15;margin-top:2px}
+
+  /* ===== cuerpo: solo el pénsum ===== */
+  .body{padding:36px 46px 42px}
+  .body-head{margin:0 0 4px}
+  .body-head h2{color:var(--azul);font-weight:700;font-size:1.5rem;margin:0;line-height:1.15}
+  .body-head .rule{width:64px;height:3px;background:var(--rojo);margin:10px 0 4px;border-radius:2px}
+  .body-head p{margin:0;color:var(--suave);font-size:.9rem}
+
+  .sede-tag{margin:30px 0 6px;display:inline-block;font-weight:700;color:var(--c);font-size:1.02rem;
+    border-left:4px solid var(--rojo);padding:2px 0 2px 12px;letter-spacing:.01em}
+  .sede-tag + .sem{margin-top:10px}
+  .sem{margin-top:26px;break-inside:avoid}
+  .sem h3{color:#fff;background:linear-gradient(180deg,var(--c),var(--c2));font-weight:700;font-size:1rem;margin:0;padding:10px 16px;border-radius:9px 9px 0 0;letter-spacing:.01em}
+  .tabla-wrap{overflow-x:auto;border:1px solid var(--linea);border-top:0;border-radius:0 0 9px 9px}
+  .sem:not(:has(h3)) .tabla-wrap{border-top:1px solid var(--linea);border-radius:9px}
+  table{border-collapse:collapse;width:100%;font-size:.82rem;line-height:1.4}
+  th,td{border:1px solid var(--linea);padding:9px 11px;text-align:left;vertical-align:top}
+  thead th,tr:first-child th{background:linear-gradient(180deg,var(--c),var(--c2));color:#fff;border-color:var(--c2);font-weight:700;text-align:center}
+  .sem h3 + .tabla-wrap thead th,.sem h3 + .tabla-wrap tr:first-child th{background:var(--gris);color:var(--azul);border-color:var(--linea)}
+  tbody tr:nth-child(even) td{background:var(--gris)}
+  tfoot td,tr:last-child td{background:#eef3f9;font-weight:700;color:var(--azul)}
+
+  .empty{padding:26px;border:1px dashed var(--linea);border-radius:10px;color:var(--suave);text-align:center;margin-top:24px}
+
+  /* pie institucional */
+  .docfoot{padding:16px 46px 30px;border-top:1px solid var(--linea);color:var(--suave);font-size:.78rem;line-height:1.5}
+  .docfoot strong{color:var(--tinta)}
+  .docfoot .brand{margin-bottom:6px}
+  .docfoot .brand b{color:var(--azul);font-weight:700}
+
+  @media print{
+    @page{margin:12mm 0}
+    body{background:#fff;font-size:11.5pt}
+    .sheet{box-shadow:none;margin:0;max-width:none}
+    .no-print{display:none !important}
+    .cover .top,.cover .title,.facts .f,.body,.docfoot{padding-left:14mm;padding-right:14mm}
+    .sem,.tabla-wrap,table,tr{break-inside:avoid}
+    .sem h3{break-after:avoid}
+  }
+</style>
+</head>
+<body>
+  <div class="sheet">
+    <div class="actions no-print">
+      <a class="btn btn-back" href="<%= item.url %>">← Volver al programa</a>
+      <button class="btn btn-print" onclick="window.print()">Descargar PDF</button>
+    </div>
+
+    <header class="cover">
+      <% if (banner){ %><img class="bg" src="<%= banner %>" alt=""><% } %>
+      <div class="top">
+        <img src="/img/logo-uniremington-blanco.svg" alt="Corporación Universitaria Remington">
+        <div class="doc-label">Plan de estudios</div>
+      </div>
+      <div class="title">
+        <span class="eyebrow">Plan académico</span>
+        <h1><%= item.title %></h1>
+        <% if (facultadNombre){ %><p class="sub"><%= facultadNombre %> · Corporación Universitaria Remington</p><% } %>
+      </div>
+    </header>
+
+    <div class="facts">
+      <% if (item.nivel){ %><div class="f"><div class="k">Nivel</div><div class="v"><%= item.nivel %></div></div><% } %>
+      <% if (item.modalidad){ %><div class="f"><div class="k">Modalidad</div><div class="v"><%= item.modalidad %></div></div><% } %>
+      <% if (ficha.duracion){ %><div class="f"><div class="k">Duración</div><div class="v"><%= ficha.duracion %></div></div><% } %>
+      <% if (ficha.snies){ %><div class="f"><div class="k">Código SNIES</div><div class="v"><%= ficha.snies %></div></div><% } %>
+    </div>
+
+    <main class="body">
+      <div class="body-head">
+        <h2>Plan de estudios</h2>
+        <div class="rule"></div>
+        <p>Distribución de asignaturas por semestre</p>
+      </div>
+
+      <% var _hayTablas = pensum && pensum.some(function(g){ return g.tables && g.tables.length; }); %>
+      <% if (_hayTablas){ %>
+        <% pensum.forEach(function(g){ %>
+          <% if (g.sede){ %><div class="sede-tag"><%= (g.sede.indexOf(',')>-1?'Sedes: ':'Sede: ') + g.sede %></div><% } %>
+          <% g.tables.forEach(function(t){ %>
+            <section class="sem">
+              <% if (t.label){ %><h3><%= t.label %></h3><% } %>
+              <div class="tabla-wrap"><%- t.html %></div>
+            </section>
+          <% }); %>
+        <% }); %>
+      <% } else { %>
+        <div class="empty">El pénsum de este programa estará disponible próximamente. Escríbenos para recibir el plan de estudios completo.</div>
+      <% } %>
+    </main>
+
+    <footer class="docfoot">
+      <div class="brand"><b>Corporación Universitaria Remington</b></div>
+      Institución de educación superior sujeta a inspección y vigilancia por el Ministerio de Educación Nacional (Vigilada Mineducación).<% if (ficha.snies){ %> SNIES <%= ficha.snies %>.<% } %><% if (ficha.resolucion){ %><br><strong>Registro calificado:</strong> <%= ficha.resolucion %>.<% } %>
+    </footer>
+  </div>
+  <script>
+    if (location.search.indexOf('print') !== -1) {
+      window.addEventListener('load', function(){ setTimeout(function(){ window.print(); }, 500); });
+    }
+  </script>
+</body>
+</html>

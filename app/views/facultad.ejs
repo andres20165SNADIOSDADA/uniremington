@@ -1,0 +1,109 @@
+<%- include('partials/head') %>
+
+<div class="crumbs"><div class="wrap">
+  <a href="/">Inicio</a> › <a href="/facultades">Facultades</a> › <span><%= fac.nombre %></span>
+</div></div>
+
+<section class="fac-hero" style="--c:<%= fac.color %>;--c2:<%= fac.colorDark %>"><div class="wrap">
+  <span class="eyebrow">Facultad</span>
+  <h1><%= fac.nombre %></h1>
+  <div class="fac-hero-meta">
+    <span><strong><%= programas.length %></strong> programas</span>
+    <% if (recursos.length){ %><span><strong><%= recursos.length %></strong> dependencias y recursos</span><% } %>
+  </div>
+</div></section>
+
+<% if (contentHtml || recursosLinks.length){ %>
+<div class="wrap fac-layout">
+  <main class="fac-main">
+    <% if (decano){ %>
+      <div class="decano-card" style="--c:<%= fac.color %>;--c2:<%= fac.colorDark %>">
+        <div class="decano-foto"><img src="<%= decano.foto %>" alt="<%= decano.nombre %>, decano de la <%= fac.nombre %>" loading="lazy" decoding="async"></div>
+        <div class="decano-bd">
+          <span class="decano-k">Decanatura</span>
+          <h2><%= decano.nombre %></h2>
+          <p>Decano · <%= fac.nombre %></p>
+          <% if (equipoUrl){ %><a class="decano-link" href="<%= equipoUrl %>">Conoce todo el equipo <span class="msi">arrow_forward</span></a><% } %>
+        </div>
+      </div>
+    <% } %>
+    <% if (contentHtml){ %>
+      <div class="article fac-content" style="--c:<%= fac.color %>;--c2:<%= fac.colorDark %>"><%- contentHtml %></div>
+    <% } %>
+  </main>
+
+  <aside class="fac-aside">
+    <div class="aside-inner">
+      <% if (recursosLinks.length){ %>
+      <div class="widget fac-reclinks" style="--c:<%= fac.color %>;--c2:<%= fac.colorDark %>">
+        <h4 class="widget-t">Recursos de la facultad</h4>
+        <ul class="reclist">
+          <% recursosLinks.forEach(function(r){ %>
+            <li><a href="<%= r.url %>"<%= /^https?:/i.test(r.url) ? ' target="_blank" rel="noopener"' : '' %>>
+              <span class="msi"><%= r.ico %></span><span><%= r.label %></span>
+            </a></li>
+          <% }) %>
+        </ul>
+      </div>
+      <% } %>
+      <div class="widget cta-widget" style="--c:<%= fac.color %>;--c2:<%= fac.colorDark %>">
+        <span class="msi cta-ic">auto_stories</span>
+        <h4>¿Te interesa esta facultad?</h4>
+        <p>Explora sus programas y da el primer paso hacia tu futuro profesional.</p>
+        <a class="btn btn-oro" href="/programas#<%= fac.slug %>">Ver programas</a>
+        <a class="btn btn-ghost" href="<%= inscripcionUrl %>" target="_blank" rel="noopener">Inscríbete</a>
+      </div>
+    </div>
+  </aside>
+</div>
+<% } %>
+
+<div class="wrap prog-wrap">
+
+  <% if (programas.length){ %>
+  <section class="fac-sec">
+    <div class="head-2">
+      <div class="t"><div class="k">Oferta académica</div><h2>Programas de la facultad</h2></div>
+      <a class="verlink" href="/programas#<%= fac.slug %>">Ver en el buscador de programas →</a>
+    </div>
+    <div class="prog-grid">
+      <% programas.forEach(function(p){ %>
+        <a class="pcard" href="<%= p.url %>" style="--c:<%= fac.color %>;--c2:<%= fac.colorDark %>">
+          <span class="cap">
+            <span class="ico"><span class="msi"><%= p.ico %></span></span>
+            <% if (p.nivel){ %><span class="niv"><%= p.nivel %></span><% } %>
+          </span>
+          <span class="bd">
+            <span class="fac"><%= fac.nombre %></span>
+            <h3><%= p.title %></h3>
+            <span class="chips"><% if (p.modalidad){ %><span class="c-mod"><%= p.modalidad %></span><% } %></span>
+            <span class="sede"><% if (p.sedes.length){ %><span class="msi">location_on</span> <%= p.sedes.length === 1 ? p.sedes[0] : p.sedes.length + ' sedes' %><% } else { %>&nbsp;<% } %></span>
+            <span class="go">Ver programa →</span>
+          </span>
+        </a>
+      <% }) %>
+    </div>
+  </section>
+  <% } %>
+
+  <% if (recursos.length){ %>
+  <section class="fac-sec">
+    <div class="head-2">
+      <div class="t"><div class="k">Extensión, investigación y servicios</div><h2>Dependencias y recursos</h2>
+        <p>Consultorios, observatorios, clínicas, publicaciones y demás dependencias de la facultad.</p></div>
+    </div>
+    <div class="recursos-grid">
+      <% recursos.forEach(function(r){ %>
+        <a class="recurso" href="<%= r.url %>" style="--c:<%= fac.color %>;--c2:<%= fac.colorDark %>">
+          <span class="rico"><span class="msi"><%= r.ico %></span></span>
+          <span class="rtxt"><%= r.title %></span>
+          <span class="rarrow msi">arrow_forward</span>
+        </a>
+      <% }) %>
+    </div>
+  </section>
+  <% } %>
+
+</div>
+
+<%- include('partials/foot') %>

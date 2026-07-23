@@ -1,0 +1,76 @@
+<%- include('partials/head') %>
+
+<%
+  // Tema institucional (azul) por defecto; si la página es de un grupo de investigación,
+  // el servidor pasa `theme` derivado de su acento y toda la página se tiñe con él.
+  var thm = (typeof theme !== 'undefined' && theme) ? theme : null;
+  var C = thm ? thm.c : '#00457c', C2 = thm ? thm.c2 : '#012a4a';
+  var ACCENT = thm ? thm.accent : C;
+  var titulo = (typeof h1 !== 'undefined' && h1) ? h1 : item.title;
+  var cur = (typeof curUrl !== 'undefined') ? curUrl : (item.url || '');
+  var crumbs = (typeof crumbs !== 'undefined' && crumbs) ? crumbs : [];
+  var sidebar = (typeof sidebar !== 'undefined') ? sidebar : null;
+  var eyebrow = (sidebar && sidebar.title) || (crumbs.length ? crumbs[crumbs.length-1].label : '');
+  var contentHtml = (typeof contentOverride !== 'undefined' && contentOverride) ? contentOverride : (item.content_html || '');
+  var tieneContenido = contentHtml.replace(/<[^>]+>/g, '').trim().length > 0
+    || /<(iframe|img|table|figure|div class="map-embed")/i.test(contentHtml);
+%>
+
+<div class="crumbs"><div class="wrap">
+  <a href="/">Inicio</a>
+  <% crumbs.forEach(function(c){ %> › <% if (c.href){ %><a href="<%= c.href %>"><%= c.label %></a><% } else { %><span><%= c.label %></span><% } %><% }) %>
+  › <span><%= titulo %></span>
+</div></div>
+
+<section class="dep-hero<%= thm ? ' dep-hero-grupo' : '' %>" style="--c:<%= C %>;--c2:<%= C2 %>;--accent:<%= ACCENT %>"><div class="wrap">
+  <% if (eyebrow){ %><span class="eyebrow"><%= eyebrow %></span><% } %>
+  <h1><%= titulo %></h1>
+</div></section>
+
+<div class="wrap dep-layout" style="--c:<%= C %>;--c2:<%= C2 %>;--accent:<%= ACCENT %>">
+  <main class="dep-main">
+    <% if (tieneContenido){ %>
+      <div class="article dep-content"><%- contentHtml %></div>
+    <% } else { %>
+      <div class="dep-empty">
+        <span class="msi">description</span>
+        <h2>Contenido en actualización</h2>
+        <p>Esta página está siendo actualizada. Mientras tanto, puedes explorar nuestra oferta o escribirnos.</p>
+        <div class="dep-empty-cta">
+          <a class="btn btn-oro" href="/programas">Ver programas</a>
+          <a class="btn btn-ghost" href="/contacto">Contactar</a>
+        </div>
+      </div>
+    <% } %>
+    <% if (sidebar && sidebar.href){ %><a class="dep-back" href="<%= sidebar.href %>"><span class="msi">arrow_back</span> Volver a <%= sidebar.title %></a>
+    <% } else if (crumbs.length){ %><a class="dep-back" href="/"><span class="msi">arrow_back</span> Volver al inicio</a><% } %>
+  </main>
+
+  <aside class="dep-aside">
+    <div class="aside-inner">
+      <% if (sidebar && sidebar.items && sidebar.items.length > 1){ %>
+      <div class="widget dep-siblings">
+        <h4 class="widget-t">En <%= sidebar.title %></h4>
+        <ul class="reclist">
+          <% sidebar.items.forEach(function(s){ %>
+            <li><a href="<%= s.href %>"<%= s.external ? ' target="_blank" rel="noopener"' : '' %> class="<%= s.href === cur ? 'is-current' : '' %>">
+              <span class="msi"><%= s.href === cur ? 'radio_button_checked' : 'chevron_right' %></span><span><%= s.label %></span>
+            </a></li>
+          <% }) %>
+        </ul>
+      </div>
+      <% } %>
+      <div class="widget cta-widget" style="--c:<%= C %>;--c2:<%= C2 %>">
+        <span class="msi cta-ic">school</span>
+        <h4>Estudia en Uniremington</h4>
+        <p>Explora nuestra oferta académica y da el primer paso hacia tu futuro profesional.</p>
+        <a class="btn btn-oro" href="/programas">Ver programas</a>
+        <a class="btn btn-ghost" href="<%= inscripcionUrl %>" target="_blank" rel="noopener">Inscríbete</a>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<% (typeof bodyScripts !== 'undefined' && bodyScripts || []).forEach(function(src){ %><script src="<%= src %>" defer></script>
+<% }) %>
+<%- include('partials/foot') %>

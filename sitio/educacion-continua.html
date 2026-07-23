@@ -1,0 +1,1327 @@
+<!doctype html><html lang="es"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Educación Continua — Uniremington</title>
+<style>
+:root{
+ --azul:#003c71; --azul-2:#0a5aa8; --azul-cl:#1e73be;
+ --oro:#f2a900; --oro-2:#c98a00;
+ --tinta:#16222e; --gris:#f5f7fa; --gris-2:#e6ecf2; --linea:#d9e1ea;
+ --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+ --sans:system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:var(--sans);color:var(--tinta);line-height:1.65;background:#fff}
+a{color:var(--azul-2)}
+img{max-width:100%;height:auto}
+
+/* barra utilitaria */
+.util{background:var(--azul);color:#cdddef;font-size:.78rem}
+.util .wrap{max-width:1180px;margin:0 auto;padding:6px 22px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.util a{color:#cdddef;text-decoration:none}
+.util a:hover{color:#fff}
+
+/* cabecera */
+header.site{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--linea);box-shadow:0 1px 8px rgba(0,40,80,.06)}
+.bar{max-width:1180px;margin:0 auto;padding:12px 22px;display:flex;align-items:center;gap:16px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--azul)}
+.crest{width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 30% 25%,var(--azul-cl),var(--azul));color:#fff;display:grid;place-items:center;font-size:1.3rem;box-shadow:0 2px 6px rgba(0,40,80,.25)}
+.brand .n{font-family:var(--serif);font-weight:700;font-size:1.12rem;line-height:1.05;color:var(--azul)}
+.brand .n small{display:block;font-family:var(--sans);font-weight:500;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--oro-2)}
+nav.main{margin-left:auto}
+nav.main ul{list-style:none;display:flex;gap:2px;margin:0;padding:0;flex-wrap:wrap}
+nav.main a{display:block;padding:8px 12px;border-radius:6px;text-decoration:none;color:var(--tinta);font-size:.85rem;font-weight:600}
+nav.main a:hover,nav.main a.on{background:var(--gris);color:var(--azul)}
+.menu-tgl{display:none}
+
+/* hero */
+.hero{position:relative;color:#fff;background:linear-gradient(120deg,var(--azul) 0%,var(--azul-2) 65%,var(--azul-cl) 100%);overflow:hidden}
+.hero::after{content:"";position:absolute;inset:0;background:
+ radial-gradient(60% 120% at 90% -10%,rgba(242,169,0,.28),transparent 60%),
+ repeating-linear-gradient(135deg,rgba(255,255,255,.05) 0 2px,transparent 2px 22px);pointer-events:none}
+.hero .wrap{position:relative;max-width:1180px;margin:0 auto;padding:52px 22px 46px;z-index:1}
+.eyebrow{display:inline-block;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:#ffd77a;border-left:3px solid var(--oro);padding-left:10px;margin-bottom:14px}
+.hero h1{font-family:var(--serif);font-weight:700;font-size:clamp(1.9rem,4.5vw,3rem);line-height:1.08;margin:0 0 12px;max-width:20ch}
+.hero p.lead{margin:0;max-width:60ch;color:#e4eefb;font-size:1.05rem}
+.crumbs{background:var(--gris);border-bottom:1px solid var(--linea)}
+.crumbs .wrap{max-width:1180px;margin:0 auto;padding:9px 22px;font-size:.82rem;color:#5b6b7a}
+.crumbs a{color:var(--azul-2);text-decoration:none}
+.crumbs a:hover{text-decoration:underline}
+
+/* contenido */
+main{max-width:900px;margin:0 auto;padding:36px 22px 70px}
+main.wide{max-width:1180px}
+.article h2{font-family:var(--serif);color:var(--azul);font-size:1.5rem;margin:32px 0 10px}
+.article h3{color:var(--azul-2);font-size:1.18rem;margin:26px 0 8px}
+.article h4{color:var(--azul-2);margin:20px 0 6px}
+.article p{margin:.6em 0}
+.article ul,.article ol{padding-left:1.3em}
+.article a{color:var(--azul-2);font-weight:600}
+.aviso{display:flex;gap:12px;align-items:flex-start;background:#fff7e6;border:1px solid #ffe0a3;border-left:4px solid var(--oro);border-radius:10px;padding:14px 16px;font-size:.9rem;margin-bottom:30px;color:#5c4a12}
+p.iconbox{background:var(--gris);border-left:4px solid var(--azul-cl);padding:10px 14px;margin:8px 0;font-size:.92rem;border-radius:0 8px 8px 0}
+figure{margin:20px 0;text-align:center}
+figure img{border-radius:12px;box-shadow:0 8px 26px rgba(0,40,80,.12)}
+.btn{display:inline-block;background:var(--oro);color:#3a2c00;padding:11px 22px;border-radius:8px;text-decoration:none;font-weight:700;box-shadow:0 3px 10px rgba(242,169,0,.35);transition:.15s}
+.btn:hover{background:var(--oro-2);color:#fff;transform:translateY(-1px)}
+
+/* acordeones */
+details.acc{border:1px solid var(--linea);border-radius:10px;margin:12px 0;background:#fff;overflow:hidden}
+details.acc+details.acc{margin-top:-2px}
+details.acc summary{cursor:pointer;list-style:none;padding:14px 46px 14px 18px;position:relative;font-weight:700;color:var(--azul);background:var(--gris);font-family:var(--serif);font-size:1.02rem}
+details.acc summary::-webkit-details-marker{display:none}
+details.acc summary::after{content:"+";position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:1.4rem;color:var(--oro-2);font-weight:400}
+details.acc[open] summary{background:linear-gradient(90deg,var(--azul),var(--azul-2));color:#fff}
+details.acc[open] summary::after{content:"–";color:#ffd77a}
+.acc-body{padding:16px 18px}
+
+/* tablas */
+.tabla-wrap{overflow-x:auto;margin:18px 0;border:1px solid var(--linea);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:.9rem;min-width:420px}
+th,td{border-bottom:1px solid var(--linea);padding:10px 12px;text-align:left;vertical-align:top}
+thead th,tr:first-child th{background:var(--azul);color:#fff;border-bottom:none}
+tbody tr:nth-child(even) td,tr:nth-child(even) td{background:var(--gris)}
+.raw-embed{margin:22px 0}
+
+/* grupo de investigacion: integrantes */
+.gruplac{margin:26px 0}
+.gruplac h3{display:flex;align-items:center;gap:10px}
+.gruplac .cnt{background:var(--oro);color:#3a2c00;font-size:.8rem;font-weight:800;padding:2px 10px;border-radius:999px;font-family:var(--sans)}
+.inv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin:16px 0}
+.inv{display:flex;align-items:center;gap:14px;border:1px solid var(--linea);border-radius:12px;padding:14px;text-decoration:none;color:inherit;background:#fff;transition:.18s}
+.inv:hover{border-color:var(--azul-cl);box-shadow:0 10px 22px rgba(0,40,80,.12);transform:translateY(-3px)}
+.inv .ini{width:50px;height:50px;min-width:50px;border-radius:50%;background:radial-gradient(circle at 30% 25%,var(--azul-cl),var(--azul));color:#fff;display:grid;place-items:center;font-weight:800;font-size:1rem}
+.inv-txt{min-width:0;display:flex;flex-direction:column;gap:1px}
+.inv-txt b{color:var(--azul);font-size:.82rem;text-transform:uppercase;font-weight:800;letter-spacing:.02em}
+.inv-txt span{color:#64748b;font-size:.82rem}
+.inv-txt em{color:var(--oro-2);font-size:.72rem;font-weight:700;font-style:normal;text-transform:uppercase;letter-spacing:.04em;margin-top:3px}
+.gruplac-links{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+.btn.ghost{background:#fff;color:var(--azul)!important;border:2px solid var(--azul);box-shadow:none}
+.btn.ghost:hover{background:var(--azul);color:#fff!important}
+
+/* index cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin-top:6px}
+.card{display:flex;flex-direction:column;border:1px solid var(--linea);border-radius:14px;padding:22px;text-decoration:none;color:inherit;background:#fff;transition:.18s;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;height:4px;width:100%;background:linear-gradient(90deg,var(--azul),var(--oro))}
+.card:hover{transform:translateY(-4px);box-shadow:0 14px 34px rgba(0,40,80,.14);border-color:var(--azul-cl)}
+.card .ico{font-size:1.9rem;margin-bottom:10px}
+.card .tag{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--oro-2);font-weight:700}
+.card h3{font-family:var(--serif);color:var(--azul);margin:4px 0 8px;font-size:1.2rem}
+.card p{margin:0;color:#516072;font-size:.9rem}
+.card .go{margin-top:14px;color:var(--azul-2);font-weight:700;font-size:.86rem}
+.stats{display:flex;gap:26px;flex-wrap:wrap;margin:28px 0 4px}
+.stat{background:var(--gris);border-radius:12px;padding:16px 22px;flex:1;min-width:150px;border-left:4px solid var(--oro)}
+.stat b{display:block;font-family:var(--serif);font-size:1.7rem;color:var(--azul)}
+.stat span{font-size:.82rem;color:#5b6b7a}
+
+/* footer */
+footer.site{background:var(--tinta);color:#aebfce;margin-top:40px}
+footer .cols{max-width:1180px;margin:0 auto;padding:44px 22px 22px;display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:30px}
+footer h4{color:#fff;font-family:var(--serif);margin:0 0 12px;font-size:1.05rem}
+footer a{color:#aebfce;text-decoration:none;display:block;padding:3px 0;font-size:.88rem}
+footer a:hover{color:var(--oro)}
+footer .legal{border-top:1px solid #2a3a49;text-align:center;padding:14px;font-size:.78rem;color:#7b8ea0}
+
+@media(max-width:820px){
+ nav.main{position:fixed;inset:0 0 0 auto;width:min(78vw,320px);background:#fff;flex-direction:column;padding:70px 18px 20px;box-shadow:-8px 0 30px rgba(0,0,0,.2);transform:translateX(100%);transition:.25s}
+ nav.main ul{flex-direction:column;gap:2px}
+ nav.main a{padding:12px}
+ .menu-tgl{display:block;margin-left:auto;background:var(--azul);color:#fff;border:0;border-radius:8px;padding:9px 13px;font-size:1.1rem;cursor:pointer;z-index:60}
+ #nav-open:checked ~ nav.main{transform:translateX(0)}
+ footer .cols{grid-template-columns:1fr}
+}
+</style></head><body>
+<div class="util"><div class="wrap">
+<span>📍 Medellín, Colombia &nbsp;·&nbsp; ☎ (604) 322 12 12</span>
+<span><a href="#">Estudiantes</a> · <a href="#">Egresados</a> · <a href="#">Aspirantes</a> · <a href="#">Contacto</a></span>
+</div></div>
+<header class="site"><div class="bar">
+<a class="brand" href="index.html"><span class="crest">🎓</span>
+<span class="n">Uniremington<small>Corporación Universitaria Remington</small></span></a>
+<input type="checkbox" id="nav-open" class="menu-tgl-cb" hidden>
+<label class="menu-tgl" for="nav-open">☰</label>
+<nav class="main"><ul><li><a class="" href="derecho-presencial.html">Derecho</a></li><li><a class="" href="facultad-ciencias-empresariales.html">Facultad de Ciencias Empresariales</a></li><li><a class="" href="acreditacion-institucional.html">Acreditación institucional</a></li><li><a class="" href="grupo-ingeniar.html">Grupo de Investigación Ingeniar</a></li><li><a class="" href="especializacion-derecho-laboral.html">Especialización en Derecho Laboral</a></li><li><a class="" href="convenios.html">Convenios Uniremington</a></li><li><a class="on" href="educacion-continua.html">Educación Continua</a></li><li><a class="" href="alternativas-financiacion.html">Alternativas de financiación</a></li></ul></nav>
+</div></header>
+<section class="hero"><div class="wrap">
+<span class="eyebrow">Extensión y Posgrados</span>
+<h1>Educación Continua</h1><p class="lead">Cursos, diplomados y programas de actualización profesional.</p></div></section>
+<div class="crumbs"><div class="wrap"><a href="index.html">Inicio</a> › <span>Educación Continua</span></div></div>
+<main class=""><div class="article">
+<div class="aviso"><span>⚠️</span><div><strong>Prueba piloto.</strong> El texto se extrajo automáticamente desde la exportación WordPress/WPBakery y se reproduce tal cual. El diseño es una plantilla neutra creada para evaluar la calidad de la migración.</div></div><p></p>
+<h2 style="text-align: center !important;"><span style="color: #00457c;">Aprender es el primer paso para evolucionar</span></h2>
+<p><div class="raw-embed"><style>
+/* ================= ACORDEÓN UNIREMINGTON ================= */
+
+.acordeon {
+  width: 100%;
+  max-width: 600px;
+
+  font-family: "PT Sans", Arial, sans-serif;
+}
+
+/* ITEM */
+.acordeon-item {
+  border: 1px solid #dcdcdc;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #ffffff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* BOTÓN */
+.acordeon-boton {
+  background-color: #00457C;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 15px 20px;
+  text-align: left;
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.3s ease, padding 0.3s ease;
+}
+
+.acordeon-boton:hover {
+  background-color: #005390;
+}
+
+/* ICONO */
+.acordeon-icono {
+  font-size: 18px;
+  transition: transform 0.3s ease;
+}
+
+/* ACTIVO */
+.acordeon-boton.activo .acordeon-icono {
+  transform: rotate(90deg);
+}
+
+/* CONTENIDO */
+.acordeon-contenido {
+  display: none;
+  padding: 18px 22px;
+  background-color: #fafafa;
+  animation: acordeonFade 0.3s ease-in-out;
+  border-top: 1px solid #e5e7eb;
+}
+
+.acordeon-contenido ul {
+  padding-left: 18px;
+  margin: 10px 0;
+}
+
+.acordeon-contenido li {
+  margin-bottom: 6px;
+}
+
+/* ANIMACIÓN */
+@keyframes acordeonFade {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .acordeon-boton {
+    font-size: 15px;
+    padding: 13px 16px;
+  }
+
+  .acordeon-icono {
+    font-size: 16px;
+  }
+
+  .acordeon-contenido {
+    padding: 14px 16px;
+  }
+}
+</style><style>
+/* ================= ACORDEÓN UNIREMINGTON ================= */
+
+.acordeon {
+  width: 100%;
+  max-width: 600px;
+
+  font-family: "PT Sans", Arial, sans-serif;
+}
+
+/* ITEM */
+.acordeon-item {
+  border: 1px solid #dcdcdc;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #ffffff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* BOTÓN */
+.acordeon-boton {
+  background-color: #00457C;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 15px 20px;
+  text-align: left;
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.3s ease, padding 0.3s ease;
+}
+
+.acordeon-boton:hover {
+  background-color: #005390;
+}
+
+/* ICONO */
+.acordeon-icono {
+  font-size: 18px;
+  transition: transform 0.3s ease;
+}
+
+/* ACTIVO */
+.acordeon-boton.activo .acordeon-icono {
+  transform: rotate(90deg);
+}
+
+/* CONTENIDO */
+.acordeon-contenido {
+  display: none;
+  padding: 18px 22px;
+  background-color: #fafafa;
+  animation: acordeonFade 0.3s ease-in-out;
+  border-top: 1px solid #e5e7eb;
+}
+
+.acordeon-contenido ul {
+  padding-left: 18px;
+  margin: 10px 0;
+}
+
+.acordeon-contenido li {
+  margin-bottom: 6px;
+}
+
+/* ANIMACIÓN */
+@keyframes acordeonFade {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .acordeon-boton {
+    font-size: 15px;
+    padding: 13px 16px;
+  }
+
+  .acordeon-icono {
+    font-size: 16px;
+  }
+
+  .acordeon-contenido {
+    padding: 14px 16px;
+  }
+}
+</style>
+
+<div class="acordeon">
+
+  <!-- PASO 1 -->
+  <div class="acordeon-item">
+    <button class="acordeon-boton" onclick="toggleAcordeon(this)">
+      Modalidades
+      <span class="acordeon-icono">▶</span>
+    </button>
+    <div class="acordeon-contenido">
+      <p>Los programas de educación continua se desarrollan bajo distintas modalidades:</p>
+      <ul>
+        <li><strong>Presencial:</strong> formación directa con énfasis en la interacción y la experiencia práctica.</li>
+        <li><strong>Virtual:</strong> aprendizaje mediado por plataformas digitales, con acompañamiento académico.</li>
+        <li><strong>Híbrida:</strong> combinación de actividades presenciales y virtuales.</li>
+        <li><strong>A la medida:</strong> programas diseñados según las necesidades específicas de organizaciones, empresas o comunidades.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- PASO 2 -->
+  <div class="acordeon-item">
+    <button class="acordeon-boton" onclick="toggleAcordeon(this)">
+      Áreas de conocimiento
+      <span class="acordeon-icono">▶</span>
+    </button>
+    <div class="acordeon-contenido">
+      <p>La oferta de educación continua se articula en diversas áreas del conocimiento:</p>
+      <ul>
+        <li>Gestión, liderazgo y desarrollo organizacional</li>
+        <li>Tecnología, innovación y transformación digital</li>
+        <li>Educación, pedagogía y procesos formativos</li>
+        <li>Comunicación, ciencias sociales y humanidades</li>
+        <li>Salud, bienestar y desarrollo humano</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- PASO 3 -->
+  <div class="acordeon-item">
+    <button class="acordeon-boton" onclick="toggleAcordeon(this)">
+      Oferta formativa
+      <span class="acordeon-icono">▶</span>
+    </button>
+    <div class="acordeon-contenido">
+      <p>
+        La educación continua incluye cursos, diplomados, talleres, seminarios y
+        microcredenciales, diseñados para:
+      </p>
+      <ul>
+        <li>Fortalecer competencias técnicas y transversales</li>
+        <li>Promover el pensamiento crítico, la innovación y la creatividad</li>
+        <li>Facilitar la aplicación del conocimiento en contextos reales</li>
+        <li>Contribuir al desarrollo personal, académico y profesional</li>
+      </ul>
+      <p>
+        Cada experiencia formativa se estructura con criterios de calidad académica,
+        enfoque práctico y actualización permanente de contenidos.
+      </p>
+    </div>
+  </div>
+
+  <!-- PASO 4 -->
+  <div class="acordeon-item">
+    <button class="acordeon-boton" onclick="toggleAcordeon(this)">
+      ¿A quiénes están dirigidos los programas de educación continua?
+      <span class="acordeon-icono">▶</span>
+    </button>
+    <div class="acordeon-contenido">
+      <p>
+        Los programas están dirigidos a personas y organizaciones interesadas en actualizar
+        sus saberes, fortalecer competencias específicas o ampliar su formación, sin requerir
+        necesariamente un proceso de formación profesional de largo plazo.
+      </p>
+      <p>
+        Están orientados a quienes buscan una formación pertinente, flexible y alineada con
+        las exigencias del entorno actual.
+      </p>
+    </div>
+  </div>
+
+  <!-- PASO 5 -->
+  <div class="acordeon-item">
+    <button class="acordeon-boton" onclick="toggleAcordeon(this)">
+      ¿Qué beneficios ofrece la educación continua?
+      <span class="acordeon-icono">▶</span>
+    </button>
+    <div class="acordeon-contenido">
+      <p>
+        La educación continua permite mantener la vigencia profesional, mejorar el desempeño
+        laboral y ampliar las oportunidades de desarrollo.
+      </p>
+      <p>
+        Asimismo, favorece el aprendizaje autónomo, la construcción de conocimiento aplicado
+        y la articulación entre la formación académica y las necesidades reales del entorno
+        productivo y social.
+      </p>
+    </div>
+  </div>
+
+</div>
+
+</div></p>
+<p data-start="368" data-end="738">La <strong data-start="371" data-end="393">educación continua</strong> constituye una oferta académica orientada a la actualización permanente del conocimiento y al fortalecimiento de competencias en distintos campos profesionales y sociales. A través de programas flexibles y de corta y mediana duración, se promueve el aprendizaje a lo largo de la vida y la aplicación práctica de los saberes en contextos reales.</p>
+<p data-start="740" data-end="1058">Esta oferta está dirigida a profesionales, estudiantes, emprendedores, empresas y comunidades que buscan <strong data-start="845" data-end="941">profundizar conocimientos, adquirir nuevas habilidades o responder a los cambios del entorno</strong>, mediante experiencias formativas pertinentes, actuales y alineadas con las dinámicas del mundo laboral y académico.</p>
+<p>Conoce nuestra oferta de <strong data-start="1030" data-end="1086">cursos, diplomados y programas de educación continua</strong>, creados para fortalecer tus competencias, ampliar tus oportunidades y potenciar tu crecimiento profesional con formación flexible y actualizada.<div class="raw-embed"><style>
+    /* =========================================================
+       BLOQUE AISLADO con refuerzo "html :where(...)" + !important
+       para evitar overrides del tema/WPBakery.
+       Tipografía PT Sans: 18px (base) / 22px (títulos).
+       ========================================================= */
+
+    /* Reset mínimo del bloque */
+    html :where(),
+    html :where() * { box-sizing: border-box; }
+
+    /* Variables y base tipográfica */
+    html :where() {
+      /* Colores corporativos */
+      --ub-brand-blue: #00457C;
+      --ub-brand-red:  #E30613;
+
+      /* Paleta */
+      --ub-surface-1: #fafafa;
+      --ub-surface-2: #f2f4f7;
+      --ub-surface-3: #e1e5eb;
+
+      /* Texto */
+      --ub-text: #0f1720;
+      --ub-text-accent: #1f2937;
+
+      /* Tokens */
+      --ub-color-primary: var(--ub-brand-red);
+      --ub-color-accent:  var(--ub-brand-blue);
+
+      /* Tipografías */
+      --ub-font-family: "PT Sans", Arial, sans-serif;
+      --ub-font-size-base: 18px;    /* párrafos/labels/botones */
+      --ub-font-size-title: 22px;   /* títulos */
+
+      /* Contenedor a ancho completo */
+      display: block;
+      padding: 0 !important;
+      margin: 0 !important;
+      width: 100% !important;
+
+      color: var(--ub-text) !important;
+      background: var(--ub-surface-1);
+      font-family: var(--ub-font-family) !important;
+      font-size: var(--ub-font-size-base) !important;
+      line-height: 1.5 !important;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Neutralizar herencias del tema */
+    html :where() h1,
+    html :where() h2,
+    html :where() h3,
+    html :where() h4,
+    html :where() p,
+    html :where() label,
+    html :where() legend,
+    html :where() span,
+    html :where() a,
+    html :where() button,
+    html :where() div,
+    html :where() input,
+    html :where() fieldset {
+      font-family: var(--ub-font-family) !important;
+      letter-spacing: normal !important;
+      text-transform: none !important;
+      color: inherit !important;
+      line-height: 1.5 !important;
+    }
+
+    /* Header / Controles */
+    html :where() .ub-header {
+      margin: 0 0 2rem 0 !important;
+      max-width: 1200px !important;
+      margin-inline: auto !important;
+      padding-inline: 1rem !important;
+      font-size: var(--ub-font-size-base) !important;
+    }
+    html :where() .ub-inputs {
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+      gap: 0.75rem 1rem !important;
+      margin-bottom: 1rem !important;
+    }
+    html :where() .ub-input {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 0.5rem !important;
+    }
+
+    /* Fieldset de filtros */
+    html :where() .ub-fieldset {
+      display: flex !important;
+      flex-wrap: wrap !important;
+      gap: 0.25rem 0.75rem !important;
+      margin: 0.5rem 0 0 0 !important;
+      padding: 0.75rem !important;
+      background-color: #f2f4f7 !important;
+      border: 1px solid #e1e5eb !important;
+      border-radius: 0.5rem !important;
+      font-size: var(--ub-font-size-base) !important;
+    }
+    html :where() .ub-fieldset legend {
+      margin-bottom: 0.25rem !important;
+      font-weight: 700 !important;
+      color: var(--ub-brand-blue) !important;
+      font-size: var(--ub-font-size-title) !important;
+      line-height: 1.35 !important;
+    }
+    html :where() .ub-fieldset > div {
+      display: flex !important;
+      align-items: center !important;
+      gap: 0.35rem !important;
+      padding: 0.15rem 0.25rem !important;
+      font-size: var(--ub-font-size-base) !important;
+    }
+    html :where() input,
+    html :where() input {
+      accent-color: var(--ub-brand-blue) !important;
+      inline-size: 1.05em !important;
+      block-size: 1.05em !important;
+    }
+    html :where() label { font-size: var(--ub-font-size-base) !important; }
+
+    /* Contenido y grilla */
+    html :where() .ub-content {
+      max-width: 1200px !important;
+      margin-inline: auto !important;
+      padding-inline: 1rem !important;
+    }
+    html :where() .ub-grid {
+      display: grid !important;
+      gap: 1rem !important;
+      grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr)) !important;
+    }
+    html :where() .ub-grid {
+      grid-template-columns: initial !important;
+    }
+
+    /* Card */
+    html :where() .ub-card {
+      position: relative !important;
+      display: flex !important;
+      flex-direction: column !important;
+      background-color: #f2f4f7 !important;
+      border-radius: 0.75rem !important;
+      overflow: hidden !important;
+      border: 1px solid rgba(0,0,0,0.04) !important;
+      box-shadow: 0 1px 2px rgba(0,0,0,.05), 0 4px 10px rgba(0,0,0,.06) !important;
+      transition: transform .16s ease, box-shadow .16s ease !important;
+      will-change: transform !important;
+      isolation: isolate !important;
+      font-size: var(--ub-font-size-base) !important;
+      cursor: pointer !important; /* card clicable */
+    }
+    @media (hover:hover) {
+      html :where() .ub-card:hover {
+        transform: translateY(-4px) !important;
+        box-shadow: 0 8px 24px rgba(0,0,0,.12) !important;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html :where() .ub-card { transition: none !important; }
+    }
+
+    /* Imagen con wrapper para overlay */
+    html :where() .ub-image-wrap {
+      position: relative !important;
+      display: block !important;
+      overflow: hidden !important;
+      aspect-ratio: 16/9 !important;
+      background: #fff !important;
+    }
+    html :where() .ub-image {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
+      display: block !important;
+      transform: scale(1) !important;
+      transition: transform .25s ease !important;
+    }
+    @media (hover:hover) {
+      html :where() .ub-card:hover .ub-image {
+        transform: scale(1.03) !important;
+      }
+    }
+    html :where() .ub-image-wrap::after {
+      content: "" !important;
+      position: absolute !important;
+      inset: 0 !important;
+      background: linear-gradient(180deg, rgba(0,0,0,0.00) 35%, rgba(0,0,0,0.25) 100%) !important;
+      pointer-events: none !important;
+    }
+
+    /* Badge */
+    html :where() .ub-badge {
+      position: absolute !important;
+      top: 10px !important;
+      left: 10px !important;
+      z-index: 2 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      padding: 0.42rem 0.7rem !important;
+      border-radius: 999px !important;
+      background: color-mix(in srgb, var(--ub-color-primary) 96%, white) !important; /* rojo */
+      color: #fff !important;
+      border: 1px solid color-mix(in srgb, var(--ub-color-primary) 88%, black) !important;
+      box-shadow: 0 2px 10px rgba(0,0,0,.15) !important;
+      font-weight: 700 !important;
+      font-size: var(--ub-font-size-base) !important;
+      line-height: 1.1 !important;
+      white-space: nowrap !important;
+      pointer-events: none !important;
+    }
+
+    /* Contenido de la card */
+    html :where() .ub-card-content {
+      display: flex !important;
+      flex-wrap: wrap !important;
+      align-content: flex-start !important;
+      gap: clamp(0.5rem, 5cqw, 0.85rem) !important;
+      padding: clamp(1rem, 5cqw, 1.35rem) !important;
+      flex-grow: 1 !important;
+    }
+    html :where() .ub-card-title {
+      flex-basis: 100% !important;
+      font-weight: 700 !important;
+      font-size: 22px !important; /* título exacto */
+      line-height: 1.25 !important;
+      margin: 0 !important;
+      color: var(--ub-brand-blue) !important;
+      letter-spacing: 0.2px !important;
+    }
+    html :where() .ub-card-desc {
+      flex-basis: 100% !important;
+      font-size: var(--ub-font-size-base) !important; /* 18px */
+      margin: 0 !important;
+      color: var(--ub-text-accent) !important;
+      line-height: 1.55 !important;
+    }
+
+    /* Empty state */
+    html :where() .ub-empty-state {
+      display: none !important; /* por defecto no ocupa espacio */
+      align-items: center !important;
+      justify-content: center !important;
+      text-align: center !important;
+      padding: 3rem 1rem !important;
+      background: #f2f4f7 !important;
+      border: 1px dashed #e1e5eb !important;
+      border-radius: 0.75rem !important;
+      margin-top: 1rem !important;
+      font-size: 18px !important;
+      color: var(--ub-text-accent) !important;
+    }
+    html :where() .ub-empty-state {
+      display: flex !important;
+    }
+    html :where() .ub-empty-state strong {
+      color: var(--ub-brand-blue) !important;
+      font-weight: 700 !important;
+    }
+
+    /* Separador sutil hacia el footer */
+    html :where() .ub-card-content::after {
+      content: "" !important;
+      display: block !important;
+      width: 100% !important;
+      height: 1px !important;
+      margin-top: 0.25rem !important;
+      background: linear-gradient(90deg, transparent, rgba(0,0,0,.06), transparent) !important;
+    }
+
+    /* Footer-botón unificado */
+    html :where() .ub-footer-btn {
+      display: block !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0.9rem 1rem !important;
+      border: 0 !important;
+      border-radius: 0 0 0.75rem 0.75rem !important;
+      background: var(--ub-color-accent) !important;  /* azul corporativo */
+      color: #fff !important;
+      text-align: center !important;
+      text-decoration: none !important;
+      font-weight: 700 !important;
+      font-size: var(--ub-font-size-base) !important;
+      line-height: 1.2 !important;
+      cursor: pointer !important;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 -1px 0 rgba(0,0,0,.04) !important;
+    }
+    html :where() .ub-footer-btn:hover { filter: brightness(0.98) !important; }
+    html :where() .ub-footer-btn:active { transform: translateY(1px) !important; }
+    html :where() .ub-footer-btn:focus-visible {
+      outline: 2px solid var(--ub-color-primary) !important; /* rojo */
+      outline-offset: -2px !important;
+    }
+
+    /* Vista “lista” (≥600px) */
+    @media (min-width: 600px) {
+      html :where() .ub-card {
+        display: grid !important;
+        grid-template-columns: auto 1fr !important;
+        grid-template-areas:
+          "image content"
+          "image footer" !important;
+        align-items: stretch !important;
+      }
+      html :where() .ub-image-wrap {
+        grid-area: image !important;
+        max-width: 300px !important;
+        height: 100% !important;
+      }
+      html :where() .ub-card-content { grid-area: content !important; }
+    }
+
+    /* ===== Filtro por tipo (usa data-filter en el root y data-type en cada card) ===== */
+    html :where() .ub-card:not(),
+    html :where() .ub-card:not(),
+    html :where()     .ub-card:not(),
+    html :where()   .ub-card:not() {
+      display: none !important;
+    }
+
+    /* Enlaces generales */
+    html :where() a {
+      color: inherit !important;
+      text-decoration: underline !important;
+      text-underline-offset: 2px !important;
+    }
+    html :where() a.ub-footer-btn { text-decoration: none !important; }
+  </style><!-- ========== BLOQUE AISLADO: Oferta Académica (Diplomados / Seminarios / Cursos / Talleres) ========== -->
+<section id="uni-business" data-uni-business>
+  <style>
+    /* =========================================================
+       BLOQUE AISLADO con refuerzo "html :where(...)" + !important
+       para evitar overrides del tema/WPBakery.
+       Tipografía PT Sans: 18px (base) / 22px (títulos).
+       ========================================================= */
+
+    /* Reset mínimo del bloque */
+    html :where(),
+    html :where() * { box-sizing: border-box; }
+
+    /* Variables y base tipográfica */
+    html :where() {
+      /* Colores corporativos */
+      --ub-brand-blue: #00457C;
+      --ub-brand-red:  #E30613;
+
+      /* Paleta */
+      --ub-surface-1: #fafafa;
+      --ub-surface-2: #f2f4f7;
+      --ub-surface-3: #e1e5eb;
+
+      /* Texto */
+      --ub-text: #0f1720;
+      --ub-text-accent: #1f2937;
+
+      /* Tokens */
+      --ub-color-primary: var(--ub-brand-red);
+      --ub-color-accent:  var(--ub-brand-blue);
+
+      /* Tipografías */
+      --ub-font-family: "PT Sans", Arial, sans-serif;
+      --ub-font-size-base: 18px;    /* párrafos/labels/botones */
+      --ub-font-size-title: 22px;   /* títulos */
+
+      /* Contenedor a ancho completo */
+      display: block;
+      padding: 0 !important;
+      margin: 0 !important;
+      width: 100% !important;
+
+      color: var(--ub-text) !important;
+      background: var(--ub-surface-1);
+      font-family: var(--ub-font-family) !important;
+      font-size: var(--ub-font-size-base) !important;
+      line-height: 1.5 !important;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Neutralizar herencias del tema */
+    html :where() h1,
+    html :where() h2,
+    html :where() h3,
+    html :where() h4,
+    html :where() p,
+    html :where() label,
+    html :where() legend,
+    html :where() span,
+    html :where() a,
+    html :where() button,
+    html :where() div,
+    html :where() input,
+    html :where() fieldset {
+      font-family: var(--ub-font-family) !important;
+      letter-spacing: normal !important;
+      text-transform: none !important;
+      color: inherit !important;
+      line-height: 1.5 !important;
+    }
+
+    /* Header / Controles */
+    html :where() .ub-header {
+      margin: 0 0 2rem 0 !important;
+      max-width: 1200px !important;
+      margin-inline: auto !important;
+      padding-inline: 1rem !important;
+      font-size: var(--ub-font-size-base) !important;
+    }
+    html :where() .ub-inputs {
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+      gap: 0.75rem 1rem !important;
+      margin-bottom: 1rem !important;
+    }
+    html :where() .ub-input {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 0.5rem !important;
+    }
+
+    /* Fieldset de filtros */
+    html :where() .ub-fieldset {
+      display: flex !important;
+      flex-wrap: wrap !important;
+      gap: 0.25rem 0.75rem !important;
+      margin: 0.5rem 0 0 0 !important;
+      padding: 0.75rem !important;
+      background-color: #f2f4f7 !important;
+      border: 1px solid #e1e5eb !important;
+      border-radius: 0.5rem !important;
+      font-size: var(--ub-font-size-base) !important;
+    }
+    html :where() .ub-fieldset legend {
+      margin-bottom: 0.25rem !important;
+      font-weight: 700 !important;
+      color: var(--ub-brand-blue) !important;
+      font-size: var(--ub-font-size-title) !important;
+      line-height: 1.35 !important;
+    }
+    html :where() .ub-fieldset > div {
+      display: flex !important;
+      align-items: center !important;
+      gap: 0.35rem !important;
+      padding: 0.15rem 0.25rem !important;
+      font-size: var(--ub-font-size-base) !important;
+    }
+    html :where() input,
+    html :where() input {
+      accent-color: var(--ub-brand-blue) !important;
+      inline-size: 1.05em !important;
+      block-size: 1.05em !important;
+    }
+    html :where() label { font-size: var(--ub-font-size-base) !important; }
+
+    /* Contenido y grilla */
+    html :where() .ub-content {
+      max-width: 1200px !important;
+      margin-inline: auto !important;
+      padding-inline: 1rem !important;
+    }
+    html :where() .ub-grid {
+      display: grid !important;
+      gap: 1rem !important;
+      grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr)) !important;
+    }
+    html :where() .ub-grid {
+      grid-template-columns: initial !important;
+    }
+
+    /* Card */
+    html :where() .ub-card {
+      position: relative !important;
+      display: flex !important;
+      flex-direction: column !important;
+      background-color: #f2f4f7 !important;
+      border-radius: 0.75rem !important;
+      overflow: hidden !important;
+      border: 1px solid rgba(0,0,0,0.04) !important;
+      box-shadow: 0 1px 2px rgba(0,0,0,.05), 0 4px 10px rgba(0,0,0,.06) !important;
+      transition: transform .16s ease, box-shadow .16s ease !important;
+      will-change: transform !important;
+      isolation: isolate !important;
+      font-size: var(--ub-font-size-base) !important;
+      cursor: pointer !important; /* card clicable */
+    }
+    @media (hover:hover) {
+      html :where() .ub-card:hover {
+        transform: translateY(-4px) !important;
+        box-shadow: 0 8px 24px rgba(0,0,0,.12) !important;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html :where() .ub-card { transition: none !important; }
+    }
+
+    /* Imagen con wrapper para overlay */
+    html :where() .ub-image-wrap {
+      position: relative !important;
+      display: block !important;
+      overflow: hidden !important;
+      aspect-ratio: 16/9 !important;
+      background: #fff !important;
+    }
+    html :where() .ub-image {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
+      display: block !important;
+      transform: scale(1) !important;
+      transition: transform .25s ease !important;
+    }
+    @media (hover:hover) {
+      html :where() .ub-card:hover .ub-image {
+        transform: scale(1.03) !important;
+      }
+    }
+    html :where() .ub-image-wrap::after {
+      content: "" !important;
+      position: absolute !important;
+      inset: 0 !important;
+      background: linear-gradient(180deg, rgba(0,0,0,0.00) 35%, rgba(0,0,0,0.25) 100%) !important;
+      pointer-events: none !important;
+    }
+
+    /* Badge */
+    html :where() .ub-badge {
+      position: absolute !important;
+      top: 10px !important;
+      left: 10px !important;
+      z-index: 2 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      padding: 0.42rem 0.7rem !important;
+      border-radius: 999px !important;
+      background: color-mix(in srgb, var(--ub-color-primary) 96%, white) !important; /* rojo */
+      color: #fff !important;
+      border: 1px solid color-mix(in srgb, var(--ub-color-primary) 88%, black) !important;
+      box-shadow: 0 2px 10px rgba(0,0,0,.15) !important;
+      font-weight: 700 !important;
+      font-size: var(--ub-font-size-base) !important;
+      line-height: 1.1 !important;
+      white-space: nowrap !important;
+      pointer-events: none !important;
+    }
+
+    /* Contenido de la card */
+    html :where() .ub-card-content {
+      display: flex !important;
+      flex-wrap: wrap !important;
+      align-content: flex-start !important;
+      gap: clamp(0.5rem, 5cqw, 0.85rem) !important;
+      padding: clamp(1rem, 5cqw, 1.35rem) !important;
+      flex-grow: 1 !important;
+    }
+    html :where() .ub-card-title {
+      flex-basis: 100% !important;
+      font-weight: 700 !important;
+      font-size: 22px !important; /* título exacto */
+      line-height: 1.25 !important;
+      margin: 0 !important;
+      color: var(--ub-brand-blue) !important;
+      letter-spacing: 0.2px !important;
+    }
+    html :where() .ub-card-desc {
+      flex-basis: 100% !important;
+      font-size: var(--ub-font-size-base) !important; /* 18px */
+      margin: 0 !important;
+      color: var(--ub-text-accent) !important;
+      line-height: 1.55 !important;
+    }
+
+    /* Empty state */
+    html :where() .ub-empty-state {
+      display: none !important; /* por defecto no ocupa espacio */
+      align-items: center !important;
+      justify-content: center !important;
+      text-align: center !important;
+      padding: 3rem 1rem !important;
+      background: #f2f4f7 !important;
+      border: 1px dashed #e1e5eb !important;
+      border-radius: 0.75rem !important;
+      margin-top: 1rem !important;
+      font-size: 18px !important;
+      color: var(--ub-text-accent) !important;
+    }
+    html :where() .ub-empty-state {
+      display: flex !important;
+    }
+    html :where() .ub-empty-state strong {
+      color: var(--ub-brand-blue) !important;
+      font-weight: 700 !important;
+    }
+
+    /* Separador sutil hacia el footer */
+    html :where() .ub-card-content::after {
+      content: "" !important;
+      display: block !important;
+      width: 100% !important;
+      height: 1px !important;
+      margin-top: 0.25rem !important;
+      background: linear-gradient(90deg, transparent, rgba(0,0,0,.06), transparent) !important;
+    }
+
+    /* Footer-botón unificado */
+    html :where() .ub-footer-btn {
+      display: block !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0.9rem 1rem !important;
+      border: 0 !important;
+      border-radius: 0 0 0.75rem 0.75rem !important;
+      background: var(--ub-color-accent) !important;  /* azul corporativo */
+      color: #fff !important;
+      text-align: center !important;
+      text-decoration: none !important;
+      font-weight: 700 !important;
+      font-size: var(--ub-font-size-base) !important;
+      line-height: 1.2 !important;
+      cursor: pointer !important;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 -1px 0 rgba(0,0,0,.04) !important;
+    }
+    html :where() .ub-footer-btn:hover { filter: brightness(0.98) !important; }
+    html :where() .ub-footer-btn:active { transform: translateY(1px) !important; }
+    html :where() .ub-footer-btn:focus-visible {
+      outline: 2px solid var(--ub-color-primary) !important; /* rojo */
+      outline-offset: -2px !important;
+    }
+
+    /* Vista “lista” (≥600px) */
+    @media (min-width: 600px) {
+      html :where() .ub-card {
+        display: grid !important;
+        grid-template-columns: auto 1fr !important;
+        grid-template-areas:
+          "image content"
+          "image footer" !important;
+        align-items: stretch !important;
+      }
+      html :where() .ub-image-wrap {
+        grid-area: image !important;
+        max-width: 300px !important;
+        height: 100% !important;
+      }
+      html :where() .ub-card-content { grid-area: content !important; }
+    }
+
+    /* ===== Filtro por tipo (usa data-filter en el root y data-type en cada card) ===== */
+    html :where() .ub-card:not(),
+    html :where() .ub-card:not(),
+    html :where()     .ub-card:not(),
+    html :where()   .ub-card:not() {
+      display: none !important;
+    }
+
+    /* Enlaces generales */
+    html :where() a {
+      color: inherit !important;
+      text-decoration: underline !important;
+      text-underline-offset: 2px !important;
+    }
+    html :where() a.ub-footer-btn { text-decoration: none !important; }
+  </style>
+
+  <div class="ub-header">
+    <div class="ub-inputs" role="group" aria-label="Controles de vista">
+      <div class="ub-input">
+        <input id="ub-layout" type="checkbox" />
+        <label for="ub-layout">Mostrar en lista</label>
+      </div>
+    </div>
+
+    <!-- Filtro por tipo de oferta -->
+    <fieldset class="ub-fieldset" aria-label="Filtrar por tipo de oferta">
+      <legend>Filtrar por tipo:</legend>
+
+      <div>
+        <input id="ub-filter-all" type="radio" name="ub-filter" value="all" checked />
+        <label for="ub-filter-all">Todos</label>
+      </div>
+      <div>
+        <input id="ub-filter-diplomados" type="radio" name="ub-filter" value="diplomados" />
+        <label for="ub-filter-diplomados">Diplomados</label>
+      </div>
+      <!-- <div>
+        <input id="ub-filter-seminarios" type="radio" name="ub-filter" value="seminarios" />
+        <label for="ub-filter-seminarios">Seminarios</label>
+      </div> -->
+      <div>
+        <input id="ub-filter-cursos" type="radio" name="ub-filter" value="cursos" />
+        <label for="ub-filter-cursos">Cursos</label>
+      </div>
+      <div>
+        <input id="ub-filter-talleres" type="radio" name="ub-filter" value="talleres" />
+        <label for="ub-filter-talleres">Talleres</label>
+      </div>
+    </fieldset>
+  </div>
+
+  <main class="ub-content">
+    <!-- Mensaje cuando no hay resultados: dinámico por categoría -->
+    <div class="ub-empty-state" aria-hidden="true">
+      <p>
+        Por el momento no hay <strong><span class="ub-empty-kind">elementos</span> disponibles</strong>.<br />
+        Te invitamos a revisar nuestras otras ofertas académicas.
+      </p>
+    </div>
+
+    <section class="ub-grid" aria-live="polite">
+      <!-- =========================================================
+           TARJETAS: TÍTULO + DESCRIPCIÓN + BADGE + FOOTER-BOTÓN
+           data-type = "diplomados|seminarios|cursos|talleres"
+           ========================================================= -->
+
+      <!-- DIPLOMADO DERECHO ELECTORAL -->
+      <article class="ub-card" data-type="diplomados" tabindex="0">
+        <div class="ub-image-wrap">
+          <img class="ub-image" loading="lazy"
+               src="https://www.uniremington.edu.co/wp-content/uploads/2026/02/Derecho-electoral.png"
+               alt="Diplomado: Derecho Electoral" />
+          <div class="ub-badge">Online sincrónico</div>
+        </div>
+        <div class="ub-card-content">
+          <h2 class="ub-card-title">Diplomado: Derecho Electoral</h2>
+          <p class="ub-card-desc">Enfoque práctico en normativa, casos y estrategias para asesoría jurídica electoral.</p>
+        </div>
+        <a class="ub-footer-btn"
+           href="https://www.uniremington.edu.co/educacion-continua/diplomado-en-derecho-electoral/"
+           target="_blank" rel="noopener noreferrer"
+           aria-label="Más información del Diplomado en Derecho Electoral">
+          Más información
+        </a>
+      </article>
+
+      <!-- DIPLOMADO DERECHO INMOBILIARIO -->
+      <article class="ub-card" data-type="diplomados" tabindex="0">
+        <div class="ub-image-wrap">
+          <img class="ub-image" loading="lazy"
+               src="https://www.uniremington.edu.co/wp-content/uploads/2026/02/Diplomado-Inmobiliario.webp"
+               alt="Diplomado: Inmobiliario" />
+          <div class="ub-badge">Online sincrónico</div>
+        </div>
+        <div class="ub-card-content">
+          <h2 class="ub-card-title">Diplomado: Inmobiliario</h2>
+          <p class="ub-card-desc">Enfoque práctico en normativa inmobiliaria, casos reales y estrategias para la gestión y asesoría del negocio inmobiliario.</p>
+        </div>
+        <a class="ub-footer-btn"
+           href="https://www.uniremington.edu.co/educacion-continua/diplomado-inmobiliario/"
+           target="_blank" rel="noopener noreferrer"
+           aria-label="Más información del Diplomado Inmobiliario">
+          Más información
+        </a>
+      </article>
+
+      <!-- DIPLOMADO DOCENCIA UNIVERSITARIA -->
+      <!-- <article class="ub-card" data-type="diplomados" tabindex="0">
+        <div class="ub-image-wrap">
+          <img class="ub-image" loading="lazy"
+               src="https://www.uniremington.edu.co/wp-content/uploads/2026/02/Docencia-Universitaria.png"
+               alt="Diplomado: Docencia Universitaria" />
+          <div class="ub-badge">Presencial</div>
+        </div>
+        <div class="ub-card-content">
+          <h2 class="ub-card-title">Diplomado: Docencia Universitaria</h2>
+          <p class="ub-card-desc">Metodologías activas, mediación digital y evaluación basada en competencias.</p>
+        </div>
+        <a class="ub-footer-btn"
+           href="https://www.uniremington.edu.co/educacion-continua/diplomado-docencia-universitaria/"
+           target="_blank" rel="noopener noreferrer"
+           aria-label="Más información del Diplomado en Docencia Universitaria">
+          Más información
+        </a>
+      </article> -->
+
+      <!-- SEMINARIO -->
+<!--       <article class="ub-card" data-type="seminarios" tabindex="0">
+        <div class="ub-image-wrap">
+          <img class="ub-image" loading="lazy"
+               src="https://www.uniremington.edu.co/wp-content/uploads/2026/02/Actualizacion-Normativa.png"
+               alt="Seminario: Actualización Normativa" />
+          <div class="ub-badge">Online</div>
+        </div>
+        <div class="ub-card-content">
+          <h2 class="ub-card-title">Seminario: Actualización Normativa</h2>
+          <p class="ub-card-desc">Cambios recientes, interpretación operativa y casos reales.</p>
+        </div>
+        <a class="ub-footer-btn"
+           href="#"
+           target="_blank" rel="noopener noreferrer"
+           aria-label="Más información del Seminario de Actualización Normativa">
+          Más información
+        </a>
+      </article> -->
+
+      <!-- CURSO -->
+      <article class="ub-card" data-type="cursos" tabindex="0">
+        <div class="ub-image-wrap">
+          <img class="ub-image" loading="lazy"
+               src="https://www.uniremington.edu.co/wp-content/uploads/2026/02/Auditoria-forence-y-crimen-financiero.webp"
+               alt="Curso: Auditoría forense y crimen financiero" />
+          <div class="ub-badge">Online</div>
+        </div>
+        <div class="ub-card-content">
+          <h2 class="ub-card-title">Curso: Auditoría forense y crimen financiero</h2>
+          <p class="ub-card-desc">Análisis, investigación y aplicación de técnicas de auditoría forense para la detección y prevención del fraude en escenarios reales.</p>
+        </div>
+        <a class="ub-footer-btn"
+           href="https://www.uniremington.edu.co/educacion-continua/curso-auditoria-forense-y-crimen-financiero/"
+           target="_blank" rel="noopener noreferrer"
+           aria-label="Más información del Curso de Auditoría forense y crimen financiero">
+          Más información
+        </a>
+      </article>
+
+      <!-- CURSO Curso Preparatorio para examen de idoneidad para abogados  -->
+      <article class="ub-card" data-type="cursos" tabindex="0">
+        <div class="ub-image-wrap">
+          <img class="ub-image" loading="lazy"
+               src="https://www.uniremington.edu.co/wp-content/uploads/2026/02/Curso-Preparatorio-para-examen-de-idoneidad-para-abogados.webp"
+               alt="Curso: Auditoría forense y crimen financiero" />
+          <div class="ub-badge">Online</div>
+        </div>
+        <div class="ub-card-content">
+          <h2 class="ub-card-title">Curso: Preparatorio para examen de idoneidad para abogados </h2>
+          <p class="ub-card-desc">Análisis, investigación y aplicación de técnicas de auditoría forense para la detección y prevención del fraude en escenarios reales.</p>
+        </div>
+        <a class="ub-footer-btn"
+           href="https://www.uniremington.edu.co/educacion-continua/curso-preparatorio-para-examen-de-idoneidad-para-abogados/"
+           target="_blank" rel="noopener noreferrer"
+           aria-label="Más información del Curso de Auditoría forense y crimen financiero">
+          Más información
+        </a>
+      </article>
+
+      <!-- TALLER -->
+      <!-- <article class="ub-card" data-type="talleres" tabindex="0">
+        <div class="ub-image-wrap">
+          <img class="ub-image" loading="lazy"
+               src="https://www.uniremington.edu.co/wp-content/uploads/2026/02/Habilidades-de-Negociacion.png"
+               alt="Taller: Habilidades de Negociación" />
+          <div class="ub-badge">Presencial</div>
+        </div>
+        <div class="ub-card-content">
+          <h2 class="ub-card-title">Taller: Habilidades de Negociación</h2>
+          <p class="ub-card-desc">Ejercicios prácticos y dinámicas aplicadas para fortalecer la comunicación, proyectar confianza y desenvolverte con seguridad en escenarios profesionales.</p>
+        </div>
+        <a class="ub-footer-btn"
+           href="https://www.uniremington.edu.co/educacion-continua/taller-imagen-para-el-exito-profesional/"
+           target="_blank" rel="noopener noreferrer"
+           aria-label="Más información del Taller de Imagen para el Éxito Profesional">
+          Más información
+        </a>
+      </article> -->
+    </section>
+  </main>
+
+  
+</section>
+<!-- ========== FIN DEL BLOQUE AISLADO ========== -->
+</div><span style="color: #00457c;"><strong>Información y contacto:</strong></span></p>
+<p style="text-align: left;">Comunícate con nosotros PBX: (604) 322 10 00 – Ext.: 7013 – 7010<br />
+<a href="mailto:educacioncontinua@uniremington.edu.co">educacioncontinua@uniremington.edu.co</a><figure><img loading="lazy" src="https://www.uniremington.edu.co/wp-content/uploads/2025/10/Facultad-de-Ciencias-de-la-Salud_Horarios.webp" alt=""></figure></p>
+</div></main>
+<footer class="site"><div class="cols">
+<div><h4>Corporación Universitaria Remington</h4>
+<p style="margin:0;font-size:.88rem">Más de 100 años haciendo parte de los cambios sociales y brindando educación superior de calidad. Institución de educación superior sujeta a inspección y vigilancia por el Ministerio de Educación Nacional.</p></div>
+<div><h4>Enlaces</h4>
+<a href="index.html">Inicio</a><a href="acreditacion-institucional.html">Acreditación</a><a href="convenios.html">Convenios</a><a href="alternativas-financiacion.html">Financiación</a></div>
+<div><h4>Contacto</h4>
+<a href="#">📍 Medellín, Antioquia</a><a href="#">☎ (604) 322 12 12</a><a href="#">✉ info@uniremington.edu.co</a><a href="#">🌐 uniremington.edu.co</a></div>
+</div><div class="legal">Prueba piloto de migración — contenido © Corporación Universitaria Remington. Diseño de plantilla generado para evaluación.</div></footer></body></html>
