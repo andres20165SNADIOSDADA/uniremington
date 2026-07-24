@@ -4,6 +4,66 @@
   function attrs(x){ return x.external ? ' target="_blank" rel="noopener"' : ''; }
   var chevron = '<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>';
   var menuItems = (typeof menu !== 'undefined' && menu.length) ? menu : [];
+
+  // Descriptor + icono representativo por sección (para el encabezado del megamenú).
+  // Data-driven: si una sección no está aquí, el panel simplemente no muestra encabezado.
+  var SECTION_META = {
+    'INSTITUCIONAL':      { icon: 'account_balance',   desc: 'Más de un siglo de historia, gobierno institucional y acreditación de alta calidad.', cta: { label: 'Conócenos', href: '/nuestra-institucion/' } },
+    'VIDA ACADÉMICA':     { icon: 'menu_book',         desc: 'Recursos, trámites y apoyo para acompañarte durante toda tu carrera.' },
+    'SEDES':              { icon: 'location_on',       desc: 'Formación de calidad con presencia en 19 ciudades de Colombia.', cta: { label: 'Ver cobertura nacional', href: '/donde-estamos/' } },
+    'ÁREAS DE ESTUDIO':   { icon: 'school',            desc: 'Explora nuestras facultades y toda su oferta de programas.', cta: { label: 'Ver todos los programas', href: '/programas' } },
+    'POSGRADOS':          { icon: 'workspace_premium', desc: 'Especializaciones y maestrías para dar el siguiente paso profesional.', cta: { label: 'Ver posgrados', href: '/programas' } },
+    'SERVICIOS':          { icon: 'support_agent',     desc: 'Trámites, apoyo y recursos para toda la comunidad Uniremington.' },
+    'EDUCACIÓN CONTINUA': { icon: 'cast_for_education', desc: 'Cursos, diplomados y formación para la vida.' }
+  };
+  function sectionMeta(label){ return SECTION_META[(label || '').trim().toUpperCase()] || null; }
+
+  // Icono Material Symbols por ítem: primero por palabra clave del texto, con reserva
+  // según la sección (p.ej. cada sede es una ubicación; cada área, una facultad).
+  function navIcon(label, section){
+    var t = (label || '').toLowerCase();
+    var s = (section || '').trim().toUpperCase();
+    if (s.indexOf('SEDE') === 0) return 'location_on';
+    if (/veterinar|animal/.test(t)) return 'pets';
+    if (/ingenier/.test(t)) return 'engineering';
+    if (/salud|m[eé]dic|enfermer|nutric|farmac/.test(t)) return 'medical_services';
+    if (/dise[ñn]o/.test(t)) return 'palette';
+    if (/jur[ií]dic|derecho|pol[ií]tic/.test(t)) return 'gavel';
+    if (/empresa|administrac|mercadeo|negoci/.test(t)) return 'business_center';
+    if (/contab|contad/.test(t)) return 'calculate';
+    if (/humanidad|sociales/.test(t)) return 'history_edu';
+    if (/equipo|docente|profesor|decan|colaborador/.test(t)) return 'groups';
+    if (/biblioteca/.test(t)) return 'local_library';
+    if (/inscrip|matr[ií]cul|admis/.test(t)) return 'how_to_reg';
+    if (/graduaci|grados|egresad/.test(t)) return 'school';
+    if (/investigaci/.test(t)) return 'science';
+    if (/reglament|normativ|estatuto/.test(t)) return 'gavel';
+    if (/beca|financ|cr[eé]dito|pago/.test(t)) return 'payments';
+    if (/internacional|movilidad|conveni/.test(t)) return 'public';
+    if (/bienestar/.test(t)) return 'favorite';
+    if (/tr[aá]mite|certificad|solicitud/.test(t)) return 'description';
+    if (/contacto|pqrs|atenci/.test(t)) return 'support_agent';
+    if (/acredit|calidad|siac/.test(t)) return 'verified';
+    if (/sostenib/.test(t)) return 'eco';
+    if (/talento|humano/.test(t)) return 'badge';
+    if (/directorio|empleado/.test(t)) return 'contacts';
+    if (/peri[oó]dico|comunicaci|blog|noticia|entorno/.test(t)) return 'newspaper';
+    if (/cobertura|d[oó]nde estamos/.test(t)) return 'map';
+    if (/campus|virtual/.test(t)) return 'computer';
+    if (/presencial/.test(t)) return 'meeting_room';
+    if (/distancia/.test(t)) return 'devices';
+    if (/direccionamiento|estrat[eé]gic/.test(t)) return 'insights';
+    if (/proyecto educativo|pei/.test(t)) return 'auto_stories';
+    if (/trayectoria|reconocimiento/.test(t)) return 'military_tech';
+    if (/s[uú]mate/.test(t)) return 'campaign';
+    if (s.indexOf('POSGRADO') === 0) return 'workspace_premium';
+    if (s.indexOf('EDUCACI') === 0) return 'cast_for_education';
+    if (s.indexOf('SERVICIO') === 0) return 'support_agent';
+    if (s.indexOf('INSTITUCIONAL') === 0) return 'account_balance';
+    if (s.indexOf('VIDA') === 0) return 'menu_book';
+    if (s.indexOf('SOY') === 0) return 'person';
+    return 'chevron_right';
+  }
 %>
 <nav class="navbar" id="navbar">
   <div class="navbar-inner">
@@ -20,19 +80,28 @@
       <% menuItems.forEach(function(item, i){ %>
         <% if ((item.label || '').trim().toUpperCase() === 'SOY') return; /* SOY: solo en el menú hamburguesa */ %>
         <% if (item.children && item.children.length){
-             var cols = item.children.length > 12 ? 3 : (item.children.length > 5 ? 2 : 1); %>
+             var cols = item.children.length > 12 ? 3 : (item.children.length > 5 ? 2 : 1);
+             var meta = sectionMeta(item.label); %>
         <div class="nav-dropdown" data-dd="dd<%= i %>">
           <button class="nav-btn" aria-haspopup="true" aria-expanded="false"><%= item.label %><%- chevron %></button>
-          <div class="nav-panel nav-panel--menu" role="menu">
+          <div class="nav-panel nav-panel--menu<%= meta ? ' has-aside' : '' %>" role="menu">
+            <% if (meta){ %>
+            <div class="mega-aside">
+              <span class="mega-aside-ic"><span class="msi" aria-hidden="true"><%= meta.icon %></span></span>
+              <span class="mega-aside-title"><%= item.label %></span>
+              <p class="mega-aside-desc"><%= meta.desc %></p>
+              <% if (meta.cta){ %><a class="mega-aside-cta" href="<%= meta.cta.href %>"><%= meta.cta.label %><span class="msi" aria-hidden="true">arrow_forward</span></a><% } %>
+            </div>
+            <% } %>
             <div class="mega-links" style="--cols:<%= cols %>">
               <% item.children.forEach(function(c){ %>
                 <% if (c.children && c.children.length){ %>
                   <span class="mega-eyebrow"><%= c.label %></span>
                   <% c.children.forEach(function(g){ %>
-                    <a href="<%= g.href %>" role="menuitem"<%- attrs(g) %>><i class="dot blue"></i><%= g.label %></a>
+                    <a class="mi" href="<%= g.href %>" role="menuitem"<%- attrs(g) %>><span class="mi-ic"><span class="msi" aria-hidden="true"><%= navIcon(g.label, item.label) %></span></span><span class="mi-tx"><%= g.label %></span><span class="mi-go msi" aria-hidden="true">arrow_forward</span></a>
                   <% }) %>
                 <% } else { %>
-                  <a href="<%= c.href %>" role="menuitem"<%- attrs(c) %>><i class="dot blue"></i><%= c.label %></a>
+                  <a class="mi" href="<%= c.href %>" role="menuitem"<%- attrs(c) %>><span class="mi-ic"><span class="msi" aria-hidden="true"><%= navIcon(c.label, item.label) %></span></span><span class="mi-tx"><%= c.label %></span><span class="mi-go msi" aria-hidden="true">arrow_forward</span></a>
                 <% } %>
               <% }) %>
             </div>

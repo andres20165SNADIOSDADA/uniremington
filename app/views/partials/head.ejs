@@ -15,6 +15,9 @@
 <% if (typeof ogImage !== 'undefined' && ogImage){ %><meta property="og:image" content="<%= ogImage %>"><meta name="twitter:card" content="summary_large_image"><% } else { %><meta name="twitter:card" content="summary"><% } %>
 <% if (typeof jsonld !== 'undefined' && jsonld){ %><script type="application/ld+json"><%- JSON.stringify(jsonld) %></script><% } %>
 <link rel="preconnect" href="https://www.uniremington.edu.co">
+<!-- Preload de la fuente de iconos: el megamenú (y muchos componentes) dependen de ella;
+     sin preload los iconos aparecen como texto hasta que algún elemento visible la dispara. -->
+<link rel="preload" href="/fonts/ms-sharp.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/css/fonts.css">
 <link rel="stylesheet" href="/css/menu.css">
 <link rel="stylesheet" href="/css/site.css">
