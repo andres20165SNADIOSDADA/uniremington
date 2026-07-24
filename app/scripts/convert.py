@@ -1190,6 +1190,12 @@ def strip_decor(html_text):
     html_text = re.sub(r'<!--[\s\S]*?-->', '', html_text)       # comentarios HTML (instrucciones WP, etc.)
     # texto de relleno por defecto de WPBakery que nunca reemplazaron (Lorem ipsum)
     html_text = re.sub(r'<p[^>]*>\s*(?:Soy un bloque de texto|Lorem ipsum)[\s\S]*?</p>', '', html_text, flags=re.I)
+    # <br> incrustado a mano dentro de un encabezado (salto de línea fijo del editor de WP):
+    # se quita para que el título fluya como texto normal y el navegador ajuste el salto según
+    # el ancho real (evita cortes feos como "Nuestra oferta" / "académica - Ipiales").
+    def _dehyphen_heading(m):
+        return re.sub(r'\s*<br\s*/?>\s*', ' ', m.group(0))
+    html_text = re.sub(r'<h[1-6]\b[^>]*>(?:(?!</h[1-6]>)[\s\S])*?</h[1-6]>', _dehyphen_heading, html_text, flags=re.I)
     html_text = re.sub(r'</iframe>\s*</iframe>', '</iframe>', html_text)   # </iframe> duplicado
     # quitar estilos inline de las tablas (colores/bordes de WP): que las controle el CSS del sitio
     html_text = re.sub(r'(<(?:table|thead|tbody|tfoot|tr|th|td)\b[^>]*?)\s+style="[^"]*"',
