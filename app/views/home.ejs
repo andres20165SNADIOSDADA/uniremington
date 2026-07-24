@@ -78,14 +78,51 @@
     /* Hero como banner */
     .hero {
       position: relative;
-      background:
-        linear-gradient(120deg, rgba(0, 69, 124, 0.92) 0%, rgba(0, 90, 158, 0.78) 55%, rgba(0, 119, 182, 0.55) 100%),
-        url("imagen%20banner.jpeg") center 20% / cover no-repeat;
       min-height: 380px;
       display: flex;
       align-items: center;
       color: white;
       overflow: hidden;
+      background: #012a4d; /* color de respaldo mientras cargan las imágenes */
+    }
+
+    /* ─── Slider: capas de fondo con crossfade + Ken Burns ─── */
+    .hero-slides {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .hero-slide {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center 22%;
+      opacity: 0;
+      transition: opacity 1.1s ease;
+    }
+    .hero-slide.is-active {
+      opacity: 1;
+      animation: heroKenBurns 9s ease-out forwards;
+    }
+    @keyframes heroKenBurns {
+      from { transform: scale(1); }
+      to   { transform: scale(1.07); }
+    }
+    /* Diapositiva de marca sin foto: gradiente propio (no un hueco vacío) */
+    .hero-slide[data-noimg] {
+      background:
+        radial-gradient(circle at 14% 18%, rgba(255, 255, 255, 0.10) 0%, transparent 45%),
+        radial-gradient(circle at 86% 78%, rgba(227, 7, 21, 0.28) 0%, transparent 50%),
+        linear-gradient(135deg, #012a4d 0%, #014f86 55%, #0077b6 100%);
+    }
+    /* Velo de marca constante encima de cualquier imagen/gradiente de fondo */
+    .hero-scrim {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: linear-gradient(120deg, rgba(0, 69, 124, 0.85) 0%, rgba(0, 90, 158, 0.62) 55%, rgba(0, 30, 56, 0.55) 100%);
+      pointer-events: none;
     }
 
     .hero::before {
@@ -98,6 +135,7 @@
       background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
       border-radius: 50%;
       pointer-events: none;
+      z-index: 2;
     }
 
     .hero::after {
@@ -110,9 +148,12 @@
       background: radial-gradient(circle, rgba(227, 7, 21, 0.18) 0%, transparent 70%);
       border-radius: 50%;
       pointer-events: none;
+      z-index: 2;
     }
 
     .hero-inner {
+      position: relative;
+      z-index: 3;
       width: 100%;
       max-width: var(--container);
       margin: 0 auto;
@@ -128,6 +169,24 @@
       position: relative;
       z-index: 1;
       max-width: 620px;
+      display: grid; /* los paneles se apilan en la misma celda para el crossfade */
+    }
+
+    /* Cada diapositiva de texto ocupa la misma celda (crossfade sin saltos de layout) */
+    .hero-panel {
+      grid-area: 1 / 1;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(14px);
+      pointer-events: none;
+      transition: opacity .6s ease, transform .6s ease, visibility 0s linear .6s;
+    }
+    .hero-panel.is-active {
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+      pointer-events: auto;
+      transition: opacity .6s ease .15s, transform .6s ease .15s, visibility 0s linear;
     }
 
     .hero-badge {
@@ -199,6 +258,11 @@
       color: #fff;
       font-weight: 600;
       font-size: 0.95rem;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      font-family: inherit;
     }
 
     .hero .video-link .play {
@@ -237,6 +301,71 @@
       color: #cfd9e3;
       margin-top: 4px;
       text-transform: capitalize;
+    }
+
+    /* ─── Controles del slider (flechas, dots, pausa) ─── */
+    /* Hijo de .hero-inner: en escritorio se ancla abajo-derecha (position:absolute lo saca
+       del flujo flex, así que no altera el "space-between" entre .hero-content y .hero-stats).
+       En móvil vuelve al flujo normal (ver media query 768px). */
+    .hero-controls {
+      position: absolute;
+      z-index: 4;
+      right: 0;
+      bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .hero-arrow, .hero-playpause {
+      width: 36px;
+      height: 36px;
+      flex: none;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+      transition: background .2s ease, transform .2s ease, border-color .2s ease;
+    }
+    .hero-arrow svg, .hero-playpause svg { width: 16px; height: 16px; }
+    .hero-arrow:hover, .hero-playpause:hover {
+      background: rgba(255, 255, 255, 0.28);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: translateY(-1px);
+    }
+    .hero-dots {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hero-dot {
+      width: 8px;
+      height: 8px;
+      padding: 0;
+      border: none;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.4);
+      cursor: pointer;
+      transition: background .25s ease, width .25s ease;
+    }
+    .hero-dot:hover { background: rgba(255, 255, 255, 0.7); }
+    .hero-dot.is-active { width: 22px; background: #fff; }
+
+    /* Barra de avance automático (indicador sutil en el borde inferior) */
+    .hero-progress {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      z-index: 4;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.14);
+    }
+    .hero-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), #ff8a80);
     }
 
     /* Sección Educación que transforma realidades */
@@ -1016,6 +1145,9 @@
 
   .hero {
     min-height: 420px;
+  }
+
+  .hero-slide {
     background-position: center;
   }
 
@@ -1030,6 +1162,15 @@
 
   .hero-stats {
     gap: 24px;
+  }
+
+  /* Controles: sin flechas (queda el swipe táctil). Vuelven al flujo normal, debajo de
+     las cifras (que en móvil pueden envolver a dos líneas), en vez de flotar encima. */
+  .hero-arrow { display: none; }
+  .hero-controls {
+    position: static;
+    justify-content: center;
+    margin-top: 16px;
   }
 
   .hero-stats .stat-num {
@@ -1299,10 +1440,7 @@ html { scroll-behavior: smooth; }
 .hero::after  { animation: float-y       7s ease-in-out infinite; }
 
 /* ─── Hero — entrada secuencial ──────────── */
-.hero-badge   { animation: fadeUp .9s .15s ease-out backwards; }
-.hero h1      { animation: fadeUp 1s   .3s  ease-out backwards; }
-.hero p       { animation: fadeUp .9s  .5s  ease-out backwards; }
-.hero-actions { animation: fadeUp .9s  .7s  ease-out backwards; }
+/* (el texto de cada diapositiva ya se revela vía .hero-panel.is-active, arriba) */
 .hero-stats > div { animation: fadeUp .85s ease-out backwards; }
 .hero-stats > div:nth-child(1){ animation-delay: .9s; }
 .hero-stats > div:nth-child(2){ animation-delay: .98s; }
@@ -1435,20 +1573,71 @@ html { scroll-behavior: smooth; }
   <!-- Header (solo HERO) -->
   <header>
 
-    <!-- Hero -->
-    <div class="hero">
+    <%
+      // Diapositivas del hero: data-driven para poder sumar/editar sin tocar el
+      // markup. "image: null" da una diapositiva de marca (gradiente propio, sin foto).
+      var heroSlides = [
+        {
+          image: '/media/imagen-banner.jpeg',
+          badge: 'Inscripciones abiertas 2026',
+          title: 'Transforma realidades con',
+          accent: 'conocimiento y educación de alta pertinencia',
+          text: 'Más de un siglo de historia educativa formando profesionales íntegros, comprometidos con la transformación social del país.',
+          ctaLabel: 'Explorar Programas',
+          ctaHref: '/programas',
+        },
+        {
+          image: '/media/imagen-banner-1.jpeg',
+          badge: 'Comunidad de egresados',
+          title: 'Miles de historias',
+          accent: 'construidas junto a ti',
+          text: 'Acompañamos a nuestros egresados en cada etapa: del aula al mundo profesional, con una red que sigue creciendo.',
+          ctaLabel: 'Conoce a nuestros egresados',
+          ctaHref: '/soy-egresado-uniremington/',
+        },
+        {
+          image: null,
+          badge: 'Presencia en todo el país',
+          title: 'Estudia donde estés,',
+          accent: 'con cobertura en 19 sedes de Colombia',
+          text: 'Modalidad presencial, virtual o a distancia: la educación de calidad llega hasta ti.',
+          ctaLabel: 'Ver sedes en Colombia',
+          ctaHref: '/donde-estamos/',
+        },
+      ];
+      // Canal oficial de YouTube (el mismo que alimenta "Últimos videos" más abajo): el
+      // CTA "Ver Video Institucional" lleva ahí en vez de a un video puntual, para no
+      // etiquetar como "institucional" un video de un programa específico.
+      var heroVideoHref = 'https://www.youtube.com/@Uniremingtonoficial';
+    %>
+
+    <!-- Hero: slider institucional -->
+    <div class="hero" id="hero" role="region" aria-roledescription="carrusel" aria-label="Presentación institucional Uniremington">
+      <div class="hero-slides">
+        <% heroSlides.forEach(function(s, i){ %>
+        <div class="hero-slide<%= i === 0 ? ' is-active' : '' %>"
+             <% if (s.image) { %>style="background-image:url('<%= s.image %>')"<% } else { %>data-noimg<% } %>
+             aria-hidden="<%= i === 0 ? 'false' : 'true' %>"></div>
+        <% }) %>
+      </div>
+      <div class="hero-scrim"></div>
+
       <div class="hero-inner">
         <div class="hero-content">
-          <span class="hero-badge">Inscripciones abiertas 2026</span>
-          <h1>Transforma realidades con <span class="accent">conocimiento y educación de alta pertinencia</span></h1>
-          <p>Más de un siglo de historia educativa formando profesionales íntegros, comprometidos con la transformación social del país.</p>
-          <div class="hero-actions">
-            <a href="/programas" class="cta-hero">Explorar Programas &rarr;</a>
-            <a href="#" class="video-link">
-              <span class="play">&#9658;</span>
-              Ver Video Institucional
-            </a>
+          <% heroSlides.forEach(function(s, i){ %>
+          <div class="hero-panel<%= i === 0 ? ' is-active' : '' %>" data-panel="<%= i %>">
+            <span class="hero-badge"><%= s.badge %></span>
+            <h1><%= s.title %> <span class="accent"><%= s.accent %></span></h1>
+            <p><%= s.text %></p>
+            <div class="hero-actions">
+              <a href="<%= s.ctaHref %>" class="cta-hero"><%= s.ctaLabel %> &rarr;</a>
+              <a href="<%= heroVideoHref %>" target="_blank" rel="noopener" class="video-link">
+                <span class="play">&#9658;</span>
+                Ver Video Institucional
+              </a>
+            </div>
           </div>
+          <% }) %>
         </div>
         <div class="hero-stats">
           <div>
@@ -1472,7 +1661,29 @@ html { scroll-behavior: smooth; }
             <div class="stat-label">Años Educativos</div>
           </div>
         </div>
+
+        <!-- Hijo de .hero-inner (no de .hero): en escritorio se ancla abajo-derecha vía
+             position:absolute; en móvil vuelve al flujo normal, debajo de las cifras, para
+             no solaparse cuando las 5 cifras envuelven a dos líneas (ver media query). -->
+        <div class="hero-controls">
+          <button type="button" class="hero-arrow hero-prev" aria-label="Diapositiva anterior">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="hero-dots" role="tablist" aria-label="Seleccionar diapositiva">
+            <% heroSlides.forEach(function(s, i){ %>
+            <button type="button" class="hero-dot<%= i === 0 ? ' is-active' : '' %>" role="tab" aria-selected="<%= i === 0 ? 'true' : 'false' %>" aria-label="Ir a la diapositiva <%= i + 1 %>" data-slide="<%= i %>"></button>
+            <% }) %>
+          </div>
+          <button type="button" class="hero-arrow hero-next" aria-label="Siguiente diapositiva">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+          <button type="button" class="hero-playpause" id="heroPlayPause" aria-pressed="false" aria-label="Pausar reproducción automática">
+            <svg class="ic-pause" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+            <svg class="ic-play" viewBox="0 0 24 24" fill="currentColor" hidden><path d="M8 5v14l11-7z"/></svg>
+          </button>
+        </div>
       </div>
+      <div class="hero-progress" aria-hidden="true"><div class="hero-progress-bar" id="heroProgressBar"></div></div>
     </div>
   </header>
 
@@ -1724,6 +1935,108 @@ html { scroll-behavior: smooth; }
         videoThumb.replaceWith(iframe);
       });
     }
+
+    // Slider del hero
+    (function () {
+      const hero = document.getElementById('hero');
+      if (!hero) return;
+      const slides = [...hero.querySelectorAll('.hero-slide')];
+      const panels = [...hero.querySelectorAll('.hero-panel')];
+      const dots = [...hero.querySelectorAll('.hero-dot')];
+      const prevBtn = hero.querySelector('.hero-prev');
+      const nextBtn = hero.querySelector('.hero-next');
+      const playPauseBtn = document.getElementById('heroPlayPause');
+      const progressBar = document.getElementById('heroProgressBar');
+      if (slides.length < 2) return; // una sola diapositiva: nada que animar
+      const DURATION = 6500;
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let current = 0;
+      let playing = true;
+      let timer = null;
+
+      function goTo(index) {
+        const next = (index + slides.length) % slides.length;
+        if (next === current) return;
+        slides[current].classList.remove('is-active');
+        slides[current].setAttribute('aria-hidden', 'true');
+        panels[current].classList.remove('is-active');
+        dots[current].classList.remove('is-active');
+        dots[current].setAttribute('aria-selected', 'false');
+
+        current = next;
+
+        slides[current].classList.add('is-active');
+        slides[current].setAttribute('aria-hidden', 'false');
+        panels[current].classList.add('is-active');
+        dots[current].classList.add('is-active');
+        dots[current].setAttribute('aria-selected', 'true');
+        restartProgress();
+      }
+
+      function restartProgress() {
+        if (!progressBar) return;
+        progressBar.style.transition = 'none';
+        progressBar.style.width = '0%';
+        void progressBar.offsetWidth; // fuerza reflow para reiniciar la transición
+        if (playing && !prefersReduced) {
+          progressBar.style.transition = 'width ' + DURATION + 'ms linear';
+          progressBar.style.width = '100%';
+        }
+      }
+
+      function startAutoplay() {
+        stopAutoplay();
+        if (!playing || prefersReduced) return;
+        timer = setInterval(() => goTo(current + 1), DURATION);
+        restartProgress();
+      }
+      function stopAutoplay() {
+        if (timer) { clearInterval(timer); timer = null; }
+      }
+
+      prevBtn && prevBtn.addEventListener('click', () => { goTo(current - 1); startAutoplay(); });
+      nextBtn && nextBtn.addEventListener('click', () => { goTo(current + 1); startAutoplay(); });
+      dots.forEach((d, i) => d.addEventListener('click', () => { goTo(i); startAutoplay(); }));
+
+      hero.addEventListener('mouseenter', stopAutoplay);
+      hero.addEventListener('mouseleave', () => { if (playing) startAutoplay(); });
+      hero.addEventListener('focusin', stopAutoplay);
+      hero.addEventListener('focusout', (e) => { if (playing && !hero.contains(e.relatedTarget)) startAutoplay(); });
+
+      if (playPauseBtn) {
+        playPauseBtn.addEventListener('click', () => {
+          playing = !playing;
+          playPauseBtn.setAttribute('aria-pressed', String(!playing));
+          playPauseBtn.setAttribute('aria-label', playing ? 'Pausar reproducción automática' : 'Reanudar reproducción automática');
+          playPauseBtn.querySelector('.ic-pause').hidden = !playing;
+          playPauseBtn.querySelector('.ic-play').hidden = playing;
+          if (playing) {
+            startAutoplay();
+          } else {
+            stopAutoplay();
+            if (progressBar) { progressBar.style.transition = 'none'; progressBar.style.width = '0%'; }
+          }
+        });
+      }
+
+      // Swipe táctil
+      let touchStartX = null;
+      hero.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].clientX; }, { passive: true });
+      hero.addEventListener('touchend', (e) => {
+        if (touchStartX === null) return;
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(dx) > 40) { goTo(current + (dx < 0 ? 1 : -1)); startAutoplay(); }
+        touchStartX = null;
+      }, { passive: true });
+
+      // Flechas de teclado cuando el foco está dentro del hero
+      hero.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') { goTo(current + 1); startAutoplay(); }
+        else if (e.key === 'ArrowLeft') { goTo(current - 1); startAutoplay(); }
+      });
+
+      startAutoplay();
+    })();
   </script>
 
   <!-- JS Actualidad Uniremingtong -->
