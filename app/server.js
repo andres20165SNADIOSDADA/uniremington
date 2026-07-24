@@ -225,6 +225,18 @@ app.set('views', join(__dirname, 'views'));
 app.use(express.static(join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 
+// Dominio de producción real (derivado de SITE_URL). Cualquier otro host donde esta app
+// responda —el subdominio temporal de Vercel, previews de PR, localhost— es un entorno de
+// staging: nunca debe indexarse ni competir por SEO con el sitio real, incluso si un canonical
+// ya apunta allá (los crawlers pueden ignorar el canonical). Doble seguro: header + robots.txt.
+// Cuando el dominio real apunte a este mismo despliegue, esto se auto-corrige sin tocar código.
+const CANONICAL_HOST = new URL(SITE).hostname;
+const isCanonicalHost = (req) => req.hostname === CANONICAL_HOST;
+app.use((req, res, next) => {
+  if (!isCanonicalHost(req)) res.set('X-Robots-Tag', 'noindex, nofollow');
+  next();
+});
+
 // Páginas basura de WooCommerce / pruebas / stands de feria: siguen respondiendo (por si
 // tienen enlaces entrantes) pero se marcan noindex y se excluyen del sitemap para no diluir
 // el SEO. Coincidencia por SEGMENTO exacto (no prefijo) para no atrapar /cartago/, /cartilla-…/, etc.
@@ -1406,6 +1418,9 @@ app.post('/contacto', (req, res) => {
 
 // ---------- SEO técnico: sitemap + robots ----------
 app.get('/robots.txt', (req, res) => {
+  if (!isCanonicalHost(req)) {
+    return res.type('text/plain').send('User-agent: *\nDisallow: /\n');
+  }
   res.type('text/plain').send(
     `User-agent: *\nAllow: /\n\nSitemap: ${SITE}/sitemap.xml\n# LLMs: ${SITE}/llms.txt\n`);
 });

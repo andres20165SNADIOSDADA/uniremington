@@ -20,3 +20,6 @@ npm-debug.log*
 # Sistema operativo / editor
 .DS_Store
 Thumbs.db
+
+# Vínculo local del proyecto Vercel (IDs de org/proyecto, específico de esta máquina)
+.vercel
