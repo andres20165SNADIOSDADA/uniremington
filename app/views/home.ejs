@@ -189,6 +189,61 @@
       transition: opacity .6s ease .15s, transform .6s ease .15s, visibility 0s linear;
     }
 
+    /* ─── Tarjeta flotante (glassmorphism): dato real por diapositiva ─── */
+    .hero-float {
+      position: absolute;
+      z-index: 2;
+      top: 38px;
+      right: 38px;
+      width: 240px;
+      display: grid; /* apiladas en la misma celda, igual que .hero-panel */
+    }
+    .hero-float-card {
+      grid-area: 1 / 1;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22);
+      color: #fff;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: opacity .6s ease .15s, transform .6s ease .15s, visibility 0s linear .6s;
+    }
+    .hero-float-card.is-active {
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+      transition: opacity .6s ease .3s, transform .6s ease .3s, visibility 0s linear;
+      animation: heroFloatBob 5s ease-in-out .9s infinite;
+    }
+    @keyframes heroFloatBob {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-8px); }
+    }
+    .hfc-ic {
+      flex: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.18);
+      display: grid;
+      place-items: center;
+    }
+    .hfc-ic .msi { font-size: 1.3rem; }
+    .hfc-tx {
+      font-size: 0.85rem;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
     .hero-badge {
       display: inline-block;
       background: rgba(255, 255, 255, 0.12);
@@ -212,8 +267,17 @@
     }
 
     .hero h1 .accent {
-      color: #ff6b6b;
       display: block;
+      background: linear-gradient(90deg, #ff8a80 0%, #ff6b6b 35%, #ffc069 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: heroAccentSheen 6s ease-in-out infinite;
+    }
+    @keyframes heroAccentSheen {
+      0%, 100% { background-position: 0% center; }
+      50%      { background-position: 100% center; }
     }
 
     .hero p {
@@ -233,6 +297,9 @@
     }
 
     .hero .cta-hero {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
       display: inline-flex;
       align-items: center;
       gap: 8px;
@@ -243,12 +310,30 @@
       font-weight: 700;
       font-size: 0.95rem;
       box-shadow: 0 4px 12px rgba(227, 7, 21, 0.35);
-      transition: background 0.3s ease, transform 0.2s ease;
+      transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
     }
 
     .hero .cta-hero:hover {
       background: var(--accent-dark);
       transform: translateY(-2px);
+      box-shadow: 0 8px 22px rgba(227, 7, 21, 0.45);
+    }
+
+    /* Barrido de brillo al pasar el mouse (efecto "shine") */
+    .hero .cta-hero::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -60%;
+      width: 45%;
+      height: 100%;
+      background: linear-gradient(115deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+      transform: skewX(-20deg);
+      transition: left 0.65s ease;
+      pointer-events: none;
+    }
+    .hero .cta-hero:hover::after {
+      left: 130%;
     }
 
     .hero .video-link {
@@ -352,7 +437,7 @@
       transition: background .25s ease, width .25s ease;
     }
     .hero-dot:hover { background: rgba(255, 255, 255, 0.7); }
-    .hero-dot.is-active { width: 22px; background: #fff; }
+    .hero-dot.is-active { width: 22px; background: #fff; box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.22); }
 
     /* Barra de avance automático (indicador sutil en el borde inferior) */
     .hero-progress {
@@ -1164,6 +1249,10 @@
     gap: 24px;
   }
 
+  /* La tarjeta flotante es un extra de escritorio: en móvil el hero ya está apretado
+     (foto detrás de texto + cifras) y superponerla arriesga a taparlas. */
+  .hero-float { display: none; }
+
   /* Controles: sin flechas (queda el swipe táctil). Vuelven al flujo normal, debajo de
      las cifras (que en móvil pueden envolver a dos líneas), en vez de flotar encima. */
   .hero-arrow { display: none; }
@@ -1576,6 +1665,8 @@ html { scroll-behavior: smooth; }
     <%
       // Diapositivas del hero: data-driven para poder sumar/editar sin tocar el
       // markup. "image: null" da una diapositiva de marca (gradiente propio, sin foto).
+      // floatIcon/floatText: tarjeta flotante (solo escritorio) con un dato real y
+      // verificable por diapositiva -nunca una cifra o certificación inventada-.
       var heroSlides = [
         {
           image: '/media/imagen-banner.jpeg',
@@ -1585,6 +1676,8 @@ html { scroll-behavior: smooth; }
           text: 'Más de un siglo de historia educativa formando profesionales íntegros, comprometidos con la transformación social del país.',
           ctaLabel: 'Explorar Programas',
           ctaHref: '/programas',
+          floatIcon: 'history_edu',
+          floatText: 'Más de 100 años formando profesionales',
         },
         {
           image: '/media/imagen-banner-1.jpeg',
@@ -1594,6 +1687,8 @@ html { scroll-behavior: smooth; }
           text: 'Acompañamos a nuestros egresados en cada etapa: del aula al mundo profesional, con una red que sigue creciendo.',
           ctaLabel: 'Conoce a nuestros egresados',
           ctaHref: '/soy-egresado-uniremington/',
+          floatIcon: 'verified',
+          floatText: 'Vigilada por el Ministerio de Educación Nacional',
         },
         {
           image: null,
@@ -1603,6 +1698,8 @@ html { scroll-behavior: smooth; }
           text: 'Modalidad presencial, virtual o a distancia: la educación de calidad llega hasta ti.',
           ctaLabel: 'Ver sedes en Colombia',
           ctaHref: '/donde-estamos/',
+          floatIcon: 'location_on',
+          floatText: 'Presencia en 19 sedes de Colombia',
         },
       ];
       // Canal oficial de YouTube (el mismo que alimenta "Últimos videos" más abajo): el
@@ -1639,6 +1736,17 @@ html { scroll-behavior: smooth; }
           </div>
           <% }) %>
         </div>
+
+        <!-- Tarjeta flotante (glass): un dato real por diapositiva. Solo escritorio. -->
+        <div class="hero-float">
+          <% heroSlides.forEach(function(s, i){ %>
+          <div class="hero-float-card<%= i === 0 ? ' is-active' : '' %>" data-float="<%= i %>">
+            <span class="hfc-ic"><span class="msi" aria-hidden="true"><%= s.floatIcon %></span></span>
+            <span class="hfc-tx"><%= s.floatText %></span>
+          </div>
+          <% }) %>
+        </div>
+
         <div class="hero-stats">
           <div>
             <div class="stat-num">+16.000</div>
@@ -1942,6 +2050,7 @@ html { scroll-behavior: smooth; }
       if (!hero) return;
       const slides = [...hero.querySelectorAll('.hero-slide')];
       const panels = [...hero.querySelectorAll('.hero-panel')];
+      const floats = [...hero.querySelectorAll('.hero-float-card')];
       const dots = [...hero.querySelectorAll('.hero-dot')];
       const prevBtn = hero.querySelector('.hero-prev');
       const nextBtn = hero.querySelector('.hero-next');
@@ -1960,6 +2069,7 @@ html { scroll-behavior: smooth; }
         slides[current].classList.remove('is-active');
         slides[current].setAttribute('aria-hidden', 'true');
         panels[current].classList.remove('is-active');
+        if (floats[current]) floats[current].classList.remove('is-active');
         dots[current].classList.remove('is-active');
         dots[current].setAttribute('aria-selected', 'false');
 
@@ -1968,6 +2078,7 @@ html { scroll-behavior: smooth; }
         slides[current].classList.add('is-active');
         slides[current].setAttribute('aria-hidden', 'false');
         panels[current].classList.add('is-active');
+        if (floats[current]) floats[current].classList.add('is-active');
         dots[current].classList.add('is-active');
         dots[current].setAttribute('aria-selected', 'true');
         restartProgress();
@@ -2034,6 +2145,18 @@ html { scroll-behavior: smooth; }
         if (e.key === 'ArrowRight') { goTo(current + 1); startAutoplay(); }
         else if (e.key === 'ArrowLeft') { goTo(current - 1); startAutoplay(); }
       });
+
+      // Parallax sutil de la tarjeta flotante (sigue al mouse, con recorrido corto)
+      const floatWrap = hero.querySelector('.hero-float');
+      if (floatWrap && !prefersReduced && window.matchMedia('(hover: hover)').matches) {
+        hero.addEventListener('mousemove', (e) => {
+          const r = hero.getBoundingClientRect();
+          const px = (e.clientX - r.left) / r.width - 0.5;
+          const py = (e.clientY - r.top) / r.height - 0.5;
+          floatWrap.style.transform = 'translate(' + (px * -14).toFixed(1) + 'px,' + (py * -10).toFixed(1) + 'px)';
+        });
+        hero.addEventListener('mouseleave', () => { floatWrap.style.transform = ''; });
+      }
 
       startAutoplay();
     })();
