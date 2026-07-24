@@ -187,7 +187,20 @@ def _scope_css(css, scope='.ms'):
             k += 1
         body = css[j + 1:k - 1]
         hl = header.lower()
-        if hl.startswith('@media') or hl.startswith('@supports'):
+        if hl.startswith('@media'):
+            # Los micrositios traen @media (max-width/min-width) pensados para el ancho
+            # del VIEWPORT completo, pero aquí viven en la columna de contenido, más
+            # angosta que el viewport por la barra lateral -> esas reglas "de móvil"
+            # nunca se disparaban aunque el espacio real disponible fuera estrecho.
+            # Si la condición es puramente de ancho, se reescribe como @container
+            # (respondiendo al ancho real de `scope`, que declara container-type).
+            cond = header[len('@media'):].strip()
+            width_q = r'\(\s*(?:max|min)-width\s*:\s*[\d.]+(?:px|em|rem)\s*\)'
+            if re.fullmatch(r'(?:' + width_q + r'\s*(?:and|,)?\s*)+', cond, re.I):
+                out.append(f'@container {scope.lstrip(".")} {cond}{{' + _scope_css(body, scope) + '}')
+            else:
+                out.append(header + '{' + _scope_css(body, scope) + '}')
+        elif hl.startswith('@supports'):
             out.append(header + '{' + _scope_css(body, scope) + '}')
         elif header.startswith('@'):          # @keyframes u otros: se conservan tal cual
             out.append(header + '{' + body + '}')

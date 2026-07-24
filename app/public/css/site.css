@@ -899,7 +899,11 @@ footer .legal{border-top:1px solid #2a3947;text-align:center;padding:16px;font-s
 .ms .ogm-box{cursor:default}
 
 /* ------- Responsividad y aire de los micrositios recuperados (.ms) ------- */
-.ms{max-width:100%;overflow-wrap:break-word}
+/* Los micrositios traían sus propios @media (max-width) pensados para el ancho
+   COMPLETO del viewport, pero aquí viven dentro de la columna de contenido (más
+   angosta que el viewport por la barra lateral). convert.py reescribe esos
+   @media como @container "ms" para que respondan al ancho real disponible. */
+.ms{container-type:inline-size;container-name:ms;max-width:100%;overflow-wrap:break-word}
 .ms img,.ms svg{max-width:100%;height:auto}
 /* las cuadrículas ocupan el ancho disponible para que auto-fit reparta columnas
    (si no, dentro de un contenedor flex centrado el grid colapsa a 1 columna) */

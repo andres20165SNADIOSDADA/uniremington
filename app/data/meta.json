@@ -1,12 +1,12 @@
 {
  "counts": {
-  "page": {
-   "total": 822,
-   "publish": 684
-  },
   "post": {
    "total": 658,
    "publish": 558
+  },
+  "page": {
+   "total": 822,
+   "publish": 684
   },
   "tribe_events": {
    "total": 645,
