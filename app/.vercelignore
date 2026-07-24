@@ -1,0 +1,5 @@
+# Pipeline de generación de contenido (build-time, offline): no hace falta en producción.
+# app/data/*.json ya está generado y es lo único que server.js lee en runtime.
+scripts/
+__pycache__/
+*.pyc

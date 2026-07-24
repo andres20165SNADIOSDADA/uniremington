@@ -1,0 +1,22 @@
+# Dependencias (se regeneran con `npm install` a partir de package-lock.json)
+node_modules/
+
+# Insumo del pipeline (WXR de WordPress): pesado, no hace falta en producción.
+# Se mantiene solo en disco para regenerar app/data/*.json con app/scripts/convert.py.
+*.WordPress.*.xml
+
+# Logs de desarrollo
+*.log
+npm-debug.log*
+
+# Variables de entorno / secretos
+.env
+.env.*
+!.env.example
+
+# Configuración local de Claude Code (específica de esta máquina)
+.claude/settings.local.json
+
+# Sistema operativo / editor
+.DS_Store
+Thumbs.db

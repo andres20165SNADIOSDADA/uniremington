@@ -1485,8 +1485,14 @@ app.use((req, res) => {
   res.status(404).render('404', { ...base, title: 'Página no encontrada — Uniremington' });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Uniremington escuchando en http://localhost:${PORT}`);
-  console.log(`Contenido: ${pages.length} páginas · ${posts.length} noticias · ${events.length} eventos · ${programas.length} programas`);
-});
+// En Vercel el runtime importa `app` como handler serverless (sin escuchar un puerto);
+// localmente (`npm start`/`npm run dev`) sí se levanta un servidor HTTP normal.
+if (!process.env.VERCEL) {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Uniremington escuchando en http://localhost:${PORT}`);
+    console.log(`Contenido: ${pages.length} páginas · ${posts.length} noticias · ${events.length} eventos · ${programas.length} programas`);
+  });
+}
+
+export default app;
