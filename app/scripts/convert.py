@@ -608,15 +608,24 @@ def _paired(m):
     # vc_column_text, vc_row, vc_column, *_inner -> aplanar
     return '\n\n' + inner + '\n\n'
 
-# [vc_btn ... el_class="nomostrar" ...]: el tema de WordPress oculta estos botones con CSS
-# (comprobado contra producción: 7 de 16 enlaces de /investigacion/ traen esta marca y NO
-# aparecen en el sitio real) sin borrarlos del origen, así que el WXR los trae completos.
-# Ámbito DELIBERADAMENTE limitado a [vc_btn] (no a filas/columnas con la misma marca): se
-# comprobó que un [vc_row_inner el_class="nomostrar"] puede envolver un botón que SÍ es
-# visible en producción (la ocultación no es universal por marca, solo confirmada en botones).
-_NOMOSTRAR_BTN = re.compile(r'\[vc_btn\b(?:[^\]])*?el_class="[^"]*nomostrar[^"]*"(?:[^\]])*?\]', re.I)
+# Shortcodes con el_class="nomostrar" (o cualquier valor que lo contenga): el editor de
+# WordPress los oculta con CSS sin borrarlos del contenido. Se descartan por completo, tanto
+# los de PAR (con su contenido interno: filas/columnas/cajas ocultas) como los de una sola
+# etiqueta (p.ej. [vc_btn ... el_class="nomostrar"], sin cierre).
+# Confirmado contra producción en /investigacion/: un [vc_row_inner el_class="nomostrar"]
+# envuelve 3 botones de "eventos" que NO aparecen en el sitio real (se ocultan en cascada
+# igual que un [vc_btn] individual con la misma marca) -> el alcance amplio es correcto.
+_NOMOSTRAR_PAIRED = re.compile(
+    r'\[(\w[\w-]*)\b(?:[^\]])*?el_class="[^"]*nomostrar[^"]*"(?:[^\]])*?\]'
+    r'(?:(?!\[/?\1\b)[\s\S])*?'
+    r'\[/\1\]', re.I)
+_NOMOSTRAR_SELF = re.compile(r'\[\w[\w-]*\b(?:[^\]])*?el_class="[^"]*nomostrar[^"]*"(?:[^\]])*?\]', re.I)
 def strip_nomostrar(s):
-    return _NOMOSTRAR_BTN.sub('', s)
+    prev = None
+    while prev != s:          # por si hay varios bloques ocultos consecutivos o anidados
+        prev = s
+        s = _NOMOSTRAR_PAIRED.sub('', s)
+    return _NOMOSTRAR_SELF.sub('', s)
 
 def clean_content(raw):
     if not raw:
@@ -655,6 +664,7 @@ def clean_content(raw):
     s = re.sub(r'\[vc_separator[^\]]*\]', '\n\n<hr>\n\n', s)
     s = re.sub(r'\[vc_empty_space[^\]]*\]', '\n\n', s)
     s = re.sub(r'\[vc_icon[^\]]*\]', '', s)
+    s = re.sub(r'\[vc_basic_grid[^\]]*\]', _basic_grid, s)
     # 3) shortcodes de par (de dentro hacia fuera) -> HTML semántico
     prev = None
     while prev != s:
@@ -743,11 +753,18 @@ WANT = {'page', 'post', 'tribe_events'}
 buckets = {k: [] for k in WANT}
 slugs = Counter()
 menu_items = []
+CAT_NAME_BY_ID = {}   # wp:term_id -> nombre de categoría (para resolver [vc_basic_grid taxonomies="N"])
 
 # ----------------------------------------------- PASO 1: recorrido único
 _fh = open(XML, 'rb')
 _fh.seek(_fh.read(16).index(b'<?xml'))
 for _ev, el in ET.iterparse(_fh, events=('end',)):
+    if el.tag == '{%s}category' % NS['wp']:
+        tid = txt(el, 'wp:term_id').strip()
+        name = txt(el, 'wp:cat_name').strip()
+        if tid and name:
+            CAT_NAME_BY_ID[tid] = html.unescape(name)
+        el.clear(); continue
     if el.tag != 'item':
         continue
     ptype = txt(el, 'wp:post_type').strip()
@@ -866,6 +883,65 @@ for _ev, el in ET.iterparse(_fh, events=('end',)):
         'categories': cats,
     })
     el.clear()
+
+# Índice liviano de posts (título/url/fecha/categorías/imagen/resumen) para poder
+# reproducir en frío los grids dinámicos [vc_basic_grid post_type="post" ...]
+# ("Noticias Uniremington" y similares). Se construye ANTES del paso 2 porque este
+# usa r['_raw'], que el paso 2 va consumiendo (r.pop) a medida que limpia cada item.
+POST_INDEX = []
+for _r in buckets.get('post', []):
+    if _r.get('status') != 'publish':
+        continue
+    _raw = _r.get('_raw') or ''
+    _img_url = ''
+    _img_m = re.search(r'<img[^>]+src="([^"]+)"', _raw)
+    if _img_m:
+        _img_url = _img_m.group(1)
+    else:
+        _vc_m = re.search(r'\[vc_single_image\s+image="(\d+)"', _raw)
+        if _vc_m:
+            _img_url = ATTACH.get(_vc_m.group(1), '')
+    _exc = html.unescape((_r.get('_raw_excerpt') or '').strip())
+    _exc = re.sub(r'<[^>]+>', ' ', _exc)
+    _exc = re.sub(r'\s+', ' ', _exc).strip()
+    if not _exc:
+        _body = html.unescape(re.sub(r'<[^>]+>', ' ', _raw))
+        _body = re.sub(r'\s+', ' ', _body).strip()
+        _exc = (_body[:160].rsplit(' ', 1)[0] + '…') if len(_body) > 160 else _body
+    POST_INDEX.append({
+        'title': _r['title'], 'url': _r['orig_path'], 'date': _r['date'],
+        'categories': _r.get('categories') or [],
+        'img': _img_url, 'excerpt': _exc,
+    })
+POST_INDEX.sort(key=lambda p: p['date'], reverse=True)
+
+def _basic_grid(m):
+    tag = m.group(0)
+    pt = attr(tag, 'post_type')
+    if pt != 'post':
+        return tag                      # tribe_events u otros: sin soporte, se barre después
+    try:
+        n = int(attr(tag, 'max_items') or '4')
+    except ValueError:
+        n = 4
+    taxo = attr(tag, 'taxonomies')
+    names = None
+    if taxo:
+        names = {CAT_NAME_BY_ID[t.strip()] for t in taxo.split(',')
+                 if t.strip() in CAT_NAME_BY_ID}
+    items = [p for p in POST_INDEX if not names or (set(p['categories']) & names)][:n]
+    if not items:
+        return ''
+    cards = []
+    for p in items:
+        media = (f'<img src="{p["img"]}" alt="{p["title"]}" loading="lazy" decoding="async">'
+                  if p['img'] else '<span class="ph"><span class="msi">newspaper</span></span>')
+        cards.append(f'<a class="post" href="{p["url"]}">'
+                     f'<span class="post-media">{media}</span>'
+                     f'<span class="bd"><h3>{p["title"]}</h3><p>{p["excerpt"]}</p>'
+                     f'<span class="go">Leer más <span class="msi">arrow_forward</span></span>'
+                     f'</span></a>')
+    return '<div class="news">' + ''.join(cards) + '</div>'
 
 # ----------------------------------------------- PASO 2: limpiar contenido
 for typ, items in buckets.items():
