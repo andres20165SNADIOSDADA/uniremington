@@ -1242,12 +1242,55 @@ HB_GROUP = re.compile(r'(?:\s*<div class="hb-card">(?:(?!</div>)[\s\S])*?</div>\
 def group_hoverboxes(html_text):
     return HB_GROUP.sub(lambda m: '\n<div class="hb-grid">' + m.group(0).strip() + '</div>\n', html_text)
 
-# Botones sueltos consecutivos (cada uno en su <p>) -> una barra compacta .btn-row.
+# Icono temático (Material Symbols) para el enlace de un botón, según su texto. Réplica de
+# recIcon() en server.js, para que el mismo tipo de enlace use el mismo icono en todo el sitio.
+def _rec_icon(label):
+    t = (label or '').lower()
+    if re.search(r'equipo|docente|profesor|decan', t): return 'groups'
+    if re.search(r'biblioteca', t): return 'local_library'
+    if re.search(r'portafolio', t): return 'description'
+    if re.search(r'inscrip|matr[ií]cul|admis', t): return 'how_to_reg'
+    if re.search(r'graduaci|postulaci|grados', t): return 'school'
+    if re.search(r'educaci[oó]n continua', t): return 'cast_for_education'
+    if re.search(r'revista|bolet[ií]n', t): return 'menu_book'
+    if re.search(r'circular|comunicado', t): return 'campaign'
+    if re.search(r'convocatoria', t): return 'campaign'
+    if re.search(r'software', t): return 'computer'
+    if re.search(r'[ée]tica|bio[ée]tica', t): return 'balance'
+    if re.search(r'requisici[oó]n|solicitud', t): return 'assignment'
+    if re.search(r'investigaci', t): return 'science'
+    if re.search(r'trabajo de grado|tesis', t): return 'assignment'
+    if re.search(r'reglament|normativ', t): return 'gavel'
+    if re.search(r'cl[ií]nica|consultorio', t): return 'medical_services'
+    if re.search(r'emple|egresad|bolsa', t): return 'work'
+    return 'arrow_forward'
+
+# Botones sueltos consecutivos (cada uno en su <p>) -> tarjetas .recurso (mismo componente que
+# "Dependencias y recursos" en facultades): ícono + texto + flecha, en vez de un muro de botones
+# rojos apilados. El color se hereda del tema de la página (--c/--c2), con azul institucional
+# de respaldo si la plantilla no define uno.
 BTN_GROUP = re.compile(r'(?:\s*<p>\s*<a\b[^>]*\bclass="[^"]*\bbtn\b[^"]*"[^>]*>[\s\S]*?</a>\s*</p>){2,}', re.I)
 def group_buttons(html_text):
     def repl(m):
-        btns = re.findall(r'<a\b[^>]*\bclass="[^"]*\bbtn\b[^"]*"[^>]*>[\s\S]*?</a>', m.group(0), re.I)
-        return '\n<div class="btn-row">' + ''.join(btns) + '</div>\n'
+        btns = re.findall(r'<a\b[^>]*\bhref="([^"]*)"[^>]*\bclass="[^"]*\bbtn\b[^"]*"[^>]*>([\s\S]*?)</a>|'
+                          r'<a\b[^>]*\bclass="[^"]*\bbtn\b[^"]*"[^>]*\bhref="([^"]*)"[^>]*>([\s\S]*?)</a>',
+                          m.group(0), re.I)
+        cards = []
+        for a1, l1, a2, l2 in btns:
+            href = a1 or a2
+            label = re.sub(r'<[^>]+>', ' ', l1 or l2)
+            label = re.sub(r'\s+', ' ', label).strip()
+            if not href or not label:
+                continue
+            ico = _rec_icon(label)
+            ext = ' target="_blank" rel="noopener"' if re.match(r'^https?://', href, re.I) else ''
+            cards.append(f'<a class="recurso" href="{href}"{ext}>'
+                         f'<span class="rico"><span class="msi">{ico}</span></span>'
+                         f'<span class="rtxt">{label}</span>'
+                         f'<span class="rarrow msi">arrow_forward</span></a>')
+        if not cards:
+            return ''
+        return '\n<div class="recursos-grid">' + ''.join(cards) + '</div>\n'
     return BTN_GROUP.sub(repl, html_text)
 
 # Limpieza de figuras sueltas del micrositio: iconos/logos que salen gigantes y apilados.

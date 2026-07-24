@@ -601,13 +601,13 @@ section.blk.alt{background:var(--gris)}
 /* recursos / dependencias de la facultad */
 .recursos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
 .recurso{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--linea);border-radius:14px;padding:15px 16px;text-decoration:none;color:var(--tinta);transition:transform .16s,box-shadow .16s,border-color .16s;box-shadow:var(--sombra-s);position:relative;overflow:hidden}
-.recurso::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--c),var(--c2));opacity:0;transition:.16s}
-.recurso:hover{border-color:color-mix(in srgb,var(--c) 45%,var(--linea));transform:translateY(-3px);box-shadow:var(--sombra)}
+.recurso::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--c,var(--azul)),var(--c2,var(--azul-900)));opacity:0;transition:.16s}
+.recurso:hover{border-color:color-mix(in srgb,var(--c,var(--azul)) 45%,var(--linea));transform:translateY(-3px);box-shadow:var(--sombra)}
 .recurso:hover::before{opacity:1}
-.recurso .rico{flex:none;width:44px;height:44px;border-radius:11px;background:linear-gradient(150deg,var(--c),var(--c2));color:#fff;display:grid;place-items:center}
+.recurso .rico{flex:none;width:44px;height:44px;border-radius:11px;background:linear-gradient(150deg,var(--c,var(--azul)),var(--c2,var(--azul-900)));color:#fff;display:grid;place-items:center}
 .recurso .rico .msi{font-size:1.35rem}
 .recurso .rtxt{font-size:.92rem;font-weight:700;line-height:1.28;color:var(--tinta);flex:1}
-.recurso .rarrow{flex:none;color:var(--c);font-size:1.15rem;opacity:0;transform:translateX(-6px);transition:.16s}
+.recurso .rarrow{flex:none;color:var(--c,var(--azul));font-size:1.15rem;opacity:0;transform:translateX(-6px);transition:.16s}
 .recurso:hover .rarrow{opacity:1;transform:translateX(0)}
 
 /* ═══════════ PÁGINA DE PROGRAMA — DISEÑO COMERCIAL ═══════════ */
@@ -1055,10 +1055,10 @@ footer .legal{border-top:1px solid #2a3947;text-align:center;padding:16px;font-s
   width:4px;border-radius:2px;background:var(--c)}
 .dep-content ul li::before{top:.66em;width:7px;height:7px}
 .dep-content ul li{padding-left:26px}
-.dep-content a:not(.btn):not(.doc-pdf):not([class*="card"]):not(.grupo-card):not(.gl-person):not(.opcion-menu){
+.dep-content a:not(.btn):not(.doc-pdf):not([class*="card"]):not(.grupo-card):not(.gl-person):not(.opcion-menu):not(.recurso){
   text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--c) 35%,transparent);
   text-underline-offset:3px;transition:text-decoration-color .2s}
-.dep-content a:not(.btn):not(.doc-pdf):not(.gl-person):not(.opcion-menu):hover{text-decoration-color:var(--c)}
+.dep-content a:not(.btn):not(.doc-pdf):not(.gl-person):not(.opcion-menu):not(.recurso):hover{text-decoration-color:var(--c)}
 
 /* ---- TABLAS: contenedor limpio, encabezado sobrio, filas cebra ---- */
 .dep-content table{border-collapse:separate;border-spacing:0;border:1px solid var(--linea);
