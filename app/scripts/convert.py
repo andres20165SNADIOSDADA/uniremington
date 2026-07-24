@@ -608,10 +608,27 @@ def _paired(m):
     # vc_column_text, vc_row, vc_column, *_inner -> aplanar
     return '\n\n' + inner + '\n\n'
 
+# [vc_btn ... el_class="nomostrar" ...]: el tema de WordPress oculta estos botones con CSS
+# (comprobado contra producción: 7 de 16 enlaces de /investigacion/ traen esta marca y NO
+# aparecen en el sitio real) sin borrarlos del origen, así que el WXR los trae completos.
+# Ámbito DELIBERADAMENTE limitado a [vc_btn] (no a filas/columnas con la misma marca): se
+# comprobó que un [vc_row_inner el_class="nomostrar"] puede envolver un botón que SÍ es
+# visible en producción (la ocultación no es universal por marca, solo confirmada en botones).
+_NOMOSTRAR_BTN = re.compile(r'\[vc_btn\b(?:[^\]])*?el_class="[^"]*nomostrar[^"]*"(?:[^\]])*?\]', re.I)
+def strip_nomostrar(s):
+    return _NOMOSTRAR_BTN.sub('', s)
+
 def clean_content(raw):
     if not raw:
         return ''
     s = raw
+    # -1) Contenido marcado como oculto en el editor de WordPress (el_class contiene
+    #     "nomostrar"): el tema lo esconde con CSS sin borrarlo del origen, así que el WXR
+    #     lo trae completo aunque en producción NUNCA se vea. Se descarta ENTERO (shortcode
+    #     de par: se quita también su contenido interno) para reflejar lo que de verdad se
+    #     ve en el sitio real. Debe correr ANTES de cualquier otra conversión de shortcodes,
+    #     mientras el atributo el_class todavía es visible como texto.
+    s = strip_nomostrar(s)
     # 0) resolver popups (fichas de adopción, etc.) y decodificar los embeds base64
     #    de WPBakery (vc_raw_html/js -> micrositios aislados)
     s = POPUP_SC.sub(_resolve_popup, s)
@@ -1105,8 +1122,8 @@ def pdf_component(html_text):
     def mark(m):
         href, inner = m.group(1), m.group(2)
         open_tag = m.group(0).split('>', 1)[0]
-        if re.search(r'class="[^"]*\bbtn\b', open_tag):
-            return m.group(0)                    # ya es botón (barra de botones): dejar igual
+        if re.search(r'class="[^"]*\b(btn|ql-link)\b', open_tag):
+            return m.group(0)                    # ya es botón o quick-link: dejar igual
         if '<img' in inner.lower():
             return m.group(0)                    # enlaces-imagen (miniaturas): no tocar
         label = re.sub(r'<[^>]+>', ' ', inner)
@@ -1265,19 +1282,16 @@ def _rec_icon(label):
     if re.search(r'emple|egresad|bolsa', t): return 'work'
     return 'arrow_forward'
 
-# Botones sueltos consecutivos (cada uno en su <p>) -> lista compacta de "chips" (píldora
-# pequeña con ícono + texto). En producción este mismo grupo de enlaces vive en una barra
-# lateral angosta de botones chicos (una lista de referencia), no como protagonista de la
-# página — por eso una cuadrícula de tarjetas grandes (.recurso) se siente como "demasiados
-# botones" aunque la cantidad de enlaces sea la misma que en el sitio real. El chip mantiene
-# el mismo ícono/orden/color pero con un tamaño discreto, en flujo (no en grilla 2 columnas).
+# Botones sueltos consecutivos (cada uno en su <p>) -> lista de índice (ícono circular sutil +
+# texto + flecha que aparece al pasar el mouse, separados por una línea fina). En vez de un
+# muro de tarjetas o botones vistosos, se lee como un índice de referencia bien organizado.
 BTN_GROUP = re.compile(r'(?:\s*<p>\s*<a\b[^>]*\bclass="[^"]*\bbtn\b[^"]*"[^>]*>[\s\S]*?</a>\s*</p>){2,}', re.I)
 def group_buttons(html_text):
     def repl(m):
         btns = re.findall(r'<a\b[^>]*\bhref="([^"]*)"[^>]*\bclass="[^"]*\bbtn\b[^"]*"[^>]*>([\s\S]*?)</a>|'
                           r'<a\b[^>]*\bclass="[^"]*\bbtn\b[^"]*"[^>]*\bhref="([^"]*)"[^>]*>([\s\S]*?)</a>',
                           m.group(0), re.I)
-        chips = []
+        links = []
         for a1, l1, a2, l2 in btns:
             href = a1 or a2
             label = re.sub(r'<[^>]+>', ' ', l1 or l2)
@@ -1286,11 +1300,13 @@ def group_buttons(html_text):
                 continue
             ico = _rec_icon(label)
             ext = ' target="_blank" rel="noopener"' if re.match(r'^https?://', href, re.I) else ''
-            chips.append(f'<a class="chip-link" href="{href}"{ext}>'
-                         f'<span class="msi">{ico}</span><span>{label}</span></a>')
-        if not chips:
+            links.append(f'<a class="ql-link" href="{href}"{ext}>'
+                        f'<span class="ql-ic"><span class="msi">{ico}</span></span>'
+                        f'<span class="ql-txt">{label}</span>'
+                        f'<span class="ql-go msi">arrow_forward</span></a>')
+        if not links:
             return ''
-        return '\n<div class="chip-links">' + ''.join(chips) + '</div>\n'
+        return '\n<div class="quick-links">' + ''.join(links) + '</div>\n'
     return BTN_GROUP.sub(repl, html_text)
 
 # Limpieza de figuras sueltas del micrositio: iconos/logos que salen gigantes y apilados.

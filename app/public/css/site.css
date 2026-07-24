@@ -610,17 +610,22 @@ section.blk.alt{background:var(--gris)}
 .recurso .rarrow{flex:none;color:var(--c,var(--azul));font-size:1.15rem;opacity:0;transform:translateX(-6px);transition:.16s}
 .recurso:hover .rarrow{opacity:1;transform:translateX(0)}
 
-/* Lista compacta de enlaces sueltos del contenido ("chips"): en producción viven en una
-   barra lateral angosta de botones chicos, así que aquí van pequeños y en flujo (no una
-   grilla de tarjetas grandes) para que 15-20 enlaces no se sientan como "muchos botones". */
-.chip-links{display:flex;flex-wrap:wrap;gap:9px;margin:20px 0}
-.chip-links .chip-link{display:inline-flex;align-items:center;gap:7px;padding:8px 14px 8px 11px;
-  background:#fff;border:1.5px solid var(--linea);border-radius:999px;color:var(--tinta);
-  font-weight:700;font-size:.83rem;line-height:1.2;text-decoration:none!important;
-  box-shadow:var(--sombra-s);transition:.15s}
-.chip-links .chip-link .msi{font-size:1.05rem;color:var(--c,var(--azul))}
-.chip-links .chip-link:hover{border-color:var(--c,var(--azul));transform:translateY(-2px);
-  box-shadow:var(--sombra);background:color-mix(in srgb,var(--c,var(--azul)) 6%,#fff)}
+/* Lista de índice para enlaces sueltos del contenido: fila con ícono circular sutil + texto +
+   flecha que aparece al pasar el mouse, separadas por una línea fina. Se lee como un índice de
+   referencia bien organizado, no como una grilla de botones/tarjetas llamativas. */
+.quick-links{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  column-gap:32px;margin:22px 0 26px;border-top:1px solid var(--linea)}
+.quick-links .ql-link{display:flex;align-items:center;gap:13px;padding:13px 2px;
+  border-bottom:1px solid var(--linea);text-decoration:none!important;color:var(--tinta);
+  transition:padding-left .15s ease,background-color .15s ease}
+.quick-links .ql-link:hover{background:color-mix(in srgb,var(--c,var(--azul)) 5%,transparent);padding-left:8px}
+.quick-links .ql-ic{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
+  background:color-mix(in srgb,var(--c,var(--azul)) 13%,#fff);color:var(--c,var(--azul))}
+.quick-links .ql-ic .msi{font-size:1.1rem}
+.quick-links .ql-txt{flex:1;font-weight:600;font-size:.92rem;line-height:1.32;color:var(--tinta)}
+.quick-links .ql-go{flex:none;font-size:1.1rem;color:var(--c,var(--azul));
+  opacity:0;transform:translateX(-5px);transition:.15s ease}
+.quick-links .ql-link:hover .ql-go{opacity:1;transform:translateX(0)}
 
 /* ═══════════ PÁGINA DE PROGRAMA — DISEÑO COMERCIAL ═══════════ */
 /* Hero con captación */
