@@ -549,6 +549,12 @@ def _heading(m):
     text = html.unescape(text).strip()
     if not text:
         return '\n\n'
+    # El editor original a veces mete párrafos completos (con saltos de línea) en este
+    # shortcode pensado para títulos cortos; si se renderiza como <hN> hereda el color/
+    # tamaño de encabezado y el texto queda todo azul. Un título real no trae párrafos.
+    if len(text) > 180 or '\n' in text:
+        paras = [p.strip() for p in re.split(r'\n\s*\n', text) if p.strip()]
+        return '\n\n' + ''.join(f'<p>{p}</p>\n\n' for p in paras)
     tm = re.search(r'tag:(h[1-6])', attr(s, 'font_container'), re.I)
     tag = (tm.group(1).lower() if tm else 'h3')
     return f'\n\n<{tag}>{text}</{tag}>\n\n'
@@ -1586,6 +1592,13 @@ for typ, items in buckets.items():
             # Un solo H1 por página (el del hero de la plantilla): los <h1> del contenido
             # del backup son duplicados que dañan la jerarquía SEO -> se degradan a <h2>.
             html_c = re.sub(r'<(/?)h1(\b[^>]*)>', r'<\1h2\2>', html_c, flags=re.I)
+            # Red de seguridad: cualquier encabezado (de cualquier origen, no solo
+            # vc_custom_heading) cuyo texto sea en realidad un párrafo largo hereda el
+            # color/tamaño de título y se ve mal -> se degrada a <p>.
+            html_c = re.sub(r'<(h[1-6])\b[^>]*>([\s\S]*?)</\1>',
+                             lambda m: (f'<p>{m.group(2)}</p>' if len(re.sub(r'<[^>]+>', '', m.group(2))) > 180
+                                        else m.group(0)),
+                             html_c, flags=re.I)
             html_c = dedupe_callouts(html_c)
             html_c = custom_accordions(html_c)
             html_c = group_roles(html_c)
