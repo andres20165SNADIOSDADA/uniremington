@@ -836,7 +836,14 @@ function facultyContent(page, deanPhoto){
                .replace(/<p>\s*(?:&nbsp;|<br\s*\/?>|\s)*<\/p>/gi, '')
                .replace(/<div class="btn-row"[^>]*>\s*<\/div>/gi, '');
   }
-  return { links, html: html.trim() };
+  // 6) "Noticias Uniremington" (convert.py ya la mueve al final del content_html) debe
+  // quedar al final de TODA la página, después de "Programas de la facultad" y
+  // "Dependencias y recursos" -que la plantilla agrega DESPUÉS de este HTML-, así que se
+  // extrae aquí para que facultad.ejs la renderice al cierre en vez de en este punto.
+  let news = '';
+  html = html.replace(/(?:<hr>\s*)?<h2>Noticias Uniremington<\/h2>\s*<div class="news">[\s\S]*?<\/div>\s*$/i,
+    (m) => { news = m; return ''; });
+  return { links, html: html.trim(), news };
 }
 
 // ---- "Nuestro equipo" de facultad: parseo estructurado de integrantes ----
@@ -1071,7 +1078,7 @@ app.get('/facultad/:slug', (req, res, next) => {
     fac: { slug: f.slug, nombre: f.nombre, color: f.color, colorDark: f.colorDark },
     decano: dec,
     equipoUrl: (facRecursos[f.slug] || []).some(r => isFacTeam(r)) ? `/facultades/${f.slug}/nuestro-equipo/` : '',
-    contentHtml: fc.html, recursosLinks: fc.links,
+    contentHtml: fc.html, recursosLinks: fc.links, newsHtml: fc.news,
     programas: f.programas.map(p => ({ slug: p.slug, url: p.url, title: p.title, ico: icoFor(p.title),
       nivel: p.nivel, modalidad: p.modalidad, sedes: p.sedes || [] })),
     recursos: f.recursos.map(p => ({ slug: p.slug, url: p.url, title: p.title, ico: depIcon(p.title) })),

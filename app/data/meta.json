@@ -1,5 +1,9 @@
 {
  "counts": {
+  "page": {
+   "total": 822,
+   "publish": 684
+  },
   "post": {
    "total": 658,
    "publish": 558
@@ -7,17 +11,13 @@
   "tribe_events": {
    "total": 645,
    "publish": 517
-  },
-  "page": {
-   "total": 822,
-   "publish": 684
   }
  },
  "tables": 299,
  "attachments": 6919,
  "links_fixed": {
   "facultad": 12,
-  "relativized": 2129
+  "relativized": 2133
  },
  "generated_from": "corporacinuniversitariaremington.WordPress.2026-07-08.xml",
  "programas": {

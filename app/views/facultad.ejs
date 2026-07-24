@@ -104,6 +104,10 @@
   </section>
   <% } %>
 
+  <% if (typeof newsHtml !== 'undefined' && newsHtml){ %>
+    <div class="article"><%- newsHtml %></div>
+  <% } %>
+
 </div>
 
 <%- include('partials/foot') %>

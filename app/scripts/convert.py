@@ -716,6 +716,7 @@ def clean_content(raw):
     if not raw:
         return ''
     s = raw
+    _PENDING_NEWS.clear()   # una página no arrastra las noticias pendientes de otra
     # -1) Contenido marcado como oculto en el editor de WordPress (el_class contiene
     #     "nomostrar"): el tema lo esconde con CSS sin borrarlo del origen, así que el WXR
     #     lo trae completo aunque en producción NUNCA se vea. Se descarta ENTERO (shortcode
@@ -759,7 +760,13 @@ def clean_content(raw):
     s = re.sub(r'\[vc_separator[^\]]*\]', '\n\n<hr>\n\n', s)
     s = re.sub(r'\[vc_empty_space[^\]]*\]', '\n\n', s)
     s = re.sub(r'\[vc_icon[^\]]*\]', '', s)
-    s = re.sub(r'\[vc_basic_grid[^\]]*\]', _basic_grid, s)
+    # (opcional) <hr> y el <hN>Noticias Uniremington</hN> que suele preceder al grid ya
+    # están convertidos a HTML normal a esta altura -se consumen aquí junto con el
+    # shortcode para poder moverlos juntos al final; _basic_grid añade su propio
+    # encabezado siempre, así que no importa si el original no traía uno (pasa en varias
+    # facultades) ni si lo consume aquí (evita que quede duplicado).
+    s = re.sub(r'(?:<hr>\s*)?(?:<(h[1-6])>\s*Noticias\s+Uniremington\s*</\1>\s*)?\[vc_basic_grid[^\]]*\]',
+               _basic_grid, s, flags=re.I)
     # 3) shortcodes de par (de dentro hacia fuera) -> HTML semántico
     prev = None
     while prev != s:
@@ -792,6 +799,16 @@ def clean_content(raw):
     result = '\n'.join(out).strip()
     # 7) barrer párrafos vacíos residuales (p.ej. envoltorios de popups resueltos)
     result = re.sub(r'<p[^>]*>\s*(?:&nbsp;|<br\s*/?>|\s)*</p>', '', result, flags=re.I)
+    # 8) mover "Noticias Uniremington" (si la hay) al final de la página: el marcador de
+    # _basic_grid pudo quedar envuelto en <p> por el auto-párrafo (paso 6) al no empezar
+    # por "<".
+    news_html = []
+    def _collect_news(mm):
+        news_html.append(_PENDING_NEWS[int(mm.group(1))])
+        return ''
+    result = re.sub(r'(?:<p[^>]*>\s*)?\x03(\d+)\x03(?:\s*</p>)?', _collect_news, result)
+    if news_html:
+        result = result.strip() + '\n' + ''.join(news_html)
     return result.strip()
 
 # ------------------------------------------------------------------ utilidades
@@ -989,6 +1006,7 @@ for _ev, el in ET.iterparse(_fh, events=('end',)):
 # ("Noticias Uniremington" y similares). Se construye ANTES del paso 2 porque este
 # usa r['_raw'], que el paso 2 va consumiendo (r.pop) a medida que limpia cada item.
 POST_INDEX = []
+_PENDING_NEWS = []   # bloques de "Noticias Uniremington" pendientes de mover al final (por página)
 for _r in buckets.get('post', []):
     if _r.get('status') != 'publish':
         continue
@@ -1041,7 +1059,13 @@ def _basic_grid(m):
                      f'<span class="bd"><h3>{p["title"]}</h3><p>{p["excerpt"]}</p>'
                      f'<span class="go">Leer más <span class="msi">arrow_forward</span></span>'
                      f'</span></a>')
-    return '<div class="news">' + ''.join(cards) + '</div>'
+    grid = ('<hr>\n<h2>Noticias Uniremington</h2>\n<div class="news">' + ''.join(cards) + '</div>')
+    # "Noticias Uniremington" debe quedar siempre al FINAL de la página, sin importar en
+    # qué punto del HTML de WordPress cayera el shortcode originalmente (a veces aparecía
+    # en medio del contenido, entre videos institucionales y la oferta de programas). Se
+    # devuelve un marcador y se traslada al final de clean_content() (ver más abajo).
+    _PENDING_NEWS.append(grid)
+    return f'\x03{len(_PENDING_NEWS) - 1}\x03'
 
 # ----------------------------------------------- PASO 2: limpiar contenido
 for typ, items in buckets.items():
