@@ -517,6 +517,21 @@ section.blk.alt{background:var(--gris)}
   gap:20px;max-width:560px;padding:16px 20px}
 .article > .hb-card img,.fac-content > .hb-card img{width:110px;height:80px;border-radius:12px;flex:none}
 .article > .hb-card .btn,.fac-content > .hb-card .btn{margin-top:0}
+
+/* "Nuestra oferta académica" de una sede: fotos-banner (persona + fondo temático) pensadas
+   para verse COMPLETAS, no como retrato → foto rectangular (no circular) + tarjeta clicable. */
+.sede-ofertas{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.sede-ofertas .hb-card{padding:0;overflow:hidden;text-decoration:none;color:inherit;
+  align-items:stretch;text-align:left;gap:0}
+.sede-ofertas .hb-card figure{width:100%;line-height:0}
+.sede-ofertas .hb-card img{width:100%;height:150px;border-radius:0;object-fit:cover;
+  object-position:center 30%;box-shadow:none}
+.sede-ofertas .hb-card strong{padding:16px 18px 0}
+.sede-ofertas .hb-card p{padding:2px 18px 16px}
+.sede-ofertas a.hb-card p{padding-bottom:2px}
+.sede-ofertas .hb-card .go{padding:0 18px 16px;color:var(--azul-2);font-weight:800;font-size:.84rem}
+.sede-ofertas a.hb-card:hover img{transform:scale(1.06)}
+.sede-ofertas .hb-card img{transition:transform .35s ease}
 /* Línea de tiempo institucional (historia) */
 .timeline{margin:32px 0;padding:0;position:relative}
 .timeline::before{content:"";position:absolute;left:71px;top:8px;bottom:8px;width:2px;background:var(--linea)}

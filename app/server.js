@@ -181,6 +181,9 @@ pages.forEach(p => {
   const s = (p.orig_path || '').replace(/^\/|\/$/g, '').split('/');
   if (s[0] === 'facultades' && s.length === 2) facultyNames[s[1]] = p.title;
 });
+// inverso (nombre normalizado -> slug), para enlazar tarjetas que solo traen el nombre en texto
+const facSlugByName = {};
+Object.keys(facultyNames).forEach(slug => { facSlugByName[facultyNames[slug].trim().toLowerCase()] = slug; });
 // programas agrupados por facultad (ordenados)
 const facMap = {};
 programas.forEach(p => { (facMap[p.facultad_slug] ||= []).push(p); });
@@ -338,8 +341,9 @@ function sedeJsonld(slug, item){
 // Limpieza del contenido de una SEDE (mismo enfoque que facultyContent): quita el encabezado
 // huérfano del formulario que se perdió en la extracción y convierte la foto+leyenda del
 // director/a en una tarjeta con estilo.
-function sedeContent(html) {
+function sedeContent(html, sedeSlug) {
   if (!html) return html;
+  const sedeCity = sedeSlug && SEDES[sedeSlug] ? SEDES[sedeSlug].city : '';
   // 1) Encabezado "Quiero ser contactado por un asesor" sin formulario debajo → se quita.
   html = html.replace(/<(h[1-4])\b[^>]*>\s*Quiero ser contactad[\s\S]*?<\/\1>/gi, '');
   // 2) Director/a de la sede. El grid de oferta ya está en .hb-card, así que el único <figure>
@@ -372,6 +376,24 @@ function sedeContent(html) {
       if (!cm) return m;
       const desc = body.replace(cm[0], '').trim();
       return `${heading}<div class="sede-intro">${cm[0]}<div class="sede-desc">${desc}</div></div>`;
+    });
+  // 4) "Nuestra oferta académica - {ciudad}": cada tarjeta es una facultad con programas
+  //    disponibles EN ESTA SEDE → debe llevar al buscador de programas ya filtrado por esa
+  //    facultad y esa sede (no a la landing general de la facultad, que mezcla todas las sedes).
+  //    Las fotos son banners (persona + fondo temático) pensados para verse completos, no como
+  //    retrato: el .hb-card genérico las recortaba en un círculo pequeño (se veía horrible) →
+  //    se marca esta cuadrícula (.sede-ofertas) con foto rectangular vía CSS.
+  html = html.replace(
+    /<div class="hb-grid">((?:<div class="hb-card">[\s\S]*?<\/div>)+)<\/div>/,
+    (m, cards) => {
+      const out = cards.replace(/<div class="hb-card">([\s\S]*?)<\/div>/g, (cm, inner) => {
+        const name = (inner.match(/<strong>([\s\S]*?)<\/strong>/) || [, ''])[1].replace(/<[^>]+>/g, '').trim();
+        const slug = facSlugByName[name.toLowerCase()];
+        if (!slug || !sedeCity) return `<div class="hb-card">${inner}</div>`;
+        const href = `/programas?facultad=${slug}&sede=${encodeURIComponent(sedeCity)}`;
+        return `<a class="hb-card" href="${href}">${inner}<span class="go">Ver programas →</span></a>`;
+      });
+      return `<div class="hb-grid sede-ofertas">${out}</div>`;
     });
   return html;
 }
@@ -1280,7 +1302,7 @@ function renderPageContent(res, item) {
     canonical: SITE + (item.url || ''),
     item, h1: ctx.h1, crumbs: ctx.crumbs, sidebar: ctx.sidebar, curUrl,
     bodyScripts: scripts, theme: contentTheme(item.content_html),
-    contentOverride: sedeSlug ? sedeContent(item.content_html) : undefined,
+    contentOverride: sedeSlug ? sedeContent(item.content_html, sedeSlug) : undefined,
     jsonld: sedeSlug ? sedeJsonld(sedeSlug, item) : undefined,
   });
 }
