@@ -406,6 +406,53 @@ def _transform_grupo_stats(body):
         return body[:wm.start()] + grid + body[_cut_balanced_div(body, wm.start()):]
     return body[:tm.start()] + grid + body[tm.end():]
 
+_SEMILLEROS_ITEM = re.compile(
+    r'<div\b[^>]*\bclass="[^"]*\bacordeon-item\b[^"]*"[^>]*\bdata-facultad="([^"]+)"[^>]*>\s*'
+    r'<button([^>]*)>([\s\S]*?)</button>\s*'
+    r'<div(?:[^>]*\bclass="[^"]*\bacordeon-contenido\b[^"]*"[^>]*)>([\s\S]*?)</div>\s*</div>')
+
+def _transform_semilleros_cifras(body):
+    """'Semilleros de investigación en cifras': el conteo real (por Facultad y el total)
+    lo calculaba un <script> contando los .semillero-tag dentro de cada acordeón, y el
+    propio acordeón (abrir/cerrar) dependía de otro <script> (toggleAcordeon); TODO
+    <script> se elimina en clean_content, así que las cifras quedaban en 0 y el acordeón
+    solo mostraba abierto el primer ítem (el único con estilo inline), sin forma de abrir
+    los demás. Se recalculan los conteos en frío y el acordeón se reescribe con <details>/
+    <summary> nativos (mismas clases -> conserva el CSS del propio micrositio) para que
+    funcione sin JS."""
+    if 'unr-cifra-card' not in body or 'acordeon-item' not in body:
+        return body
+    counts = {}
+
+    def _item(m):
+        fac, btn_attrs, btn_inner, tags = m.groups()
+        n = tags.count('semillero-tag')
+        counts[fac] = n
+        title = re.sub(r'<span[^>]*\bacordeon-boton__count\b[^>]*>[\s\S]*?</span>', '', btn_inner)
+        title = re.sub(r'<[^>]+>', ' ', title)
+        title = re.sub(r'\s+', ' ', title).strip()
+        is_open = 'activo' in btn_attrs.lower()
+        return ('<details class="acordeon-item"' + (' open' if is_open else '') +
+                f' data-facultad="{fac}"><summary class="acordeon-boton">'
+                f'<span class="acordeon-boton__left"><span class="acordeon-boton__count" data-count>{n}</span> '
+                f'{title}</span><span class="acordeon-icono"></span></summary>'
+                f'<div class="acordeon-contenido">{tags}</div></details>')
+    body = _SEMILLEROS_ITEM.sub(_item, body)
+    total = sum(counts.values())
+
+    def _card(m):
+        return m.group(0).replace('data-count>0<', f'data-count>{counts.get(m.group(1), 0)}<', 1)
+    body = re.sub(r'<div\b[^>]*\bclass="unr-cifra-card"[^>]*\bdata-facultad="([^"]+)"[^>]*>'
+                  r'[\s\S]*?</div>\s*</div>', _card, body)
+    body = re.sub(r'(class="unr-total__num"[^>]*data-total>)0(<)', rf'\g<1>{total}\g<2>', body)
+
+    # con <details> nativo el estado abierto lo da [open]; solo faltan el giro del icono
+    # y el acento lateral de color que antes disparaba la clase .activo puesta por JS.
+    return ('<style data-ms>summary.acordeon-boton{list-style:none;cursor:pointer}'
+            'summary.acordeon-boton::-webkit-details-marker{display:none}'
+            'details.acordeon-item[open]>summary.acordeon-boton .acordeon-icono{transform:rotate(-135deg)}'
+            'details.acordeon-item[open]::before{opacity:1}</style>') + body
+
 def _extract_micrositio(dec):
     """De un HTML de micrositio (documento completo o fragmento) devuelve un bloque
     `<div class="ms">` con el cuerpo y su CSS ya aislado en `<style data-ms>`."""
@@ -432,6 +479,7 @@ def _extract_micrositio(dec):
     body = _transform_org_chart(body)
     body = _transform_grupo_cards(body)
     body = _transform_grupo_stats(body)
+    body = _transform_semilleros_cifras(body)
     micro = ('<style data-ms>' + scoped + '</style>' if scoped.strip() else '') + body
     # sin saltos de línea: es un único bloque, y así las etiquetas multilínea
     # (atributos de <path>, <a>...) no se rompen con <br> ni se parten en el auto-<p>
@@ -649,6 +697,16 @@ def clean_content(raw):
     s = POPUP_SC.sub(_resolve_popup, s)
     s = RAW_HTML.sub(_rawhtml, s)
     s = RAW_JS.sub('', s)
+    # proteger el <style data-ms> de los micrositios (RAW_HTML ya lo dejó embebido en el
+    # HTML) del resto de la limpieza: si el CSS trae selectores de atributo, p.ej.
+    # [data-facultad="x"], el barrido genérico de shortcodes de más abajo (que busca
+    # cualquier "[...]" suelto) los confunde con shortcodes y los destruye, dejando
+    # "\n\n" sueltos que el auto-párrafo convierte en </p><p> DENTRO del CSS.
+    _style_store = []
+    def _protect_style(m):
+        _style_store.append(m.group(0))
+        return f'\x01{len(_style_store) - 1}\x01'
+    s = re.sub(r'<style[^>]*data-ms[^>]*>.*?</style>', _protect_style, s, flags=re.S | re.I)
     # normalizar botones crudos del contenido a nuestro estilo (texto blanco, etc.)
     s = s.replace('class="unr-button"', 'class="btn btn-oro"')
     # quitar bloques <style>/<script> incrustados en el contenido (afectan el layout
@@ -688,6 +746,11 @@ def clean_content(raw):
     # quitar estilos inline de color en los encabezados (los controla el CSS del sitio)
     s = re.sub(r'(<h[1-6])\s+style="[^"]*"', r'\1', s)
     s = MULTINL.sub('\n\n', s)
+    # restaurar el <style data-ms> protegido arriba: debe ir DESPUÉS de las limpiezas de
+    # texto de este paso (si no, "color: white" del CSS cae en el barrido de arriba) y
+    # ANTES del auto-párrafo (si no, el marcador -que no empieza por "<"- se envuelve en
+    # <p></p> como si fuera texto suelto).
+    s = re.sub(r'\x01(\d+)\x01', lambda m: _style_store[int(m.group(1))], s)
     # 6) auto-párrafo para bloques de texto plano; respeta el HTML existente
     out = []
     for block in s.split('\n\n'):
