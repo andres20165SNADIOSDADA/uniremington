@@ -195,8 +195,21 @@ def _scope_css(css, scope='.ms'):
             # Si la condición es puramente de ancho, se reescribe como @container
             # (respondiendo al ancho real de `scope`, que declara container-type).
             cond = header[len('@media'):].strip()
-            width_q = r'\(\s*(?:max|min)-width\s*:\s*[\d.]+(?:px|em|rem)\s*\)'
-            if re.fullmatch(r'(?:' + width_q + r'\s*(?:and|,)?\s*)+', cond, re.I):
+            width_q = r'\(\s*(?:max|min)-width\s*:\s*([\d.]+)(px|em|rem)\s*\)'
+            is_width_only = bool(re.fullmatch(
+                r'(?:' + width_q + r'\s*(?:and|,)?\s*)+', cond, re.I))
+            # Sólo se convierte si TODOS los quiebres son de rango claramente móvil
+            # (<=700px): un breakpoint mayor (900px, 1024px…) suele estar calibrado
+            # para el ancho COMPLETO del viewport original del micrositio (bastante
+            # más ancho que nuestra columna de contenido), y traducido tal cual se
+            # dispararía SIEMPRE en el embed aunque el layout quepa perfecto -p.ej. una
+            # línea de tiempo horizontal de 3 pasos que cabe cómoda en ~776px se
+            # apilaba igual solo porque 776 < 900-. Con >700px se deja como @media
+            # normal (viewport), que es el comportamiento original (no se dispara aquí).
+            widths = re.findall(width_q, cond, re.I) if is_width_only else []
+            mobile_range = bool(widths) and all(
+                unit.lower() == 'px' and float(val) <= 700 for val, unit in widths)
+            if is_width_only and mobile_range:
                 out.append(f'@container {scope.lstrip(".")} {cond}{{' + _scope_css(body, scope) + '}')
             else:
                 out.append(header + '{' + _scope_css(body, scope) + '}')
