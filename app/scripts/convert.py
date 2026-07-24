@@ -1265,17 +1265,19 @@ def _rec_icon(label):
     if re.search(r'emple|egresad|bolsa', t): return 'work'
     return 'arrow_forward'
 
-# Botones sueltos consecutivos (cada uno en su <p>) -> tarjetas .recurso (mismo componente que
-# "Dependencias y recursos" en facultades): ícono + texto + flecha, en vez de un muro de botones
-# rojos apilados. El color se hereda del tema de la página (--c/--c2), con azul institucional
-# de respaldo si la plantilla no define uno.
+# Botones sueltos consecutivos (cada uno en su <p>) -> lista compacta de "chips" (píldora
+# pequeña con ícono + texto). En producción este mismo grupo de enlaces vive en una barra
+# lateral angosta de botones chicos (una lista de referencia), no como protagonista de la
+# página — por eso una cuadrícula de tarjetas grandes (.recurso) se siente como "demasiados
+# botones" aunque la cantidad de enlaces sea la misma que en el sitio real. El chip mantiene
+# el mismo ícono/orden/color pero con un tamaño discreto, en flujo (no en grilla 2 columnas).
 BTN_GROUP = re.compile(r'(?:\s*<p>\s*<a\b[^>]*\bclass="[^"]*\bbtn\b[^"]*"[^>]*>[\s\S]*?</a>\s*</p>){2,}', re.I)
 def group_buttons(html_text):
     def repl(m):
         btns = re.findall(r'<a\b[^>]*\bhref="([^"]*)"[^>]*\bclass="[^"]*\bbtn\b[^"]*"[^>]*>([\s\S]*?)</a>|'
                           r'<a\b[^>]*\bclass="[^"]*\bbtn\b[^"]*"[^>]*\bhref="([^"]*)"[^>]*>([\s\S]*?)</a>',
                           m.group(0), re.I)
-        cards = []
+        chips = []
         for a1, l1, a2, l2 in btns:
             href = a1 or a2
             label = re.sub(r'<[^>]+>', ' ', l1 or l2)
@@ -1284,13 +1286,11 @@ def group_buttons(html_text):
                 continue
             ico = _rec_icon(label)
             ext = ' target="_blank" rel="noopener"' if re.match(r'^https?://', href, re.I) else ''
-            cards.append(f'<a class="recurso" href="{href}"{ext}>'
-                         f'<span class="rico"><span class="msi">{ico}</span></span>'
-                         f'<span class="rtxt">{label}</span>'
-                         f'<span class="rarrow msi">arrow_forward</span></a>')
-        if not cards:
+            chips.append(f'<a class="chip-link" href="{href}"{ext}>'
+                         f'<span class="msi">{ico}</span><span>{label}</span></a>')
+        if not chips:
             return ''
-        return '\n<div class="recursos-grid">' + ''.join(cards) + '</div>\n'
+        return '\n<div class="chip-links">' + ''.join(chips) + '</div>\n'
     return BTN_GROUP.sub(repl, html_text)
 
 # Limpieza de figuras sueltas del micrositio: iconos/logos que salen gigantes y apilados.

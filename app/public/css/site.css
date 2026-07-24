@@ -610,6 +610,18 @@ section.blk.alt{background:var(--gris)}
 .recurso .rarrow{flex:none;color:var(--c,var(--azul));font-size:1.15rem;opacity:0;transform:translateX(-6px);transition:.16s}
 .recurso:hover .rarrow{opacity:1;transform:translateX(0)}
 
+/* Lista compacta de enlaces sueltos del contenido ("chips"): en producción viven en una
+   barra lateral angosta de botones chicos, así que aquí van pequeños y en flujo (no una
+   grilla de tarjetas grandes) para que 15-20 enlaces no se sientan como "muchos botones". */
+.chip-links{display:flex;flex-wrap:wrap;gap:9px;margin:20px 0}
+.chip-links .chip-link{display:inline-flex;align-items:center;gap:7px;padding:8px 14px 8px 11px;
+  background:#fff;border:1.5px solid var(--linea);border-radius:999px;color:var(--tinta);
+  font-weight:700;font-size:.83rem;line-height:1.2;text-decoration:none!important;
+  box-shadow:var(--sombra-s);transition:.15s}
+.chip-links .chip-link .msi{font-size:1.05rem;color:var(--c,var(--azul))}
+.chip-links .chip-link:hover{border-color:var(--c,var(--azul));transform:translateY(-2px);
+  box-shadow:var(--sombra);background:color-mix(in srgb,var(--c,var(--azul)) 6%,#fff)}
+
 /* ═══════════ PÁGINA DE PROGRAMA — DISEÑO COMERCIAL ═══════════ */
 /* Hero con captación */
 .phero{position:relative;color:#fff;background:linear-gradient(125deg,var(--c2,#012a50) 0%,var(--c,#00457c) 100%);overflow:hidden}
