@@ -562,6 +562,19 @@ const INV_AREAS = {
   'grupo-de-investigacion-de-humanidades': 'Humanidades',
 };
 
+// Bajo /investigacion/ también hay páginas de convocatorias/eventos de un año puntual
+// (2019-2025, ya vencidas) y una casi-duplicada de "información relevante para
+// investigadores": no son secciones permanentes como Convocatorias o Grupos de
+// Investigación, así que no deben listarse junto a esas en el sidebar.
+const INV_NOISE = new Set([
+  'informacion-para-investigadores',
+  'cronograma-2025-convocatorias-y-eventos',
+  'memorias-de-eventos',
+  'semana-de-la-investigacion-uniremington-2023',
+  'proyeccion-investigativa-uniremington-2024',
+  'simposio-de-investigaciones-uniremington',
+]);
+
 // Grupos REALES de cada área = los que aparecen como tarjeta (.grupo-card) en la página
 // del área. La fuente de verdad son esas tarjetas (idénticas a producción), para que el
 // sidebar de "hermanas" NO liste páginas del mismo nivel que no son grupos (p.ej. "Cidepro",
@@ -613,8 +626,9 @@ function contentContext(item){
       return ps.length === segs.length && '/' + ps.slice(0, -1).join('/') + '/' === parent;
     }).map(p => { const u = normPath(p.url); return { label: labelForPath(u), href: u, current: u === path }; })
       .sort((a,b) => a.label.localeCompare(b.label, 'es'));
-    // En /investigacion/, no mezclar áreas de facultad con páginas administrativas.
-    if (parent === '/investigacion/') siblings = siblings.filter(s => !INV_AREAS[areaSlug(s.href)]);
+    // En /investigacion/, no mezclar áreas de facultad ni páginas de eventos/años
+    // puntuales ya vencidos con las secciones administrativas permanentes.
+    if (parent === '/investigacion/') siblings = siblings.filter(s => !INV_AREAS[areaSlug(s.href)] && !INV_NOISE.has(areaSlug(s.href)));
     // Dentro de un área, listar SÓLO los grupos reales (las tarjetas del área).
     if (invAreaGroups[parent]) siblings = siblings.filter(s => invAreaGroups[parent].has(normPath(s.href)));
   }

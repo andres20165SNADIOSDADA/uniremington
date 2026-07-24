@@ -461,10 +461,15 @@ def _transform_semilleros_cifras(body):
 
     # con <details> nativo el estado abierto lo da [open]; solo faltan el giro del icono
     # y el acento lateral de color que antes disparaba la clase .activo puesta por JS.
+    # El propio CSS del micrositio trae ".acordeon-contenido{display:none}" INCONDICIONAL
+    # (esperaba que el JS eliminado pusiera "style=display:block" al abrir) -> sin JS,
+    # esa regla gana siempre sobre el "mostrar hijos si [open]" nativo de <details>, y el
+    # contenido queda oculto aunque el acordeón esté abierto. Se fuerza a visible con [open].
     return ('<style data-ms>summary.acordeon-boton{list-style:none;cursor:pointer}'
             'summary.acordeon-boton::-webkit-details-marker{display:none}'
             'details.acordeon-item[open]>summary.acordeon-boton .acordeon-icono{transform:rotate(-135deg)}'
-            'details.acordeon-item[open]::before{opacity:1}</style>') + body
+            'details.acordeon-item[open]::before{opacity:1}'
+            'details.acordeon-item[open]>.acordeon-contenido{display:block!important}</style>') + body
 
 def _extract_micrositio(dec):
     """De un HTML de micrositio (documento completo o fragmento) devuelve un bloque
