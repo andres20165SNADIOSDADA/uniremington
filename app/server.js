@@ -787,7 +787,11 @@ function facultyContent(page, deanPhoto){
   // 1) Quitar la sección "Oferta académica": es un grid de tarjetas WPBakery que DUPLICA la
   //    lista de programas data-driven de más abajo. Se corta desde su encabezado (que suele venir
   //    fusionado con "Conoce más sobre nuestra Facultad") hasta el próximo <hN> o el final.
-  html = html.replace(/<(h[1-4])\b[^>]*>[^<]*Oferta acad[ée]mica[\s\S]*?(?=<h[1-4]\b|$)/i, '');
+  //    Si a esta sección le sigue el grid de "Noticias Uniremington" (vc_basic_grid) SIN un
+  //    encabezado propio delante (pasa en varias facultades), el corte no debe seguir de largo
+  //    hasta el <h3> INTERNO de la primera tarjeta de noticia -eso se traga su envoltorio
+  //    .news/.post-media, dejando la imagen "suelta"-: por eso también se detiene ahí.
+  html = html.replace(/<(h[1-4])\b[^>]*>[^<]*Oferta acad[ée]mica[\s\S]*?(?=<h[1-4]\b|<div class="news"|$)/i, '');
   // 2) Quitar iframes rotos SIN src (los de YouTube sí traen src y su inner es vacío: no tocarlos).
   html = html.replace(/<iframe\b(?![^>]*\bsrc=)[^>]*>\s*<\/iframe>/gi, '');
   // 3) Extraer los botones a la barra lateral de recursos; descartar los genéricos del grid
