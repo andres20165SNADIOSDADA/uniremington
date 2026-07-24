@@ -338,6 +338,75 @@ function sedeJsonld(slug, item){
   if (c.email) node.email = c.email;
   return node;
 }
+// "Dirección y canales de contacto" de una SEDE: el backup trae un formato distinto por cada
+// sede (párrafos sueltos con <strong>, o cajas .callout, con o sin redes sociales, a veces con
+// un contacto/asesor extra tipo Sufi o Consultorio Jurídico). Se parsea a una estructura común
+// (ubicación/teléfonos/correo/extras/redes) y se renderiza SIEMPRE con la misma tarjeta, para
+// que las 19 sedes se vean iguales sin importar cómo haya quedado el HTML original.
+const _SC_PHONE_RE = /^(pbx|tel[eé]fonos?|cel(ular)?|whatsapp|admisiones)\b/i;
+const _SC_CORREO_RE = /^correos?\b/i;
+const _SC_GENERIC_RE = /^(correos?|horario|tel[eé]fonos?|pbx|cel(ular)?|whatsapp|admisiones|contacto)s?:?$/i;
+function renderSedeContact(seg, sedeCity) {
+  const social = [...seg.matchAll(/<a\s+href="(https?:\/\/[^"]+)"[^>]*>\s*(?:<br\s*\/?>)?\s*<img[^>]+alt="([^"]+)"/gi)]
+    .map(m => ({ url: m[1].trim(), label: m[2] }));
+  seg = seg.replace(/<strong>\s*Canales de redes sociales\s*<\/strong>[\s\S]*$/i, '');
+
+  const groups = [];
+  for (const part of seg.split(/(?=<strong>)/i)) {
+    const lm = part.match(/^<strong>([\s\S]*?)<\/strong>/i);
+    const label = lm ? _strip(lm[1]) : '';
+    const body = _strip((lm ? part.slice(lm[0].length) : part).replace(/^\s*<\/div>/, ''));
+    if (label || body) groups.push({ label, body });
+  }
+
+  let phase = 'address';
+  const ubicLines = [], telLines = []; let correo = null;
+  const extras = []; let curExtra = null;
+  for (const { label, body } of groups) {
+    if (phase === 'address' && !_SC_PHONE_RE.test(label) && !_SC_CORREO_RE.test(label)) {
+      if (body) ubicLines.push(body);
+      continue;
+    }
+    if (_SC_PHONE_RE.test(label) && phase !== 'extra') {
+      phase = 'phone';
+      if (body) {
+        let sub = label.replace(/:$/, '').trim();
+        sub = /^(pbx|tel[eé]fonos?)$/i.test(sub) ? '' : sub.charAt(0).toUpperCase() + sub.slice(1);
+        telLines.push(sub ? `${sub}: ${body}` : body);
+      }
+      continue;
+    }
+    if (_SC_CORREO_RE.test(label) && phase !== 'extra' && !correo) {
+      phase = 'correo';
+      const email = (body.match(/[\w.+-]+@[\w.-]+\.[a-z]{2,}/i) || [])[0] || '';
+      correo = { email, text: email || body };
+      continue;
+    }
+    phase = 'extra';
+    const isGeneric = _SC_GENERIC_RE.test(label);
+    if (!isGeneric || !curExtra) {
+      curExtra = { k: isGeneric ? (label.replace(/:$/, '') || 'Info') : label, lines: [] };
+      extras.push(curExtra);
+      if (body) curExtra.lines.push(body);
+    } else if (body) curExtra.lines.push(`${label} ${body}`.trim());
+  }
+
+  const card = (k, bodyHtml) => `<div class="sc-card"><span class="sc-k">${k}</span>${bodyHtml}</div>`;
+  const cards = [];
+  if (ubicLines.length) cards.push(card('Ubicación', `<p>${ubicLines.join('<br>')}</p>`));
+  if (telLines.length) cards.push(card('Teléfonos', `<p>${telLines.join('<br>')}</p>`));
+  if (correo) cards.push(card('Correo', `<p>${correo.text}</p>` + (correo.email
+    ? `<a class="btn btn-oro" href="mailto:${correo.email}" target="_blank" rel="noopener">Escribir ›</a>` : '')));
+  extras.forEach(e => cards.push(card(e.k, `<p>${e.lines.join('<br>')}</p>`)));
+
+  const SOC_GLYPH = { Facebook: 'f', Instagram: '◎', WhatsApp: '☎', LinkedIn: 'in', YouTube: '▶', TikTok: '♪', X: 'X', Twitter: 'X' };
+  const socialHtml = social.length
+    ? `<div class="sede-social">${social.map(s =>
+        `<a href="${s.url}" target="_blank" rel="noopener" aria-label="${s.label}">${SOC_GLYPH[s.label] || s.label[0]}</a>`).join('')}</div>`
+    : '';
+
+  return `<div class="sede-contact">${cards.join('')}</div>${socialHtml}`;
+}
 // Limpieza del contenido de una SEDE (mismo enfoque que facultyContent): quita el encabezado
 // huérfano del formulario que se perdió en la extracción y convierte la foto+leyenda del
 // director/a en una tarjeta con estilo.
@@ -395,6 +464,20 @@ function sedeContent(html, sedeSlug) {
       });
       return `<div class="hb-grid sede-ofertas">${out}</div>`;
     });
+  // 4b) "Dirección y canales de contacto" (o "¿Cómo llegar a…?", según la sede): se localiza
+  //     por el último encabezado antes del mapa (el texto del título varía) y se reemplaza por
+  //     la tarjeta unificada, sin importar qué formato traía el HTML original.
+  {
+    const mi = html.search(/<div class="map-embed"/i);
+    if (mi >= 0) {
+      const heads = [...html.slice(0, mi).matchAll(/<h[1-4]\b[^>]*>[\s\S]*?<\/h[1-4]>/gi)];
+      if (heads.length) {
+        const last = heads[heads.length - 1];
+        const segStart = last.index + last[0].length;
+        html = html.slice(0, segStart) + renderSedeContact(html.slice(segStart, mi), sedeCity) + html.slice(mi);
+      }
+    }
+  }
   // 5) Contacto duplicado: algunas sedes traen, tras el mapa, un segundo bloque de callouts
   //    (dirección/teléfono/correo) que repite información YA mostrada en "Dirección y canales
   //    de contacto" más arriba (quedó de una edición vieja del contenido, nunca se borró la
