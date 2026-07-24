@@ -395,6 +395,28 @@ function sedeContent(html, sedeSlug) {
       });
       return `<div class="hb-grid sede-ofertas">${out}</div>`;
     });
+  // 5) Contacto duplicado: algunas sedes traen, tras el mapa, un segundo bloque de callouts
+  //    (dirección/teléfono/correo) que repite información YA mostrada en "Dirección y canales
+  //    de contacto" más arriba (quedó de una edición vieja del contenido, nunca se borró la
+  //    versión anterior). Se descarta cada callout posterior al mapa cuyo correo o un número de
+  //    teléfono largo ya aparecía antes en la página; el resto (info genuinamente nueva) se deja.
+  const mapIdx = html.search(/<div class="map-embed"/i);
+  if (mapIdx >= 0) {
+    const mapEnd = html.indexOf('</div>', html.indexOf('</iframe>', mapIdx)) + 6;
+    const before = html.slice(0, mapEnd);
+    const after = html.slice(mapEnd);
+    const beforeTokens = new Set([
+      ...(before.match(/[\w.+-]+@[\w.-]+/gi) || []).map(s => s.toLowerCase()),
+      ...(before.match(/\d[\d\s()+-]{6,}\d/g) || []).map(s => s.replace(/\D/g, '')),
+    ]);
+    const cleanedAfter = after.replace(/<div class="callout">([\s\S]*?)<\/div>/gi, (m, inner) => {
+      const emails = (inner.match(/[\w.+-]+@[\w.-]+/gi) || []).map(s => s.toLowerCase());
+      const nums = (inner.match(/\d[\d\s()+-]{6,}\d/g) || []).map(s => s.replace(/\D/g, ''));
+      const isDup = [...emails, ...nums].some(t => beforeTokens.has(t));
+      return isDup ? '' : m;
+    });
+    html = before + cleanedAfter;
+  }
   return html;
 }
 // GEO: preguntas frecuentes del home (fuente única para el HTML visible y el schema FAQPage).
