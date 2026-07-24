@@ -14,7 +14,6 @@
   <h1><%= facNombre %></h1>
   <div class="fac-hero-meta">
     <% if (total){ %><span><strong><%= total %></strong> integrantes</span><% } %>
-    <% if (facUrl){ %><span><a href="<%= facUrl %>" style="color:#fff;text-decoration:underline">← Volver a <%= typeof backLabel !== 'undefined' ? backLabel : 'la facultad' %></a></span><% } %>
   </div>
 </div></section>
 
@@ -49,6 +48,7 @@
   <% } else { %>
     <div class="article eq-raw"><%- rawHtml %></div>
   <% } %>
+  <% if (facUrl){ %><a class="dep-back" href="<%= facUrl %>"><span class="msi">arrow_back</span> Volver a <%= typeof backLabel !== 'undefined' ? backLabel : 'la facultad' %></a><% } %>
 </div>
 </main>
 
