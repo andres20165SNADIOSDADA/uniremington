@@ -982,6 +982,18 @@
     }
     .act-media { position: relative; display: block; overflow: hidden; }
     .act-media img { transition: transform .55s ease; }
+    /* Overlay azul institucional leve para reforzar la identidad de marca */
+    .act-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: linear-gradient(180deg, rgba(0, 69, 124, 0.10) 0%, rgba(0, 69, 124, 0.22) 100%);
+      pointer-events: none;
+      transition: opacity .3s ease;
+    }
+    .act-principal:hover .act-media::after,
+    .act-card:hover .act-media::after { opacity: .6; }
 
     /* --- Destacada horizontal --- */
     .act-principal {
