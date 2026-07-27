@@ -20,7 +20,8 @@
 .chat-widget.open .chat-panel{opacity:1;visibility:visible;transform:none;transition:opacity .18s ease,transform .18s ease}
 
 .chat-head{display:flex;align-items:center;gap:10px;padding:14px 14px;background:#00457c;color:#fff;flex:none}
-.chat-head-ic{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.16);display:grid;place-items:center;flex:none}
+.chat-head-ic{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.16);display:grid;place-items:center;flex:none;overflow:hidden}
+.chat-head-ic img{width:100%;height:100%;object-fit:cover;object-position:center 32%}
 .chat-head-tx{display:flex;flex-direction:column;line-height:1.25;flex:1;min-width:0}
 .chat-head-tx strong{font-size:.94rem}
 .chat-head-tx span{font-size:.76rem;color:#bcd4ea}
@@ -67,7 +68,7 @@
 
   <div class="chat-panel" id="chatPanel" role="dialog" aria-label="Remi, asistente virtual de Uniremington" inert>
     <header class="chat-head">
-      <span class="chat-head-ic"><span class="msi" aria-hidden="true">school</span></span>
+      <span class="chat-head-ic"><img src="/img/remi-logo.png" alt="" aria-hidden="true"></span>
       <div class="chat-head-tx">
         <strong>Remi</strong>
         <span>Asistente virtual · Uniremington</span>
