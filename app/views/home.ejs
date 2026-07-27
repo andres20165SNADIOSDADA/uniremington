@@ -958,148 +958,150 @@
       display: block;
     }
 
+    /* Estructura: destacada horizontal arriba + fila de tarjetas debajo */
     .act-grid {
-      display: grid;
-      grid-template-columns: 2fr 2fr;
-      gap: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
     }
 
-    .act-principal {
-      position: relative;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      transition: box-shadow 0.3s;
-    }
-
-    .act-principal:hover {
-      box-shadow: 0 4px 15px rgba(227, 7, 21, 0.35);
-    }
-
-    .act-principal .act-media { display: block; height: 100%; }
-    .act-principal img {
-      width: 100%;
-      height: 100%;
-      min-height: 300px;
-      object-fit: cover;
-      transition: transform .5s ease;
-    }
-    .act-principal:hover img { transform: scale(1.04); }
-
-    .act-principal .contenido {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      padding: 24px;
-      color: #fff;
-      background: linear-gradient(to top, rgba(0, 20, 40, 0.92) 0%, rgba(0, 20, 40, 0.72) 45%, transparent 100%);
-      width: 100%;
-    }
-
+    /* Etiqueta flotante sobre la imagen (compartida por destacada y tarjetas) */
     .act-tag {
+      position: absolute;
+      top: 12px; left: 12px;
+      z-index: 2;
       background: var(--accent);
       color: #fff;
-      padding: 3px 10px;
-      border-radius: 12px;
-      font-size: 0.75rem;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.72rem;
       font-weight: 700;
-      letter-spacing: .02em;
+      letter-spacing: .03em;
       text-transform: uppercase;
-      display: inline-block;
-      margin-bottom: 10px;
+      box-shadow: 0 4px 12px rgba(227, 7, 21, 0.35);
     }
+    .act-media { position: relative; display: block; overflow: hidden; }
+    .act-media img { transition: transform .55s ease; }
 
+    /* --- Destacada horizontal --- */
+    .act-principal {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      background: #fff;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 24px 50px -22px rgba(0, 40, 80, 0.45), 0 6px 16px -8px rgba(0, 40, 80, 0.2);
+      transition: box-shadow 0.3s, transform 0.3s;
+    }
+    .act-principal:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 32px 60px -24px rgba(0, 40, 80, 0.5), 0 8px 20px -8px rgba(0, 40, 80, 0.24);
+    }
+    .act-principal .act-media { height: 100%; }
+    .act-principal .act-media img {
+      width: 100%;
+      height: 100%;
+      min-height: 260px;
+      max-height: 340px;
+      object-fit: cover;
+    }
+    .act-principal:hover .act-media img { transform: scale(1.05); }
+
+    .act-principal .contenido {
+      padding: 30px 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
     .act-principal h3 {
-      margin: 0 0 8px;
-      font-size: 1.4rem;
-      line-height: 1.25;
+      margin: 0 0 12px;
+      font-size: 1.5rem;
+      line-height: 1.22;
+      color: #002b5c;
       text-wrap: balance;
     }
     .act-principal h3 a,
     .act-card h4 a { color: inherit; text-decoration: none; }
-    .act-principal h3 a:hover { text-decoration: underline; }
+    .act-principal h3 a:hover,
+    .act-card h4 a:hover { color: var(--accent); }
 
     .act-resumen {
       margin: 0;
-      font-size: 0.92rem;
-      line-height: 1.5;
+      color: #54606e;
+      line-height: 1.55;
       display: -webkit-box;
-      -webkit-line-clamp: 2;
-      line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
-    .act-principal .act-resumen { color: rgba(255, 255, 255, 0.9); }
+    .act-principal .act-resumen {
+      font-size: 1rem;
+      -webkit-line-clamp: 4;
+      line-clamp: 4;
+    }
 
     .act-foot {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      margin-top: 14px;
-      font-size: 0.82rem;
+      gap: 16px;
+      margin-top: 20px;
+      font-size: 0.86rem;
+      flex-wrap: wrap;
     }
-    .act-foot time { color: rgba(255, 255, 255, 0.75); }
+    .act-foot time { color: #8a97a6; font-weight: 600; }
     .act-leer {
-      color: #fff;
+      color: var(--accent);
       font-weight: 700;
       text-decoration: none;
       white-space: nowrap;
     }
     .act-leer:hover { text-decoration: underline; }
 
+    /* --- Fila de tarjetas --- */
     .act-cards {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
     }
 
     .act-card {
       background: #fff;
-      border-radius: 12px;
+      border-radius: 16px;
       overflow: hidden;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 16px 34px -18px rgba(0, 40, 80, 0.42), 0 4px 10px -5px rgba(0, 40, 80, 0.18);
       display: flex;
       flex-direction: column;
       transition: box-shadow 0.3s, transform 0.3s;
     }
-
     .act-card:hover {
-      box-shadow: 0 10px 24px -8px rgba(0, 40, 80, 0.28);
-      transform: translateY(-3px);
+      transform: translateY(-5px);
+      box-shadow: 0 26px 46px -18px rgba(0, 40, 80, 0.5), 0 8px 16px -6px rgba(0, 40, 80, 0.22);
     }
-
-    .act-card .act-media { display: block; overflow: hidden; }
-    .act-card img {
+    .act-card .act-media img {
       width: 100%;
-      height: 140px;
+      height: 150px;
       object-fit: cover;
-      transition: transform .5s ease;
     }
-    .act-card:hover img { transform: scale(1.05); }
+    .act-card:hover .act-media img { transform: scale(1.06); }
 
     .act-card .info {
-      padding: 14px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
       flex: 1;
     }
-
     .act-card h4 {
-      margin: 0 0 6px;
+      margin: 0 0 8px;
       font-size: 0.98rem;
       font-weight: 700;
-      line-height: 1.3;
+      line-height: 1.32;
       color: #002b5c;
     }
-
     .act-card .act-resumen {
-      color: #54606e;
+      font-size: 0.86rem;
       -webkit-line-clamp: 3;
       line-clamp: 3;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
-
     .act-card time {
       margin-top: auto;
       font-size: 0.78rem;
@@ -1109,7 +1111,7 @@
 
     .act-more {
       text-align: center;
-      margin-top: 28px;
+      margin-top: 30px;
     }
     .act-more-link {
       display: inline-block;
@@ -1119,11 +1121,23 @@
       border-radius: 10px;
       font-weight: 700;
       text-decoration: none;
-      transition: background .25s ease, color .25s ease;
+      transition: background .25s ease, color .25s ease, box-shadow .25s ease;
     }
     .act-more-link:hover {
       background: var(--blue, #00457c);
       color: #fff;
+      box-shadow: 0 12px 24px -10px rgba(0, 40, 80, 0.5);
+    }
+
+    @media (max-width: 1024px) {
+      .act-cards { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 760px) {
+      .act-principal { grid-template-columns: 1fr; }
+      .act-principal .act-media img { max-height: 240px; }
+    }
+    @media (max-width: 560px) {
+      .act-cards { grid-template-columns: 1fr; }
     }
      #canal {
       text-align: center;
@@ -1174,15 +1188,6 @@
 
     #canal .btn-canal:hover {
       background: var(--accent-dark);
-    }
-    @media(max-width:900px) {
-      .act-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .act-cards {
-        grid-template-columns: 1fr;
-      }
     }
     /* ============================= */
 /*      RESPONSIVIDAD GENERAL    */
@@ -1819,13 +1824,11 @@ html { scroll-behavior: smooth; }
         <div class="act-tabs">
           <button class="active" data-tab="noticias">Noticias</button>
           <button data-tab="eventos">Eventos</button>
-          <button data-tab="blog">Blog</button>
           <button data-tab="youtube">YouTube</button>
         </div>
 
         <div id="noticias" class="act-tab-content active"></div>
         <div id="eventos" class="act-tab-content"></div>
-        <div id="blog" class="act-tab-content"></div>
         <div id="youtube" class="act-tab-content">
         <!-- 🔴 SECCIÓN CANAL YOUTUBE -->
   <section id="canal" class="section canal">
@@ -2041,8 +2044,8 @@ html { scroll-behavior: smooth; }
 
   <!-- JS Actualidad Uniremingtong -->
   <script>
-  const ACT_TABS = ["noticias", "eventos", "blog"];
-  const ACT_MORE = { noticias: "/noticias", eventos: "/eventos", blog: "/noticias" };
+  const ACT_TABS = ["noticias", "eventos"];
+  const ACT_MORE = { noticias: "/noticias", eventos: "/eventos" };
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   async function loadTab(id) {
     try {
@@ -2053,12 +2056,16 @@ html { scroll-behavior: smooth; }
       const principal = posts[0];
       const secundarios = posts.slice(1, 5);
       const moreUrl = ACT_MORE[id] || "/noticias";
+      const media = function(p, eager){ return (
+        '<a class="act-media" href="' + esc(p.url) + '">' +
+          '<img src="' + esc(p.img) + '" alt="' + esc(p.title) + '"' + (eager ? '' : ' loading="lazy"') + '>' +
+          '<span class="act-tag">' + esc(p.tag) + '</span>' +
+        '</a>'); };
       container.innerHTML =
         '<div class="act-grid">' +
           '<article class="act-principal">' +
-            '<a class="act-media" href="' + esc(principal.url) + '"><img src="' + esc(principal.img) + '" alt="' + esc(principal.title) + '" loading="lazy"></a>' +
+            media(principal, false) +
             '<div class="contenido">' +
-              '<span class="act-tag">' + esc(principal.tag) + '</span>' +
               '<h3><a href="' + esc(principal.url) + '">' + esc(principal.title) + '</a></h3>' +
               (principal.resumen ? '<p class="act-resumen">' + esc(principal.resumen) + '</p>' : '') +
               '<div class="act-foot">' +
@@ -2070,9 +2077,8 @@ html { scroll-behavior: smooth; }
           '<div class="act-cards">' +
             secundarios.map(function(p){ return (
               '<article class="act-card">' +
-                '<a class="act-media" href="' + esc(p.url) + '"><img src="' + esc(p.img) + '" alt="' + esc(p.title) + '" loading="lazy"></a>' +
+                media(p, false) +
                 '<div class="info">' +
-                  '<span class="act-tag">' + esc(p.tag) + '</span>' +
                   '<h4><a href="' + esc(p.url) + '">' + esc(p.title) + '</a></h4>' +
                   (p.resumen ? '<p class="act-resumen">' + esc(p.resumen) + '</p>' : '') +
                   (p.iso ? '<time datetime="' + esc(p.iso) + '">' + esc(p.date) + '</time>' : '') +
