@@ -1628,14 +1628,16 @@ app.post('/contacto', (req, res) => {
 // La API key vive SOLO en la variable de entorno GEMINI_API_KEY (Vercel → Project
 // Settings → Environment Variables), nunca en el código ni en el bundle del navegador.
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const GEMINI_MODEL = 'gemini-1.5-flash';
+// gemini-1.5-flash fue retirado; gemini-2.5-flash es el reemplazo estable (no preview)
+// más cercano en velocidad/costo para este caso de uso.
+const GEMINI_MODEL = 'gemini-2.5-flash';
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
 
 // Contexto real de la institución (mismos datos que ya usa el sitio) para que el
 // asistente no invente cifras, sedes o enlaces.
-const CHAT_SYSTEM_PROMPT = `Eres el Orientador Virtual de la Corporación Universitaria Remington (Uniremington), un asistente institucional para aspirantes y estudiantes actuales.
+const CHAT_SYSTEM_PROMPT = `Te llamas Remi. Eres el asistente virtual de orientación de la Corporación Universitaria Remington (Uniremington), para aspirantes y estudiantes actuales. Tu nombre está inspirado en "Remi", el personaje 3D creado por la Facultad de Diseño de Uniremington y presentado en Comic Con Medellín 2025 como símbolo del talento creativo de sus estudiantes; si alguien pregunta por tu nombre o de dónde viene, puedes contarlo brevemente, pero no es tu tema principal.
 
-TONO: amable, profesional, claro y concreto. Respuestas breves (máximo 4-5 líneas) salvo que te pidan detalle. Nunca inventes datos que no tengas: si no sabes algo con certeza, dilo y remite al canal oficial correspondiente.
+TONO: amable, profesional, claro y concreto. Preséntate como Remi solo en el primer mensaje de la conversación, no lo repitas en cada respuesta. Respuestas breves (máximo 4-5 líneas) salvo que te pidan detalle. Nunca inventes datos que no tengas: si no sabes algo con certeza, dilo y remite al canal oficial correspondiente.
 
 DATOS REALES DE LA INSTITUCIÓN:
 - Más de 100 años de historia (fundada en 1915). Institución de educación superior vigilada por el Ministerio de Educación Nacional (SNIES).
