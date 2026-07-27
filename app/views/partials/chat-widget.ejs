@@ -101,8 +101,22 @@
   const sendBtn = document.getElementById('chatSend');
 
   let history = [];
+  let chatLog = [];
   let sending = false;
   let opened = false;
+
+  // Persiste la conversación en sessionStorage: sobrevive a que el usuario navegue a
+  // otra página del sitio (o recargue) sin perder el historial, pero se limpia solo al
+  // cerrar la pestaña/navegador — igual que "durante la sesión" se especificó siempre.
+  const STORAGE_KEY = 'uniremington_chat_v1';
+  function persist(){
+    try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ log: chatLog, history })); }
+    catch (e) { /* almacenamiento no disponible (privado, cuota, etc.): el chat sigue funcionando en memoria */ }
+  }
+  function loadPersisted(){
+    try { return JSON.parse(sessionStorage.getItem(STORAGE_KEY) || 'null'); }
+    catch (e) { return null; }
+  }
 
   // Red de seguridad: el prompt le pide texto plano a Gemini, pero si igual se
   // le escapa algo de markdown, se limpia antes de mostrarlo (todo vía textContent,
@@ -139,13 +153,37 @@
     });
   }
 
-  function addMessage(role, text){
+  function renderOne(role, text){
     const row = document.createElement('div');
     row.className = 'chat-msg chat-msg-' + role;
     renderMessageContent(row, role === 'model' ? stripMarkdown(text) : text);
     body.appendChild(row);
-    body.scrollTop = body.scrollHeight;
   }
+
+  function addMessage(role, text){
+    chatLog.push({ role, text });
+    renderOne(role, text);
+    body.scrollTop = body.scrollHeight;
+    persist();
+  }
+
+  // Al cargar la página: si hay una conversación guardada de esta misma sesión del
+  // navegador, se restaura tal cual (mensajes + historial que se envía a la API);
+  // si no, se registra el saludo inicial (ya presente en el HTML) para que si el
+  // usuario sí escribe algo, quede guardado desde el primer mensaje.
+  (function restoreOrInit(){
+    const saved = loadPersisted();
+    if (saved && Array.isArray(saved.log) && saved.log.length) {
+      chatLog = saved.log;
+      history = Array.isArray(saved.history) ? saved.history : [];
+      body.innerHTML = '';
+      chatLog.forEach((m) => renderOne(m.role, m.text));
+      body.scrollTop = body.scrollHeight;
+    } else {
+      const saludo = body.querySelector('.chat-msg');
+      chatLog = saludo ? [{ role: 'model', text: saludo.textContent }] : [];
+    }
+  })();
 
   function setOpen(open){
     widget.classList.toggle('open', open);
