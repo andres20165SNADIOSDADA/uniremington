@@ -1632,11 +1632,69 @@ const GROQ_API_KEY = process.env.GROQ_API_KEY;
 const GROQ_MODEL = 'llama-3.3-70b-versatile';
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
+// Contexto amplio y siempre-actual para Remi, generado a partir de los mismos datos que
+// alimentan el resto del sitio (nunca queda desactualizado a mano, y no depende de que
+// alguien recuerde editar el prompt cuando cambie la oferta, las noticias o la agenda).
+function catalogoProgramasPorModalidad() {
+  const limpiar = (t) => t.replace(/\s*-?\s*(Virtual|Presencial|Distancia)\s*$/i, '').trim();
+  const modalidades = ['Virtual', 'Presencial', 'Distancia'];
+  const niveles = ['Tecnología', 'Pregrado', 'Posgrado'];
+  return modalidades.map((mod) => {
+    const items = programas.filter((p) => p.modalidad === mod);
+    if (!items.length) return '';
+    const bloques = niveles.map((niv) => {
+      const nombres = items.filter((p) => p.nivel === niv).map((p) => {
+        const nombre = limpiar(p.title);
+        const dur = p.ficha?.duracion ? ` [${p.ficha.duracion}]` : '';
+        // La sede solo aporta información real en modalidad Presencial (Virtual/Distancia
+        // se ofrecen prácticamente en todas las sedes por igual, listarla ahí es ruido).
+        const sedes = mod === 'Presencial' && p.sedes?.length ? ` [sede(s): ${p.sedes.join(', ')}]` : '';
+        return `${nombre}${dur}${sedes}`;
+      });
+      return nombres.length ? `  ${niv}: ${nombres.join('; ')}` : '';
+    }).filter(Boolean).join('\n');
+    return `Modalidad ${mod} (${items.length} programas):\n${bloques}`;
+  }).filter(Boolean).join('\n');
+}
+
+function facultadesYDecanos() {
+  return Object.keys(FAC).map((slug) => {
+    const nombre = facultyNames[slug] || slug.replace(/-/g, ' ');
+    const decano = DECANOS[slug];
+    return `- ${nombre}${decano ? ' — decano/a: ' + decano.nombre : ''}`;
+  }).join('\n');
+}
+
+function faqInstitucional() {
+  return HOME_FAQ.map(([q, a]) => `P: ${q}\nR: ${a}`).join('\n');
+}
+
+function noticiasRecientes(n = 6) {
+  return postsByDate.slice(0, n).map((p) => `- "${p.title}" (${fechaCorta(p.date)}): ${SITE}${p.url}`).join('\n');
+}
+
+function proximosEventos(n = 6) {
+  const ahora = Date.now();
+  let prox = eventsSorted.filter((e) => (parseDate(e.date) || 0) >= ahora);
+  if (prox.length < n) prox = eventsSorted;
+  return prox.slice(0, n).map((e) => `- "${e.title}" (${fechaCorta(e.date)}): ${SITE}${e.url}`).join('\n');
+}
+
+// Mapa de secciones principales del sitio (menú real, 2 niveles) para que Remi sepa qué
+// otros temas/páginas existen y pueda orientar hacia la sección correcta aunque no tenga
+// el dato exacto (bienestar, investigación, egresados, biblioteca, etc.).
+function mapaDelSitio() {
+  return menuPrincipal.map((top) => {
+    const hijos = (top.children || []).map((c) => c.label).join(', ');
+    return `- ${top.label}${hijos ? ': ' + hijos : ''}`;
+  }).join('\n');
+}
+
 // Contexto real de la institución (mismos datos que ya usa el sitio) para que el
 // asistente no invente cifras, sedes o enlaces.
 const CHAT_SYSTEM_PROMPT = `Te llamas Remi. Eres el asistente virtual de orientación de la Corporación Universitaria Remington (Uniremington), para aspirantes y estudiantes actuales. Tu nombre está inspirado en "Remi", el personaje 3D creado por la Facultad de Diseño de Uniremington y presentado en Comic Con Medellín 2025 como símbolo del talento creativo de sus estudiantes; si alguien pregunta por tu nombre o de dónde viene, puedes contarlo brevemente, pero no es tu tema principal.
 
-TONO: amable, profesional, claro y concreto. Preséntate como Remi solo en el primer mensaje de la conversación, no lo repitas en cada respuesta. Respuestas breves (máximo 4-5 líneas) salvo que te pidan detalle, pero SIEMPRE termina la idea que empezaste: nunca dejes una frase o una lista a medias. Si la respuesta requiere una lista larga (por ejemplo, varios programas), resúmela en una sola frase corta en vez de enumerar todo. Nunca inventes datos que no tengas: si no sabes algo con certeza, dilo y remite al canal oficial correspondiente.
+TONO: amable, profesional, claro y concreto. Preséntate como Remi solo en el primer mensaje de la conversación, no lo repitas en cada respuesta. Para preguntas simples, respuestas breves (4-5 líneas). Pero si te piden explícitamente una lista, un listado o "cuáles son" los programas de algo, SÍ enumera los ítems reales uno por uno (con el formato de guiones de la sección FORMATO) en vez de resumir o remitir solo al enlace del catálogo — el enlace es un complemento, no un reemplazo de la respuesta. SIEMPRE termina la idea que empezaste: nunca dejes una frase o una lista a medias. Nunca inventes datos que no tengas: si no sabes algo con certeza, dilo y remite al canal oficial correspondiente.
 
 FORMATO: responde siempre en texto plano, sin markdown (nada de **negritas**, títulos con #, ni tablas). Si necesitas listar varias cosas, usa un guion simple "-" al inicio de cada línea, nunca asteriscos.
 
@@ -1644,12 +1702,29 @@ DATOS REALES DE LA INSTITUCIÓN:
 - Más de 100 años de historia (fundada en 1915). Institución de educación superior vigilada por el Ministerio de Educación Nacional (SNIES).
 - 19 sedes en Colombia: Medellín, Rionegro, Apartadó, Caucasia, Armenia, Bucaramanga, Cali, Palmira, Tuluá, Cúcuta, Ibagué, Ipiales, Pasto, Manizales, Montería, Sahagún, Sincelejo, Pereira y Yopal.
 - Modalidades: presencial, a distancia y campus virtual.
-- 7 facultades: Ciencias de la Salud, Medicina Veterinaria, Ciencias Empresariales, Ciencias Jurídicas y Políticas, Ciencias Contables, Ingenierías y Diseño. Programas de pregrado (tecnologías y profesional universitario), especializaciones, maestrías y educación continua.
 - Inscripción/admisión de nuevo ingreso: ${INSCRIPCION_URL}
-- Catálogo completo de programas: ${SITE}/programas
+- Catálogo completo de programas (con fichas, SNIES, duración): ${SITE}/programas
 - Sedes y cobertura: ${SITE}/donde-estamos/
 - Noticias y agenda de eventos: ${SITE}/noticias y ${SITE}/eventos
 - WhatsApp institucional: +${WHATSAPP}
+
+FACULTADES Y DECANOS/AS REALES:
+${facultadesYDecanos()}
+
+CATÁLOGO REAL DE PROGRAMAS POR MODALIDAD Y NIVEL, con duración entre corchetes y, en modalidad Presencial, la(s) sede(s) reales donde se ofrece (usa estos nombres tal cual cuando te pidan listar programas; el enlace del catálogo es un complemento, no un reemplazo de la respuesta):
+${catalogoProgramasPorModalidad()}
+
+PREGUNTAS FRECUENTES YA RESUELTAS (reutiliza esta redacción cuando aplique):
+${faqInstitucional()}
+
+NOTICIAS RECIENTES (usa esto si preguntan por novedades, actualidad o algo que "salió" recientemente):
+${noticiasRecientes()}
+
+PRÓXIMOS EVENTOS DE LA AGENDA:
+${proximosEventos()}
+
+MAPA DE SECCIONES DEL SITIO (para orientar hacia la página correcta incluso si no tienes el detalle exacto):
+${mapaDelSitio()}
 
 TRÁMITES CONFIDENCIALES O QUE REQUIEREN AUTENTICACIÓN (notas, certificados, estado de matrícula, recibos de pago, PQRS): NUNCA intentes resolverlos ni pidas datos personales/contraseñas. Indica siempre el canal oficial:
 - Notas, recibos y trámites académicos → Portal Académico: https://class.uniremington.edu.co/academico/
