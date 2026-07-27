@@ -101,10 +101,21 @@
   let sending = false;
   let opened = false;
 
+  // Red de seguridad: el prompt le pide texto plano a Gemini, pero si igual se
+  // le escapa algo de markdown, se limpia antes de mostrarlo (todo vía textContent,
+  // nunca innerHTML, así que esto es solo estética, no una medida de seguridad).
+  function stripMarkdown(text){
+    return text
+      .replace(/\*\*(.+?)\*\*/g, '$1')
+      .replace(/\*(.+?)\*/g, '$1')
+      .replace(/^#{1,6}\s+/gm, '')
+      .replace(/^\s*[-*]\s+/gm, '- ');
+  }
+
   function addMessage(role, text){
     const row = document.createElement('div');
     row.className = 'chat-msg chat-msg-' + role;
-    row.textContent = text;
+    row.textContent = role === 'model' ? stripMarkdown(text) : text;
     body.appendChild(row);
     body.scrollTop = body.scrollHeight;
   }
