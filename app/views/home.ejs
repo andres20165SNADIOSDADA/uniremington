@@ -130,7 +130,7 @@
       grid-template-rows: auto auto auto;
       gap: 16px;
       grid-template-areas:
-        "headline stat-a  stat-b"
+        "headline media   media"
         "headline media   media"
         "link-a   link-b  link-c";
     }
@@ -248,34 +248,20 @@
     .bento-meta .stat-num { font-size: 1.15rem; font-weight: 800; color: #fff; line-height: 1; }
     .bento-meta .stat-label { font-size: .72rem; color: #a9bbcb; margin-top: 2px; }
 
-    /* Celdas: cifras destacadas */
-    .bento-stat {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 6px;
-      padding: 20px 20px;
-    }
-    .bs-ic {
-      width: 34px; height: 34px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.14);
-      display: grid; place-items: center;
-      margin-bottom: 2px;
-    }
-    .bs-ic .msi { font-size: 1.05rem; }
-    .bento-stat .stat-num { font-size: 1.9rem; font-weight: 800; color: #fff; line-height: 1; }
-    .bento-stat .stat-label { font-size: .8rem; color: #b9c8d6; margin-top: 2px; }
-    .bento-stat-a { grid-area: stat-a; }
-    .bento-stat-b { grid-area: stat-b; }
-
     /* Celda: media — mini-carrusel de ofertas de Mercadeo */
     .bento-media {
       grid-area: media;
-      position: relative;
-      display: block;
+      display: flex;
+      flex-direction: column;
       min-height: 150px;
       color: #fff;
+      overflow: hidden;
+    }
+    /* Viewport: solo la imagen: aquí vive el crossfade y el tilt 3D */
+    .bm-viewport {
+      position: relative;
+      flex: 1;
+      min-height: 0;
       overflow: hidden;
       transform: perspective(800px);
       transition: transform .15s ease;
@@ -314,12 +300,21 @@
       font-size: .92rem;
       line-height: 1.25;
     }
-    .bm-dots {
-      position: absolute;
-      right: 16px; bottom: 14px;
-      z-index: 3;
+    /* Barra de controles: fuera de la imagen, debajo del viewport */
+    .bm-controls {
       display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: rgba(4, 20, 36, .55);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .bm-dots {
+      display: flex;
+      align-items: center;
       gap: 7px;
+      flex: 1;
+      justify-content: center;
     }
     .bm-dot {
       width: 7px; height: 7px;
@@ -332,6 +327,22 @@
     }
     .bm-dot:hover { background: rgba(255, 255, 255, 0.6); }
     .bm-dot.is-active { width: 18px; background: #fff; }
+    .bm-arrow, .bm-play {
+      flex: none;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: background .25s ease, transform .2s ease;
+    }
+    .bm-arrow .msi, .bm-play .msi { font-size: 1.05rem; }
+    .bm-arrow:hover, .bm-play:hover { background: rgba(255, 255, 255, 0.2); }
+    .bm-arrow:active, .bm-play:active { transform: scale(.92); }
+    .bm-arrow:focus-visible, .bm-play:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
     /* Celdas: accesos rápidos */
     .bento-link {
@@ -1221,7 +1232,6 @@
     grid-template-columns: 1fr 1fr;
     grid-template-areas:
       "headline headline"
-      "stat-a   stat-b"
       "media    media"
       "link-a   link-b"
       "link-c   link-c";
@@ -1254,8 +1264,6 @@
     grid-template-columns: 1fr;
     grid-template-areas:
       "headline"
-      "stat-a"
-      "stat-b"
       "media"
       "link-a"
       "link-b"
@@ -1266,10 +1274,6 @@
 
   .hero h1 {
     font-size: 28px;
-  }
-
-  .bento-stat .stat-num {
-    font-size: 1.6rem;
   }
 
   .impacto-cifras {
@@ -1327,10 +1331,6 @@
 
   .bento-meta {
     gap: 18px;
-  }
-
-  .bento-stat .stat-num {
-    font-size: 1.5rem;
   }
 
   .impacto-cifras {
@@ -1512,9 +1512,7 @@ html { scroll-behavior: smooth; }
 /* ─── Hero bento — entrada escalonada de las celdas ──────── */
 .bento-cell { animation: bentoIn .7s cubic-bezier(.22,.61,.36,1) backwards; }
 .bento-headline { animation-delay: .05s; }
-.bento-stat-a   { animation-delay: .15s; }
-.bento-stat-b   { animation-delay: .22s; }
-.bento-media    { animation-delay: .3s; }
+.bento-media    { animation-delay: .18s; }
 .bento-link-a   { animation-delay: .38s; }
 .bento-link-b   { animation-delay: .44s; }
 .bento-link-c   { animation-delay: .5s; }
@@ -1570,7 +1568,6 @@ html { scroll-behavior: smooth; }
 
 /* ─── Stats del hero — hover bouncy ──────── */
 .stat-num { display: inline-block; will-change: transform; }
-.bento-stat:hover .stat-num { animation: counter-tick .5s ease-out; }
 
 /* ─── Estado activo del contador: BIEN NOTORIO ─── */
 .stat-num.counting,
@@ -1684,32 +1681,27 @@ html { scroll-behavior: smooth; }
           </div>
         </div>
 
-        <div class="bento-cell bento-stat bento-stat-a">
-          <span class="bs-ic"><span class="msi" aria-hidden="true">groups</span></span>
-          <div class="stat-num">+16.000</div>
-          <div class="stat-label">Estudiantes activos</div>
-        </div>
-
-        <div class="bento-cell bento-stat bento-stat-b">
-          <span class="bs-ic"><span class="msi" aria-hidden="true">location_on</span></span>
-          <div class="stat-num">19</div>
-          <div class="stat-label">Sedes en Colombia</div>
-        </div>
-
         <!-- Celda media: mini-carrusel de ofertas de Mercadeo -->
         <div class="bento-cell bento-media" id="bentoMedia">
-          <% campaigns.forEach(function(c, i){ %>
-          <div class="bm-slide<%= i === 0 ? ' is-active' : '' %>" data-slide="<%= i %>">
-            <a class="bm-linkfull" href="<%= c.href %>"<% if (c.external) { %> target="_blank" rel="noopener"<% } %> aria-label="<%= c.label %>">
-              <img src="<%= c.img %>" alt="<%= c.label %>" loading="<%= i === 0 ? 'eager' : 'lazy' %>" decoding="async">
-              <span class="bento-media-cap"><%= c.label %></span>
-            </a>
-          </div>
-          <% }) %>
-          <div class="bm-dots" role="tablist" aria-label="Seleccionar oferta destacada">
+          <div class="bm-viewport">
             <% campaigns.forEach(function(c, i){ %>
-            <button type="button" class="bm-dot<%= i === 0 ? ' is-active' : '' %>" data-slide="<%= i %>" aria-label="Ver oferta: <%= c.label %>"></button>
+            <div class="bm-slide<%= i === 0 ? ' is-active' : '' %>" data-slide="<%= i %>">
+              <a class="bm-linkfull" href="<%= c.href %>"<% if (c.external) { %> target="_blank" rel="noopener"<% } %> aria-label="<%= c.label %>">
+                <img src="<%= c.img %>" alt="<%= c.label %>" loading="<%= i === 0 ? 'eager' : 'lazy' %>" decoding="async">
+                <span class="bento-media-cap"><%= c.label %></span>
+              </a>
+            </div>
             <% }) %>
+          </div>
+          <div class="bm-controls">
+            <button type="button" class="bm-arrow bm-arrow-prev" aria-label="Oferta anterior"><span class="msi" aria-hidden="true">chevron_left</span></button>
+            <div class="bm-dots" role="tablist" aria-label="Seleccionar oferta destacada">
+              <% campaigns.forEach(function(c, i){ %>
+              <button type="button" class="bm-dot<%= i === 0 ? ' is-active' : '' %>" data-slide="<%= i %>" aria-label="Ver oferta: <%= c.label %>"></button>
+              <% }) %>
+            </div>
+            <button type="button" class="bm-play" aria-pressed="true" aria-label="Pausar avance automático"><span class="msi" aria-hidden="true">pause</span></button>
+            <button type="button" class="bm-arrow bm-arrow-next" aria-label="Oferta siguiente"><span class="msi" aria-hidden="true">chevron_right</span></button>
           </div>
         </div>
 
@@ -1998,20 +1990,21 @@ html { scroll-behavior: smooth; }
       });
 
       const media = hero.querySelector('.bento-media');
-      if (media) {
+      const viewport = media && media.querySelector('.bm-viewport');
+      if (media && viewport) {
         media.addEventListener('mousemove', (e) => {
           const r = media.getBoundingClientRect();
           const px = (e.clientX - r.left) / r.width - 0.5;
           const py = (e.clientY - r.top) / r.height - 0.5;
-          media.style.transform = 'perspective(800px) rotateX(' + (py * -6).toFixed(2) + 'deg) rotateY(' + (px * 8).toFixed(2) + 'deg)';
+          viewport.style.transform = 'perspective(800px) rotateX(' + (py * -6).toFixed(2) + 'deg) rotateY(' + (px * 8).toFixed(2) + 'deg)';
         });
-        media.addEventListener('mouseleave', () => { media.style.transform = ''; });
+        media.addEventListener('mouseleave', () => { viewport.style.transform = ''; });
       }
     })();
 
     // Celda de media: mini-carrusel de ofertas de Mercadeo (piezas gráficas reales).
-    // Autoplay corto, pausa al pasar el mouse/foco, y respeta prefers-reduced-motion
-    // (sin avance automático, solo navegación manual).
+    // Autoplay corto, pausa al pasar el mouse/foco o con el botón play/pausa,
+    // y respeta prefers-reduced-motion (sin avance automático; solo navegación manual).
     (function () {
       const media = document.getElementById('bentoMedia');
       if (!media) return;
@@ -2022,6 +2015,7 @@ html { scroll-behavior: smooth; }
       const DURATION = 4500;
       let current = 0;
       let timer = null;
+      let userPaused = prefersReduced;
 
       function goTo(index) {
         const next = (index + slides.length) % slides.length;
@@ -2037,18 +2031,40 @@ html { scroll-behavior: smooth; }
 
       dots.forEach((d, i) => d.addEventListener('click', () => { goTo(i); restart(); }));
 
+      const prevBtn = media.querySelector('.bm-arrow-prev');
+      const nextBtn = media.querySelector('.bm-arrow-next');
+      if (prevBtn) prevBtn.addEventListener('click', () => { goTo(current - 1); restart(); });
+      if (nextBtn) nextBtn.addEventListener('click', () => { goTo(current + 1); restart(); });
+
       function start() {
         stop();
-        if (prefersReduced) return;
+        if (userPaused) return;
         timer = setInterval(() => goTo(current + 1), DURATION);
       }
       function stop() { if (timer) { clearInterval(timer); timer = null; } }
       function restart() { start(); }
 
+      // Pausa temporal al pasar el mouse/foco (no cambia la preferencia del usuario)
       media.addEventListener('mouseenter', stop);
-      media.addEventListener('mouseleave', start);
+      media.addEventListener('mouseleave', () => { if (!userPaused) start(); });
       media.addEventListener('focusin', stop);
-      media.addEventListener('focusout', (e) => { if (!media.contains(e.relatedTarget)) start(); });
+      media.addEventListener('focusout', (e) => { if (!userPaused && !media.contains(e.relatedTarget)) start(); });
+
+      // Botón play/pausa: control explícito y persistente del avance automático
+      const playBtn = media.querySelector('.bm-play');
+      if (playBtn) {
+        const syncPlayBtn = () => {
+          playBtn.querySelector('.msi').textContent = userPaused ? 'play_arrow' : 'pause';
+          playBtn.setAttribute('aria-pressed', String(!userPaused));
+          playBtn.setAttribute('aria-label', userPaused ? 'Reanudar avance automático' : 'Pausar avance automático');
+        };
+        syncPlayBtn();
+        playBtn.addEventListener('click', () => {
+          userPaused = !userPaused;
+          syncPlayBtn();
+          if (userPaused) stop(); else start();
+        });
+      }
 
       start();
     })();
