@@ -1689,19 +1689,6 @@ function chatGlobalLimited() {
   return false;
 }
 
-// TEMPORAL: confirma los modelos reales disponibles para esta cuenta de Groq. Borrar tras el chequeo.
-app.get('/api/chat-debug-models', async (req, res) => {
-  try {
-    const r = await fetch('https://api.groq.com/openai/v1/models', {
-      headers: { Authorization: `Bearer ${GROQ_API_KEY}` },
-    });
-    const data = await r.json();
-    res.json({ status: r.status, models: (data.data || []).map((m) => m.id) });
-  } catch (e) {
-    res.status(500).json({ error: String(e) });
-  }
-});
-
 app.post('/api/chat', async (req, res) => {
   if (chatIpLimited(req.ip)) {
     return res.status(429).json({ reply: 'Estás enviando mensajes muy rápido. Espera un minuto y vuelve a intentar.' });
