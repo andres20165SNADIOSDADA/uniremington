@@ -1628,9 +1628,10 @@ app.post('/contacto', (req, res) => {
 // La API key vive SOLO en la variable de entorno GEMINI_API_KEY (Vercel → Project
 // Settings → Environment Variables), nunca en el código ni en el bundle del navegador.
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-// gemini-1.5-flash fue retirado; gemini-2.5-flash es el reemplazo estable (no preview)
-// más cercano en velocidad/costo para este caso de uso.
-const GEMINI_MODEL = 'gemini-2.5-flash';
+// gemini-1.5-flash fue retirado, y gemini-2.5-flash ya no está disponible para cuentas
+// nuevas. Se usa el alias "flash-latest" que Google mantiene apuntando siempre al
+// modelo flash vigente, para no volver a pisar esta piedra con futuras retiradas.
+const GEMINI_MODEL = 'gemini-flash-latest';
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
 
 // Contexto real de la institución (mismos datos que ya usa el sitio) para que el
