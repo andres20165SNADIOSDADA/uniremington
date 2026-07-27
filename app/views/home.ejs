@@ -976,19 +976,23 @@
       box-shadow: 0 4px 15px rgba(227, 7, 21, 0.35);
     }
 
+    .act-principal .act-media { display: block; height: 100%; }
     .act-principal img {
       width: 100%;
       height: 100%;
+      min-height: 300px;
       object-fit: cover;
+      transition: transform .5s ease;
     }
+    .act-principal:hover img { transform: scale(1.04); }
 
     .act-principal .contenido {
       position: absolute;
       bottom: 0;
       left: 0;
-      padding: 20px;
+      padding: 24px;
       color: #fff;
-      background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+      background: linear-gradient(to top, rgba(0, 20, 40, 0.92) 0%, rgba(0, 20, 40, 0.72) 45%, transparent 100%);
       width: 100%;
     }
 
@@ -997,16 +1001,52 @@
       color: #fff;
       padding: 3px 10px;
       border-radius: 12px;
-      font-size: 0.8rem;
-      font-weight: 600;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: .02em;
+      text-transform: uppercase;
       display: inline-block;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
     .act-principal h3 {
-      margin: 0;
-      font-size: 1.2rem;
+      margin: 0 0 8px;
+      font-size: 1.4rem;
+      line-height: 1.25;
+      text-wrap: balance;
     }
+    .act-principal h3 a,
+    .act-card h4 a { color: inherit; text-decoration: none; }
+    .act-principal h3 a:hover { text-decoration: underline; }
+
+    .act-resumen {
+      margin: 0;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .act-principal .act-resumen { color: rgba(255, 255, 255, 0.9); }
+
+    .act-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: 14px;
+      font-size: 0.82rem;
+    }
+    .act-foot time { color: rgba(255, 255, 255, 0.75); }
+    .act-leer {
+      color: #fff;
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .act-leer:hover { text-decoration: underline; }
 
     .act-cards {
       display: grid;
@@ -1021,33 +1061,69 @@
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
       display: flex;
       flex-direction: column;
-      transition: box-shadow 0.3s;
+      transition: box-shadow 0.3s, transform 0.3s;
     }
 
     .act-card:hover {
-      box-shadow: 0 4px 15px rgba(227, 7, 21, 0.35);
+      box-shadow: 0 10px 24px -8px rgba(0, 40, 80, 0.28);
+      transform: translateY(-3px);
     }
 
+    .act-card .act-media { display: block; overflow: hidden; }
     .act-card img {
       width: 100%;
-      height: 120px;
+      height: 140px;
       object-fit: cover;
+      transition: transform .5s ease;
     }
+    .act-card:hover img { transform: scale(1.05); }
 
     .act-card .info {
-      padding: 10px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
     }
 
     .act-card h4 {
-      margin: 5px 0;
-      font-size: 0.9rem;
+      margin: 0 0 6px;
+      font-size: 0.98rem;
+      font-weight: 700;
+      line-height: 1.3;
+      color: #002b5c;
+    }
+
+    .act-card .act-resumen {
+      color: #54606e;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      margin-bottom: 10px;
+    }
+
+    .act-card time {
+      margin-top: auto;
+      font-size: 0.78rem;
+      color: #8a97a6;
       font-weight: 600;
     }
 
-    .act-card p {
-      margin: 0;
-      font-size: 0.8rem;
-      color: #555;
+    .act-more {
+      text-align: center;
+      margin-top: 28px;
+    }
+    .act-more-link {
+      display: inline-block;
+      padding: 12px 32px;
+      border: 2px solid var(--blue, #00457c);
+      color: var(--blue, #00457c);
+      border-radius: 10px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: background .25s ease, color .25s ease;
+    }
+    .act-more-link:hover {
+      background: var(--blue, #00457c);
+      color: #fff;
     }
      #canal {
       text-align: center;
@@ -1966,6 +2042,8 @@ html { scroll-behavior: smooth; }
   <!-- JS Actualidad Uniremingtong -->
   <script>
   const ACT_TABS = ["noticias", "eventos", "blog"];
+  const ACT_MORE = { noticias: "/noticias", eventos: "/eventos", blog: "/noticias" };
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   async function loadTab(id) {
     try {
       const res = await fetch("/api/actualidad/" + id);
@@ -1974,20 +2052,35 @@ html { scroll-behavior: smooth; }
       const container = document.getElementById(id);
       const principal = posts[0];
       const secundarios = posts.slice(1, 5);
+      const moreUrl = ACT_MORE[id] || "/noticias";
       container.innerHTML =
         '<div class="act-grid">' +
-          '<div class="act-principal">' +
-            '<a href="' + principal.url + '"><img src="' + principal.img + '" alt=""></a>' +
-            '<div class="contenido"><span class="act-tag">' + principal.tag + '</span><h3>' + principal.title + '</h3></div>' +
-          '</div>' +
+          '<article class="act-principal">' +
+            '<a class="act-media" href="' + esc(principal.url) + '"><img src="' + esc(principal.img) + '" alt="' + esc(principal.title) + '" loading="lazy"></a>' +
+            '<div class="contenido">' +
+              '<span class="act-tag">' + esc(principal.tag) + '</span>' +
+              '<h3><a href="' + esc(principal.url) + '">' + esc(principal.title) + '</a></h3>' +
+              (principal.resumen ? '<p class="act-resumen">' + esc(principal.resumen) + '</p>' : '') +
+              '<div class="act-foot">' +
+                (principal.iso ? '<time datetime="' + esc(principal.iso) + '">' + esc(principal.date) + '</time>' : '') +
+                '<a class="act-leer" href="' + esc(principal.url) + '">Leer nota completa &rarr;</a>' +
+              '</div>' +
+            '</div>' +
+          '</article>' +
           '<div class="act-cards">' +
             secundarios.map(function(p){ return (
-              '<div class="act-card">' +
-                '<a href="' + p.url + '"><img src="' + p.img + '" alt=""></a>' +
-                '<div class="info"><span class="act-tag">' + p.tag + '</span><h4>' + p.title + '</h4><p>' + p.date + '</p></div>' +
-              '</div>'); }).join("") +
+              '<article class="act-card">' +
+                '<a class="act-media" href="' + esc(p.url) + '"><img src="' + esc(p.img) + '" alt="' + esc(p.title) + '" loading="lazy"></a>' +
+                '<div class="info">' +
+                  '<span class="act-tag">' + esc(p.tag) + '</span>' +
+                  '<h4><a href="' + esc(p.url) + '">' + esc(p.title) + '</a></h4>' +
+                  (p.resumen ? '<p class="act-resumen">' + esc(p.resumen) + '</p>' : '') +
+                  (p.iso ? '<time datetime="' + esc(p.iso) + '">' + esc(p.date) + '</time>' : '') +
+                '</div>' +
+              '</article>'); }).join("") +
           '</div>' +
-        '</div>';
+        '</div>' +
+        '<div class="act-more"><a class="act-more-link" href="' + esc(moreUrl) + '">Ver todo &rarr;</a></div>';
     } catch (e) { console.error("actualidad", e); }
   }
   ACT_TABS.forEach(loadTab);

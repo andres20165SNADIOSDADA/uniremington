@@ -509,6 +509,22 @@ const faqJsonld = (pairs) => ({
   '@context': 'https://schema.org', '@type': 'FAQPage',
   mainEntity: pairs.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })),
 });
+// ItemList de las últimas noticias: ayuda a buscadores y motores generativos (GEO) a
+// entender la actualidad de la home como una lista ordenada de artículos reales.
+const newsItemListJsonld = (items) => ({
+  '@context': 'https://schema.org', '@type': 'ItemList',
+  name: 'Actualidad Uniremington', itemListOrder: 'https://schema.org/ItemListOrderDescending',
+  itemListElement: items.map((p, i) => ({
+    '@type': 'ListItem', position: i + 1, url: SITE + (p.url || ''),
+    item: {
+      '@type': 'NewsArticle', headline: p.title, url: SITE + (p.url || ''),
+      datePublished: p.date ? p.date.replace(' ', 'T') : undefined,
+      ...(realImg(p) ? { image: realImg(p) } : {}),
+      description: resumen(p, 150),
+      publisher: { '@type': 'Organization', name: 'Corporación Universitaria Remington' },
+    },
+  })),
+});
 // Menú Principal (reproducido del backup por el pipeline): árbol con enlaces ya
 // resueltos a páginas locales o al dominio de producción.
 const menuPrincipal = (load('menu.json').principal) || [];
@@ -641,7 +657,8 @@ function contentContext(item){
 app.get('/', (req, res) => {
   // La home es la maqueta del repositorio (standalone); su contenido dinámico
   // (Actualidad) se carga desde /api/actualidad.
-  res.render('home', { ...base, canonical: SITE + '/', jsonld: [ORG_JSONLD, faqJsonld(HOME_FAQ)], faqs: HOME_FAQ,
+  res.render('home', { ...base, canonical: SITE + '/',
+    jsonld: [ORG_JSONLD, faqJsonld(HOME_FAQ), newsItemListJsonld(postsByDate.slice(0, 5))], faqs: HOME_FAQ,
     desc: 'Corporación Universitaria Remington: más de 100 años formando profesionales, con presencia en 19 sedes de Colombia. Programas de pregrado, posgrado y educación continua, presenciales y a distancia.' });
 });
 
@@ -652,7 +669,8 @@ function firstImg(item){
 }
 function toActualidad(item, tag){
   return { title: item.title, url: item.url,
-           img: firstImg(item), date: fechaCorta(item.date), tag };
+           img: firstImg(item), date: fechaCorta(item.date), iso: isoDate(item.date),
+           resumen: resumen(item, 150), tag };
 }
 app.get('/api/actualidad/:tab', (req, res) => {
   const tab = req.params.tab;
@@ -1204,20 +1222,38 @@ function renderArticle(res, item, kind) {
     url: e.url, title: e.title, dia: calDia(e.date), mes: calMes(e.date),
     iso: isoDate(e.date), fecha: fechaCorta(e.date),
   }));
-  const jsonld = {
+  const fechaISO = item.date ? item.date.replace(' ', 'T') : undefined;
+  const url = SITE + (item.url || '');
+  const publisher = { '@type': 'Organization', name: 'Corporación Universitaria Remington',
+    url: SITE, logo: { '@type': 'ImageObject', url: SITE + '/img/logo-uniremington.svg' } };
+  const principal = {
     '@context': 'https://schema.org',
     '@type': esEvento ? 'Event' : 'NewsArticle',
     headline: item.title, name: item.title,
-    datePublished: item.date ? item.date.replace(' ', 'T') : undefined,
-    ...(lead ? { image: lead } : {}),
-    mainEntityOfPage: SITE + (item.url || ''),
-    publisher: { '@type': 'Organization', name: 'Corporación Universitaria Remington',
-      logo: { '@type': 'ImageObject', url: SITE + '/img/logo-uniremington.svg' } },
+    description: metaDesc(item),
+    inLanguage: 'es',
+    datePublished: fechaISO,
+    ...(esEvento ? {} : { dateModified: fechaISO, articleSection: cat,
+                          author: publisher, publisher }),
+    ...(esEvento ? { organizer: publisher } : {}),
+    ...(lead ? { image: [lead] } : {}),
+    mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+    url,
   };
+  // BreadcrumbList: Inicio › Noticias/Agenda › (título) — mejora navegación en resultados y GEO.
+  const breadcrumb = {
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Inicio', item: SITE + '/' },
+      { '@type': 'ListItem', position: 2, name: esEvento ? 'Agenda de eventos' : 'Noticias', item: SITE + (esEvento ? '/eventos' : '/noticias') },
+      { '@type': 'ListItem', position: 3, name: item.title, item: url },
+    ],
+  };
+  const jsonld = [principal, breadcrumb];
   res.render('article', { ...base,
     title: `${item.title} — Uniremington`, desc: metaDesc(item),
     canonical: SITE + (item.url || ''),
-    ogImage: lead || '', jsonld,
+    ogImage: lead || '', ogType: 'article', jsonld,
     item, contentHtml: html, lead, cat,
     fecha: fechaCorta(item.date), iso: isoDate(item.date),
     lectura: esEvento ? 0 : readingTime(item),

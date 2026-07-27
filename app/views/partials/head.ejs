@@ -7,7 +7,7 @@
 <meta name="description" content="<%= typeof desc !== 'undefined' ? desc : 'Corporación Universitaria Remington' %>">
 <% if (typeof noindex !== 'undefined' && noindex){ %><meta name="robots" content="noindex,follow"><% } %>
 <% if (typeof canonical !== 'undefined' && canonical){ %><link rel="canonical" href="<%= canonical %>"><% } %>
-<meta property="og:type" content="website">
+<meta property="og:type" content="<%= typeof ogType !== 'undefined' && ogType ? ogType : 'website' %>">
 <meta property="og:site_name" content="Corporación Universitaria Remington">
 <meta property="og:title" content="<%= title %>">
 <meta property="og:description" content="<%= typeof desc !== 'undefined' ? desc : 'Corporación Universitaria Remington' %>">
