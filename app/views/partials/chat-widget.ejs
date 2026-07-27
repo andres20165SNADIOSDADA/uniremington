@@ -32,6 +32,9 @@
 .chat-body{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:#f4f8fb}
 .chat-msg{max-width:82%;padding:9px 13px;border-radius:14px;font-size:.88rem;line-height:1.45;white-space:pre-wrap;word-break:break-word}
 .chat-msg-model{align-self:flex-start;background:#fff;color:#1c2b38;border-bottom-left-radius:4px;box-shadow:0 1px 3px rgba(0,40,80,.1)}
+.chat-msg-model a{color:#00457c;font-weight:600;text-decoration:underline;word-break:break-all}
+.chat-msg-model a:hover{color:#e30613}
+.chat-msg-user a{color:#fff;text-decoration:underline;word-break:break-all}
 .chat-msg-user{align-self:flex-end;background:#00457c;color:#fff;border-bottom-right-radius:4px}
 .chat-typing{display:flex;gap:4px;align-items:center;padding:11px 14px}
 .chat-typing span{width:6px;height:6px;border-radius:50%;background:#9fb3c4;animation:chat-bounce 1.1s infinite ease-in-out}
@@ -112,10 +115,34 @@
       .replace(/^\s*[-*]\s+/gm, '- ');
   }
 
+  // Convierte URLs en enlaces reales sin usar innerHTML con texto del modelo: se
+  // reconocen con una expresión regular y cada <a> se construye a mano (href/target/
+  // rel fijos por nosotros), así que no hay forma de inyectar HTML arbitrario.
+  const URL_RE = /(https?:\/\/[^\s<>"')]+)/g;
+  function renderMessageContent(row, text){
+    text.split(URL_RE).forEach((part, i) => {
+      if (i % 2 === 0) {
+        if (part) row.appendChild(document.createTextNode(part));
+        return;
+      }
+      let url = part;
+      const trailMatch = url.match(/[.,;:!?)]+$/);
+      const trail = trailMatch ? trailMatch[0] : '';
+      if (trail) url = url.slice(0, -trail.length);
+      const a = document.createElement('a');
+      a.href = url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.textContent = url;
+      row.appendChild(a);
+      if (trail) row.appendChild(document.createTextNode(trail));
+    });
+  }
+
   function addMessage(role, text){
     const row = document.createElement('div');
     row.className = 'chat-msg chat-msg-' + role;
-    row.textContent = role === 'model' ? stripMarkdown(text) : text;
+    renderMessageContent(row, role === 'model' ? stripMarkdown(text) : text);
     body.appendChild(row);
     body.scrollTop = body.scrollHeight;
   }
