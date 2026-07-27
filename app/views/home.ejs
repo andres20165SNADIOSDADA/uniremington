@@ -1253,6 +1253,17 @@
       "link-c   link-c";
   }
 
+  /* En desktop la celda "media" comparte alto con el titular (grid-area de 2 filas);
+     aquí ocupa su propia fila y el grid la deja sin alto real (el flex:1 interno del
+     viewport no tiene de dónde tomar espacio), aplastándola a la altura de la barra
+     de controles. Se le da un alto explícito. */
+  /* El aspect-ratio va en .bm-viewport (el área de la imagen), no en toda la celda
+     (que también incluye la barra de controles) — así una sola imagen (recomendada
+     1200x850) se recorta siempre con la misma proporción real sin importar el ancho
+     de pantalla. flex:none anula el flex:1 de desktop para que el aspect-ratio mande. */
+  .bento-media { height: auto; }
+  .bm-viewport { flex: none; aspect-ratio: 1200 / 850; }
+
   .impacto-grid {
     grid-template-columns: 1fr;
     gap: 30px;
@@ -1285,6 +1296,8 @@
       "link-b"
       "link-c";
   }
+
+  /* Hereda el aspect-ratio de 1024px; no hace falta repetirlo, solo no pisarlo. */
 
   .bento-headline { padding: 28px 24px; }
 
