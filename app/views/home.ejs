@@ -269,23 +269,37 @@
     .bento-stat-a { grid-area: stat-a; }
     .bento-stat-b { grid-area: stat-b; }
 
-    /* Celda: media (foto + reproducir video) */
+    /* Celda: media — mini-carrusel (video institucional + ofertas de Mercadeo) */
     .bento-media {
       grid-area: media;
       position: relative;
       display: block;
       min-height: 150px;
       color: #fff;
+      overflow: hidden;
       transform: perspective(800px);
       transition: transform .15s ease;
     }
+    .bm-slide {
+      position: absolute; inset: 0;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .5s ease, visibility 0s linear .5s;
+    }
+    .bm-slide.is-active {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity .5s ease;
+    }
+    .bm-linkfull { position: absolute; inset: 0; display: block; }
     .bento-media img {
       position: absolute; inset: 0;
       width: 100%; height: 100%;
       object-fit: cover;
+      object-position: center 35%;
       transition: transform .6s ease;
     }
-    .bento-media:hover img { transform: scale(1.06); }
+    .bm-slide:hover img { transform: scale(1.06); }
     .bento-media-scrim {
       position: absolute; inset: 0;
       background: linear-gradient(180deg, rgba(4,20,36,0) 35%, rgba(4,20,36,.75) 100%);
@@ -305,7 +319,7 @@
       transition: transform .25s ease, background .25s ease;
     }
     .bento-media-play .msi { font-size: 1.6rem; }
-    .bento-media:hover .bento-media-play {
+    .bm-linkfull:hover .bento-media-play {
       transform: translate(-50%, -50%) scale(1.12);
       background: rgba(255, 255, 255, 0.26);
     }
@@ -316,6 +330,24 @@
       font-weight: 700;
       font-size: .92rem;
     }
+    .bm-dots {
+      position: absolute;
+      right: 16px; bottom: 14px;
+      z-index: 3;
+      display: flex;
+      gap: 7px;
+    }
+    .bm-dot {
+      width: 7px; height: 7px;
+      padding: 0;
+      border: none;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.35);
+      cursor: pointer;
+      transition: background .25s ease, width .25s ease;
+    }
+    .bm-dot:hover { background: rgba(255, 255, 255, 0.6); }
+    .bm-dot.is-active { width: 18px; background: #fff; }
 
     /* Celdas: accesos rápidos */
     .bento-link {
@@ -1540,6 +1572,24 @@ html { scroll-behavior: smooth; }
   <!-- Header (solo HERO) -->
   <header>
 
+    <%
+      // Ofertas de Mercadeo (piezas gráficas reales de producción): solo 2-3, pequeñas,
+      // integradas como celdas más del propio bento -no una sección/carrusel aparte-.
+      // Mercadeo rota estas piezas seguido; para cambiar cuáles se muestran aquí, solo
+      // se edita este arreglo.
+      var campaigns = [
+        { img: 'https://www.uniremington.edu.co/wp-content/uploads/2026/02/MAESTRIA-EN-CIENCIAS-DE-LA-SALUD-BANNER-ESCRITORIO.webp',
+          href: 'https://apps.clientify.net/forms/simpleembed/#/forms/embedform/277097/105053', external: true,
+          label: 'Maestría en Ciencias de la Salud' },
+        { img: 'https://www.uniremington.edu.co/wp-content/uploads/2026/02/MAESTRIA-EN-CLINICA-Y-CIRUGIA-VETERINARIA-BANNER-ESCRITORIO.webp',
+          href: 'https://apps.clientify.net/forms/simpleembed/#/forms/embedform/277098/105053', external: true,
+          label: 'Maestría en Clínica y Cirugía Veterinaria' },
+        { img: 'https://www.uniremington.edu.co/wp-content/uploads/2026/01/Refiere-y-Gana-Escritorio.webp',
+          href: '/plan-refiere-y-gana-politicas-y-condiciones/', external: false,
+          label: 'Plan Refiere y Gana' },
+      ];
+    %>
+
     <!-- Hero: bento grid (sin carrusel). Todo el contenido real visible a la vez. -->
     <div class="hero" id="hero">
       <div class="hero-aurora" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -1569,12 +1619,32 @@ html { scroll-behavior: smooth; }
           <div class="stat-label">Sedes en Colombia</div>
         </div>
 
-        <a class="bento-cell bento-media" href="https://www.youtube.com/@Uniremingtonoficial" target="_blank" rel="noopener">
-          <img src="/media/imagen-banner-1.jpeg" alt="Graduandos de Uniremington" loading="eager" decoding="async">
-          <span class="bento-media-scrim" aria-hidden="true"></span>
-          <span class="bento-media-play" aria-hidden="true"><span class="msi">play_arrow</span></span>
-          <span class="bento-media-cap">Ver Video Institucional</span>
-        </a>
+        <!-- Celda media: mini-carrusel (video institucional + ofertas de Mercadeo) -->
+        <div class="bento-cell bento-media" id="bentoMedia">
+          <div class="bm-slide is-active">
+            <a class="bm-linkfull" href="https://www.youtube.com/@Uniremingtonoficial" target="_blank" rel="noopener" aria-label="Ver Video Institucional">
+              <img src="/media/imagen-banner-1.jpeg" alt="Graduandos de Uniremington" loading="eager" decoding="async">
+              <span class="bento-media-scrim" aria-hidden="true"></span>
+              <span class="bento-media-play" aria-hidden="true"><span class="msi">play_arrow</span></span>
+              <span class="bento-media-cap">Ver Video Institucional</span>
+            </a>
+          </div>
+          <% campaigns.forEach(function(c, i){ %>
+          <div class="bm-slide" data-slide="<%= i + 1 %>">
+            <a class="bm-linkfull" href="<%= c.href %>"<% if (c.external) { %> target="_blank" rel="noopener"<% } %> aria-label="<%= c.label %>">
+              <img src="<%= c.img %>" alt="<%= c.label %>" loading="lazy" decoding="async">
+              <span class="bento-media-scrim" aria-hidden="true"></span>
+              <span class="bento-media-cap"><%= c.label %></span>
+            </a>
+          </div>
+          <% }) %>
+          <div class="bm-dots" role="tablist" aria-label="Seleccionar contenido destacado">
+            <button type="button" class="bm-dot is-active" data-slide="0" aria-label="Ver video institucional"></button>
+            <% campaigns.forEach(function(c, i){ %>
+            <button type="button" class="bm-dot" data-slide="<%= i + 1 %>" aria-label="Ver oferta: <%= c.label %>"></button>
+            <% }) %>
+          </div>
+        </div>
 
         <a class="bento-cell bento-link bento-link-a" href="/programas">
           <span class="bl-ic"><span class="msi" aria-hidden="true">school</span></span>
@@ -1845,8 +1915,8 @@ html { scroll-behavior: smooth; }
     }
 
     // Hero bento: spotlight que sigue al cursor + leve tilt 3D en la celda de media.
-    // Sin carrusel: todo el contenido está siempre visible, así que no hay temporizador
-    // ni mecánica de autoplay que mantener.
+    // El resto del bento no rota (todo el contenido institucional está siempre visible);
+    // solo la celda de media tiene un pequeño carrusel propio (ver más abajo).
     (function () {
       const hero = document.getElementById('hero');
       if (!hero) return;
@@ -1872,6 +1942,50 @@ html { scroll-behavior: smooth; }
         });
         media.addEventListener('mouseleave', () => { media.style.transform = ''; });
       }
+    })();
+
+    // Celda de media: mini-carrusel entre el video institucional y las ofertas de
+    // Mercadeo (piezas gráficas reales). Autoplay corto, pausa al pasar el mouse/foco,
+    // y respeta prefers-reduced-motion (sin avance automático, solo navegación manual).
+    (function () {
+      const media = document.getElementById('bentoMedia');
+      if (!media) return;
+      const slides = [...media.querySelectorAll('.bm-slide')];
+      const dots = [...media.querySelectorAll('.bm-dot')];
+      if (slides.length < 2) return;
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const DURATION = 4500;
+      let current = 0;
+      let timer = null;
+
+      function goTo(index) {
+        const next = (index + slides.length) % slides.length;
+        if (next === current) return;
+        slides[current].classList.remove('is-active');
+        dots[current].classList.remove('is-active');
+        dots[current].setAttribute('aria-selected', 'false');
+        current = next;
+        slides[current].classList.add('is-active');
+        dots[current].classList.add('is-active');
+        dots[current].setAttribute('aria-selected', 'true');
+      }
+
+      dots.forEach((d, i) => d.addEventListener('click', () => { goTo(i); restart(); }));
+
+      function start() {
+        stop();
+        if (prefersReduced) return;
+        timer = setInterval(() => goTo(current + 1), DURATION);
+      }
+      function stop() { if (timer) { clearInterval(timer); timer = null; } }
+      function restart() { start(); }
+
+      media.addEventListener('mouseenter', stop);
+      media.addEventListener('mouseleave', start);
+      media.addEventListener('focusin', stop);
+      media.addEventListener('focusout', (e) => { if (!media.contains(e.relatedTarget)) start(); });
+
+      start();
     })();
   </script>
 
