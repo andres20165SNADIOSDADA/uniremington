@@ -1643,15 +1643,21 @@ function catalogoProgramasPorModalidad() {
     const items = programas.filter((p) => p.modalidad === mod);
     if (!items.length) return '';
     const bloques = niveles.map((niv) => {
-      const nombres = items.filter((p) => p.nivel === niv).map((p) => {
+      const filas = items.filter((p) => p.nivel === niv).map((p) => {
         const nombre = limpiar(p.title);
-        const dur = p.ficha?.duracion ? ` [${p.ficha.duracion}]` : '';
+        const f = p.ficha || {};
+        const datos = [];
+        if (f.duracion) datos.push(`duración: ${f.duracion}`);
+        if (f.titulo) datos.push(`título otorgado: ${f.titulo}`);
+        if (f.snies) datos.push(`SNIES: ${f.snies}`);
+        if (f.resolucion) datos.push(f.resolucion);
+        if (f.registro_unico) datos.push(f.registro_unico);
         // La sede solo aporta información real en modalidad Presencial (Virtual/Distancia
         // se ofrecen prácticamente en todas las sedes por igual, listarla ahí es ruido).
-        const sedes = mod === 'Presencial' && p.sedes?.length ? ` [sede(s): ${p.sedes.join(', ')}]` : '';
-        return `${nombre}${dur}${sedes}`;
+        if (mod === 'Presencial' && p.sedes?.length) datos.push(`sede(s): ${p.sedes.join(', ')}`);
+        return `    - ${nombre}${datos.length ? ' — ' + datos.join('; ') : ''}`;
       });
-      return nombres.length ? `  ${niv}: ${nombres.join('; ')}` : '';
+      return filas.length ? `  ${niv}:\n${filas.join('\n')}` : '';
     }).filter(Boolean).join('\n');
     return `Modalidad ${mod} (${items.length} programas):\n${bloques}`;
   }).filter(Boolean).join('\n');
