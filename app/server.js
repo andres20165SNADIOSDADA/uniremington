@@ -1701,7 +1701,11 @@ app.post('/api/chat', async (req, res) => {
       body: JSON.stringify({
         system_instruction: { parts: [{ text: CHAT_SYSTEM_PROMPT }] },
         contents: [...safeHistory, { role: 'user', parts: [{ text: message }] }],
-        generationConfig: { temperature: 0.4, maxOutputTokens: 1000 },
+        // thinkingBudget:0 apaga el razonamiento interno de los modelos Gemini 2.5+/3.x:
+        // ese "thinking" consume tokens del mismo maxOutputTokens antes de escribir la
+        // respuesta visible, y para un chat de preguntas frecuentes no aporta nada —
+        // solo le restaba presupuesto a la respuesta real y añadía latencia.
+        generationConfig: { temperature: 0.4, maxOutputTokens: 1500, thinkingConfig: { thinkingBudget: 0 } },
       }),
     });
 
