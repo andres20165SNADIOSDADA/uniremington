@@ -14,13 +14,21 @@
   <meta property="og:description" content="<%= _desc %>">
   <meta property="og:url" content="<%= (typeof canonical !== 'undefined' && canonical) ? canonical : 'https://www.uniremington.edu.co/' %>">
   <meta name="twitter:card" content="summary">
+  <link rel="icon" href="https://www.uniremington.edu.co/wp-content/uploads/2018/10/favicon-uniremington-32x32.png" sizes="32x32">
+  <link rel="icon" href="https://www.uniremington.edu.co/wp-content/uploads/2018/10/favicon-uniremington.png" sizes="192x192">
+  <link rel="apple-touch-icon" href="https://www.uniremington.edu.co/wp-content/uploads/2018/10/favicon-uniremington.png">
   <% if (typeof jsonld !== 'undefined' && jsonld){ %><script type="application/ld+json"><%- JSON.stringify(jsonld) %></script><% } %>
   <!-- Preload de la fuente de iconos: sin esto los iconos del megamenú aparecen como
        texto hasta que un elemento visible la dispara (en la home no hay ninguno). -->
   <link rel="preload" href="/fonts/ms-sharp.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/fonts.css">
-  <!-- Navbar + megamenú + drawer: fuente única de verdad (compartida con el resto del sitio) -->
-  <link rel="stylesheet" href="/css/menu.css">
+  <!-- PT Sans (400/700 latin): son los únicos dos cortes de la tipografía que el texto
+       visible realmente usa; precargarlos evita esperar a que el CSS termine de parsear
+       para descubrirlos, acortando la cadena de dependencia crítica. -->
+  <link rel="preload" href="/fonts/ptsans-3.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/ptsans-7.woff2" as="font" type="font/woff2" crossorigin>
+  <!-- fonts.css + menu.css (navbar/megamenú/drawer) fusionados en una sola solicitud -->
+  <link rel="stylesheet" href="/css/home-critical.css">
+  <link rel="preconnect" href="https://fastly.picsum.photos" crossorigin>
   <style>
     .skip-link{position:fixed;top:-60px;left:12px;z-index:2000;background:#00457c;color:#fff;
       padding:10px 18px;border-radius:0 0 10px 10px;font-weight:700;text-decoration:none;
@@ -33,7 +41,7 @@
       --accent: #e30613;
       --accent-dark: #b0050f;
       --dark: #0b2b3a;
-      --muted: #6b7a85;
+      --muted: #5b6b78;
       --container: 1100px;
     }
 
@@ -312,21 +320,29 @@
     .bm-dots {
       display: flex;
       align-items: center;
-      gap: 7px;
+      gap: 2px;
       flex: 1;
       justify-content: center;
     }
+    /* Objetivo táctil real de 24x24 (WCAG 2.5.8); el punto visible es un ::after más pequeño */
     .bm-dot {
-      width: 7px; height: 7px;
+      width: 24px; height: 24px;
       padding: 0;
       border: none;
+      background: transparent;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+    }
+    .bm-dot::after {
+      content: "";
+      width: 7px; height: 7px;
       border-radius: 5px;
       background: rgba(255, 255, 255, 0.35);
-      cursor: pointer;
       transition: background .25s ease, width .25s ease;
     }
-    .bm-dot:hover { background: rgba(255, 255, 255, 0.6); }
-    .bm-dot.is-active { width: 18px; background: #fff; }
+    .bm-dot:hover::after { background: rgba(255, 255, 255, 0.6); }
+    .bm-dot.is-active::after { width: 18px; background: #fff; }
     .bm-arrow, .bm-play {
       flex: none;
       width: 30px; height: 30px;
@@ -832,7 +848,7 @@
       height: 18px;
     }
 
-    .foot-col h5 {
+    .foot-col h3 {
       font-size: 0.95rem;
       font-weight: 700;
       margin-bottom: 16px;
@@ -1070,7 +1086,7 @@
       font-size: 0.86rem;
       flex-wrap: wrap;
     }
-    .act-foot time { color: #8a97a6; font-weight: 600; }
+    .act-foot time { color: var(--muted); font-weight: 600; }
     .act-leer {
       color: var(--accent);
       font-weight: 700;
@@ -1128,7 +1144,7 @@
     .act-card time {
       margin-top: auto;
       font-size: 0.78rem;
-      color: #8a97a6;
+      color: var(--muted);
       font-weight: 600;
     }
 
@@ -1702,9 +1718,9 @@ html { scroll-behavior: smooth; }
         <div class="bento-cell bento-media" id="bentoMedia">
           <div class="bm-viewport">
             <% campaigns.forEach(function(c, i){ %>
-            <div class="bm-slide<%= i === 0 ? ' is-active' : '' %>" data-slide="<%= i %>">
+            <div class="bm-slide<%= i === 0 ? ' is-active' : '' %>" data-slide="<%= i %>" id="bm-panel-<%= i %>" role="tabpanel" aria-labelledby="bm-tab-<%= i %>">
               <a class="bm-linkfull" href="<%= c.href %>"<% if (c.external) { %> target="_blank" rel="noopener"<% } %> aria-label="<%= c.label %>">
-                <img src="<%= c.img %>" alt="<%= c.label %>" loading="<%= i === 0 ? 'eager' : 'lazy' %>" decoding="async">
+                <img src="<%= c.img %>" alt="<%= c.label %>" width="1200" height="675" loading="<%= i === 0 ? 'eager' : 'lazy' %>"<% if (i === 0) { %> fetchpriority="high"<% } %> decoding="async">
                 <span class="bento-media-cap"><%= c.label %></span>
               </a>
             </div>
@@ -1714,7 +1730,7 @@ html { scroll-behavior: smooth; }
             <button type="button" class="bm-arrow bm-arrow-prev" aria-label="Oferta anterior"><span class="msi" aria-hidden="true">chevron_left</span></button>
             <div class="bm-dots" role="tablist" aria-label="Seleccionar oferta destacada">
               <% campaigns.forEach(function(c, i){ %>
-              <button type="button" class="bm-dot<%= i === 0 ? ' is-active' : '' %>" data-slide="<%= i %>" aria-label="Ver oferta: <%= c.label %>"></button>
+              <button type="button" id="bm-tab-<%= i %>" role="tab" aria-controls="bm-panel-<%= i %>" aria-selected="<%= i === 0 ? 'true' : 'false' %>" class="bm-dot<%= i === 0 ? ' is-active' : '' %>" data-slide="<%= i %>" aria-label="Ver oferta: <%= c.label %>"></button>
               <% }) %>
             </div>
             <button type="button" class="bm-play" aria-pressed="true" aria-label="Pausar avance automático"><span class="msi" aria-hidden="true">pause</span></button>
@@ -1756,10 +1772,11 @@ html { scroll-behavior: smooth; }
         <a href="/programas" class="btn">VER OFERTA</a>
       </div>
       <div class="video-oferta">
-        <div class="video-thumb" id="videoThumb" data-video="_D5nmSNZ-F8">
-          <img src="https://img.youtube.com/vi/_D5nmSNZ-F8/maxresdefault.jpg" alt="Video Institucional Uniremington"
+        <div class="video-thumb" id="videoThumb" data-video="_D5nmSNZ-F8" role="button" tabindex="0" aria-label="Reproducir video institucional">
+          <img src="https://img.youtube.com/vi/_D5nmSNZ-F8/sddefault.jpg" alt="Video Institucional Uniremington"
+               width="640" height="480" loading="lazy" decoding="async"
                onerror="this.src='https://img.youtube.com/vi/_D5nmSNZ-F8/hqdefault.jpg'">
-          <div class="play-btn" aria-label="Reproducir video"></div>
+          <div class="play-btn" aria-hidden="true"></div>
         </div>
       </div>
     </section>
@@ -1768,27 +1785,27 @@ html { scroll-behavior: smooth; }
     <section>
       <div style="margin-top:22px" class="grid-4 grid-5">
         <article class="card">
-          <a href="/tecnologias" aria-label="Ver tecnologías"><img alt="Tecnologías"
+          <a href="/tecnologias" aria-label="Ver tecnologías"><img alt="Tecnologías" width="800" height="1000" loading="lazy" decoding="async"
               src="https://www.uniremington.edu.co/wp-content/uploads/2025/09/Tecnologias.webp"></a>
           <a class="caption tecnologias" href="/tecnologias">TECNOLOGÍAS</a>
         </article>
         <article class="card">
-          <a href="/pregrados" aria-label="Ver pregrados"><img alt="Pregrados"
+          <a href="/pregrados" aria-label="Ver pregrados"><img alt="Pregrados" width="800" height="1000" loading="lazy" decoding="async"
               src="https://www.uniremington.edu.co/wp-content/uploads/2025/09/Carreras-Universitarias.webp"></a>
           <a class="caption carreras" href="/pregrados">PREGRADOS</a>
         </article>
         <article class="card">
-          <a href="/especializaciones" aria-label="Ver especializaciones"><img alt="Especializaciones"
+          <a href="/especializaciones" aria-label="Ver especializaciones"><img alt="Especializaciones" width="800" height="1000" loading="lazy" decoding="async"
               src="https://www.uniremington.edu.co/wp-content/uploads/2025/09/Especializaciones.webp"></a>
           <a class="caption especializaciones" href="/especializaciones">ESPECIALIZACIONES</a>
         </article>
         <article class="card card-maestrias">
-          <a class="card-tinted" href="/maestrias" aria-label="Ver maestrías"><img alt="Maestrías"
-              src="https://www.uniremington.edu.co/wp-content/uploads/2025/12/Grados-uniremington-2026-I.webp"></a>
+          <a class="card-tinted" href="/maestrias" aria-label="Ver maestrías"><img alt="Maestrías" width="768" height="432" loading="lazy" decoding="async"
+              src="https://www.uniremington.edu.co/wp-content/uploads/2025/12/Grados-uniremington-2026-I-768x432.webp"></a>
           <a class="caption maestrias" href="/maestrias">MAESTRÍAS</a>
         </article>
         <article class="card">
-          <a href="/extension-y-posgrados" aria-label="Ver educación continua"><img alt="Educación continua"
+          <a href="/extension-y-posgrados" aria-label="Ver educación continua"><img alt="Educación continua" width="800" height="1000" loading="lazy" decoding="async"
               src="https://www.uniremington.edu.co/wp-content/uploads/2025/09/Extension-y-proyeccion-social.webp"></a>
           <a class="caption extension" href="/extension-y-posgrados">EDUCACIÓN Y <br> CONTINUA</a>
         </article>
@@ -1799,7 +1816,7 @@ html { scroll-behavior: smooth; }
     <section class="impacto">
       <div class="impacto-grid">
         <div class="impacto-img">
-          <img src="/media/imagen-banner-1.jpeg" alt="Estudiantes Uniremington">
+          <img src="/media/imagen-banner-1.jpeg" alt="Estudiantes Uniremington" width="1200" height="856" loading="lazy" decoding="async">
         </div>
         <div class="impacto-text">
           <div class="impacto-eyebrow">Nuestro Impacto</div>
@@ -1907,7 +1924,7 @@ html { scroll-behavior: smooth; }
     <div class="footer-top">
       <div class="foot-grid">
         <div class="foot-brand">
-          <img src="/img/logo-uniremington-blanco.svg" alt="Corporación Universitaria Remington">
+          <img src="/img/logo-uniremington-blanco.svg" alt="Corporación Universitaria Remington" width="170" height="46" loading="lazy" decoding="async">
           <p>Más de un siglo de historia educativa formando profesionales íntegros, comprometidos con la transformación social del país.</p>
           <div class="foot-social">
             <a href="https://www.facebook.com/UniremingtonOficial" target="_blank" rel="noopener" aria-label="Facebook">
@@ -1926,7 +1943,7 @@ html { scroll-behavior: smooth; }
         </div>
 
         <div class="foot-col">
-          <h5>Oferta Académica</h5>
+          <h3>Oferta Académica</h3>
           <ul>
             <li><a href="/programas">Pregrados</a></li>
             <li><a href="/programas">Tecnologías</a></li>
@@ -1937,7 +1954,7 @@ html { scroll-behavior: smooth; }
         </div>
 
         <div class="foot-col">
-          <h5>Institucional</h5>
+          <h3>Institucional</h3>
           <ul>
             <li><a href="/nuestra-institucion/">Nosotros</a></li>
             <li><a href="/donde-estamos/">Sedes</a></li>
@@ -1948,7 +1965,7 @@ html { scroll-behavior: smooth; }
         </div>
 
         <div class="foot-col">
-          <h5>Contacto</h5>
+          <h3>Contacto</h3>
           <address>
             Línea nacional: 01 8000 51 8200<br>
             contacto@uniremington.edu.co<br>
@@ -1977,7 +1994,7 @@ html { scroll-behavior: smooth; }
     // Video thumbnail → iframe al hacer clic
     const videoThumb = document.getElementById('videoThumb');
     if (videoThumb) {
-      videoThumb.addEventListener('click', () => {
+      const reproducirVideo = () => {
         const id = videoThumb.dataset.video;
         const iframe = document.createElement('iframe');
         iframe.src = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
@@ -1985,6 +2002,10 @@ html { scroll-behavior: smooth; }
         iframe.allow = 'autoplay; encrypted-media';
         iframe.allowFullscreen = true;
         videoThumb.replaceWith(iframe);
+      };
+      videoThumb.addEventListener('click', reproducirVideo);
+      videoThumb.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); reproducirVideo(); }
       });
     }
 
@@ -2218,6 +2239,7 @@ html { scroll-behavior: smooth; }
     function abrirMenu() {
       drawer.classList.add("open");
       drawer.setAttribute("aria-hidden", "false");
+      drawer.inert = false;
       backdrop.classList.add("active");
       hamburger.classList.add("active");
       hamburger.setAttribute("aria-expanded", "true");
@@ -2227,6 +2249,7 @@ html { scroll-behavior: smooth; }
     function cerrarMenu() {
       drawer.classList.remove("open");
       drawer.setAttribute("aria-hidden", "true");
+      drawer.inert = true;
       backdrop.classList.remove("active");
       hamburger.classList.remove("active");
       hamburger.setAttribute("aria-expanded", "false");
@@ -2329,11 +2352,17 @@ html { scroll-behavior: smooth; }
           if (cur !== lastDisplayed) {
             lastDisplayed = cur;
             el.textContent = prefix + fmtThousands(cur) + suffix;
-            // Mini-bounce visual en cada tick
-            el.classList.remove('tick');
-            // forzar reflow para reiniciar animación
-            void el.offsetWidth;
-            el.classList.add('tick');
+            // Mini-bounce visual en cada tick: Web Animations API en vez de reiniciar una
+            // animación CSS por clase (ese patrón exige forzar un reflow síncrono para que
+            // el navegador "olvide" el estado anterior; .animate() no lo necesita).
+            el.animate(
+              [
+                { transform: 'translateY(0) scale(1)' },
+                { transform: 'translateY(-6px) scale(1.08)' },
+                { transform: 'translateY(0) scale(1)' },
+              ],
+              { duration: 120, easing: 'ease-out' }
+            );
           }
           lastTick = now;
         }
@@ -2341,10 +2370,7 @@ html { scroll-behavior: smooth; }
         if (t < 1) requestAnimationFrame(frame);
         else {
           el.textContent = raw;
-          setTimeout(() => {
-            el.classList.remove('counting');
-            el.classList.remove('tick');
-          }, 600);
+          setTimeout(() => { el.classList.remove('counting'); }, 600);
         }
       }
       requestAnimationFrame(frame);
@@ -2388,13 +2414,14 @@ html { scroll-behavior: smooth; }
     }
 
     // 4) Fallback inicial — dispara los HERO ya visibles
+    // Reflow forzado: si se lee getBoundingClientRect() y se escribe (animateCounter
+    // muta clases/estilos) dentro del mismo forEach, cada lectura del SIGUIENTE elemento
+    // fuerza al navegador a recalcular el layout que la escritura anterior invalidó. Se
+    // separa en dos pasadas: primero todas las lecturas, después todas las escrituras.
     setTimeout(() => {
-      document.querySelectorAll('.stat-num').forEach(el => {
-        if (!el.dataset.animated && isInViewport(el, 0)) {
-          animateCounter(el);
-          counterObs.unobserve(el);
-        }
-      });
+      const visibles = [...document.querySelectorAll('.stat-num')]
+        .filter(el => !el.dataset.animated && isInViewport(el, 0));
+      visibles.forEach(el => { animateCounter(el); counterObs.unobserve(el); });
     }, 1400);
 
     // 5) Fallback de scroll — garantiza que las cifras disparen al llegar
@@ -2404,13 +2431,9 @@ html { scroll-behavior: smooth; }
       if (scrollTicking) return;
       scrollTicking = true;
       requestAnimationFrame(() => {
-        document.querySelectorAll('.stat-num, .cifra-num').forEach(el => {
-          if (el.dataset.animated) return;
-          if (isInViewport(el, 80)) {
-            animateCounter(el);
-            counterObs.unobserve(el);
-          }
-        });
+        const visibles = [...document.querySelectorAll('.stat-num, .cifra-num')]
+          .filter(el => !el.dataset.animated && isInViewport(el, 80));
+        visibles.forEach(el => { animateCounter(el); counterObs.unobserve(el); });
         scrollTicking = false;
       });
     }

@@ -3,7 +3,6 @@
 .to-top.show{opacity:1;visibility:visible;transform:none}
 .to-top:hover{background:#0a5aa8}
 .to-top svg{width:22px;height:22px;display:block}
-@media(max-width:860px){ body:has(.cta-bar) .to-top{bottom:82px} }
 </style>
 <button class="to-top" id="toTop" aria-label="Volver arriba" title="Volver arriba">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
@@ -12,7 +11,9 @@
 (function(){
   var b=document.getElementById('toTop'); if(!b) return;
   function toggle(){ if(window.scrollY>400) b.classList.add('show'); else b.classList.remove('show'); }
-  window.addEventListener('scroll',toggle,{passive:true}); toggle();
+  window.addEventListener('scroll',toggle,{passive:true});
+  // Estado inicial diferido: evita competir por el layout con el resto de la carga crítica.
+  requestAnimationFrame(toggle);
   b.addEventListener('click',function(){
     var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     window.scrollTo({top:0,behavior:reduce?'auto':'smooth'});

@@ -10,6 +10,7 @@
     function abrirMenu() {
       drawer.classList.add("open");
       drawer.setAttribute("aria-hidden", "false");
+      drawer.inert = false;
       backdrop.classList.add("active");
       hamburger.classList.add("active");
       hamburger.setAttribute("aria-expanded", "true");
@@ -19,6 +20,7 @@
     function cerrarMenu() {
       drawer.classList.remove("open");
       drawer.setAttribute("aria-hidden", "true");
+      drawer.inert = true;
       backdrop.classList.remove("active");
       hamburger.classList.remove("active");
       hamburger.setAttribute("aria-expanded", "false");

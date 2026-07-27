@@ -225,7 +225,33 @@ const catList = Object.values(catIndex).sort((a,b) => b.count - a.count);
 const app = express();
 app.set('view engine', 'ejs');
 app.set('views', join(__dirname, 'views'));
-app.use(express.static(join(__dirname, 'public')));
+
+// CSS fusionado para la home (standalone: no carga site.css). Une fonts.css + menu.css
+// en UNA sola respuesta para ahorrarse una solicitud de bloqueo de renderización bajo
+// conexiones lentas; se lee de los mismos archivos fuente en cada arranque, así que nunca
+// puede quedar desincronizado si se edita alguno de los dos.
+const HOME_CRITICAL_CSS = [
+  readFileSync(join(__dirname, 'public/css/fonts.css'), 'utf-8'),
+  readFileSync(join(__dirname, 'public/css/menu.css'), 'utf-8'),
+].join('\n');
+app.get('/css/home-critical.css', (req, res) => {
+  res.set('Content-Type', 'text/css; charset=utf-8');
+  res.set('Cache-Control', 'public, max-age=3600');
+  res.send(HOME_CRITICAL_CSS);
+});
+
+// Caché de estáticos: los archivos no tienen nombre con hash, así que a CSS/JS (que sí
+// cambian mientras el sitio está en desarrollo activo) se les da una vida corta; a
+// imágenes/fuentes (prácticamente inmutables una vez subidas) una vida larga.
+app.use(express.static(join(__dirname, 'public'), {
+  setHeaders(res, filePath) {
+    if (/\.(css|js)$/.test(filePath)) {
+      res.set('Cache-Control', 'public, max-age=3600');
+    } else if (/\.(woff2?|ttf|otf|png|jpe?g|webp|svg|gif|ico)$/.test(filePath)) {
+      res.set('Cache-Control', 'public, max-age=2592000, immutable');
+    }
+  },
+}));
 app.use(express.urlencoded({ extended: true }));
 
 // Dominio de producción real (derivado de SITE_URL). Cualquier otro host donde esta app

@@ -73,7 +73,7 @@
     </button>
 
     <a href="/" class="navbar-logo" aria-label="Uniremington — Inicio">
-      <img src="https://www.uniremington.edu.co/wp-content/uploads/2025/05/logo-uniremington.svg" alt="Uniremington">
+      <img src="https://www.uniremington.edu.co/wp-content/uploads/2025/05/logo-uniremington.svg" alt="Uniremington" width="148" height="40">
     </a>
 
     <div class="navbar-links">
@@ -120,7 +120,7 @@
 </nav>
 
 <!-- Drawer móvil -->
-<div class="drawer" id="drawer" aria-hidden="true">
+<div class="drawer" id="drawer" aria-hidden="true" inert>
   <div class="drawer-main-menu">
     <% menuItems.forEach(function(item){ %>
       <% if ((item.label || '').trim().toUpperCase() === 'SOY') return; /* SOY va en la sección siempre visible de abajo */ %>
