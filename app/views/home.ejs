@@ -28,7 +28,6 @@
   <link rel="preload" href="/fonts/ptsans-7.woff2" as="font" type="font/woff2" crossorigin>
   <!-- fonts.css + menu.css (navbar/megamenú/drawer) fusionados en una sola solicitud -->
   <link rel="stylesheet" href="/css/home-critical.css">
-  <link rel="preconnect" href="https://fastly.picsum.photos" crossorigin>
   <style>
     .skip-link{position:fixed;top:-60px;left:12px;z-index:2000;background:#00457c;color:#fff;
       padding:10px 18px;border-radius:0 0 10px 10px;font-weight:700;text-decoration:none;
@@ -1676,38 +1675,21 @@ html { scroll-behavior: smooth; }
   <header>
 
     <%
-      // Ofertas de Mercadeo (piezas gráficas reales de producción): solo 2-3, pequeñas,
-      // integradas como celdas más del propio bento -no una sección/carrusel aparte-.
-      // Mercadeo rota estas piezas seguido; para cambiar cuáles se muestran aquí, solo
-      // se edita este arreglo.
-      // NOTA TEMPORAL: img reemplazada por foto de stock genérica (picsum.photos, seed fijo
-      // para que no cambie en cada carga) a pedido explícito del usuario. Las piezas reales
-      // de Mercadeo (con datos de descuento reales) quedan comentadas abajo para restaurarlas
-      // cuando se conecte el banco de imágenes definitivo.
+      // Ofertas de Mercadeo (piezas gráficas reales, campañas vigentes de lanzamiento de
+      // posgrados): solo 2-3, pequeñas, integradas como celdas más del propio bento -no
+      // una sección/carrusel aparte-. Mercadeo rota estas piezas seguido; para cambiar
+      // cuáles se muestran aquí, solo se edita este arreglo.
       var campaigns = [
-        { img: 'https://picsum.photos/seed/uniremington-salud/1200/675',
+        { img: '/media/campanas/maestria-ciencias-salud.jpg',
           href: 'https://apps.clientify.net/forms/simpleembed/#/forms/embedform/277097/105053', external: true,
           label: 'Maestría en Ciencias de la Salud' },
-        { img: 'https://picsum.photos/seed/uniremington-vet/1200/675',
+        { img: '/media/campanas/maestria-clinica-veterinaria.jpg',
           href: 'https://apps.clientify.net/forms/simpleembed/#/forms/embedform/277098/105053', external: true,
           label: 'Maestría en Clínica y Cirugía Veterinaria' },
-        { img: 'https://picsum.photos/seed/uniremington-refiere/1200/675',
-          href: '/plan-refiere-y-gana-politicas-y-condiciones/', external: false,
-          label: 'Plan Refiere y Gana' },
+        { img: '/media/campanas/maestria-administracion.jpg',
+          href: '/facultades/facultad-de-ciencias-empresariales/maestria-en-administracion/', external: false,
+          label: 'Maestría en Administración' },
       ];
-      /* Piezas reales de Mercadeo (producción) — restaurar cuando corresponda:
-      var campaigns = [
-        { img: 'https://www.uniremington.edu.co/wp-content/uploads/2026/02/MAESTRIA-EN-CIENCIAS-DE-LA-SALUD-BANNER-ESCRITORIO.webp',
-          href: 'https://apps.clientify.net/forms/simpleembed/#/forms/embedform/277097/105053', external: true,
-          label: 'Maestría en Ciencias de la Salud' },
-        { img: 'https://www.uniremington.edu.co/wp-content/uploads/2026/02/MAESTRIA-EN-CLINICA-Y-CIRUGIA-VETERINARIA-BANNER-ESCRITORIO.webp',
-          href: 'https://apps.clientify.net/forms/simpleembed/#/forms/embedform/277098/105053', external: true,
-          label: 'Maestría en Clínica y Cirugía Veterinaria' },
-        { img: 'https://www.uniremington.edu.co/wp-content/uploads/2026/01/Refiere-y-Gana-Escritorio.webp',
-          href: '/plan-refiere-y-gana-politicas-y-condiciones/', external: false,
-          label: 'Plan Refiere y Gana' },
-      ];
-      */
     %>
 
     <!-- Hero: bento grid (sin carrusel). Todo el contenido real visible a la vez. -->
@@ -1733,7 +1715,7 @@ html { scroll-behavior: smooth; }
             <% campaigns.forEach(function(c, i){ %>
             <div class="bm-slide<%= i === 0 ? ' is-active' : '' %>" data-slide="<%= i %>" id="bm-panel-<%= i %>" role="tabpanel" aria-labelledby="bm-tab-<%= i %>">
               <a class="bm-linkfull" href="<%= c.href %>"<% if (c.external) { %> target="_blank" rel="noopener"<% } %> aria-label="<%= c.label %>">
-                <img src="<%= c.img %>" alt="<%= c.label %>" width="1200" height="675" loading="<%= i === 0 ? 'eager' : 'lazy' %>"<% if (i === 0) { %> fetchpriority="high"<% } %> decoding="async">
+                <img src="<%= c.img %>" alt="<%= c.label %>" width="1200" height="850" loading="<%= i === 0 ? 'eager' : 'lazy' %>"<% if (i === 0) { %> fetchpriority="high"<% } %> decoding="async">
                 <span class="bento-media-cap"><%= c.label %></span>
               </a>
             </div>
