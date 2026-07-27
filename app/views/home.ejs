@@ -1651,6 +1651,22 @@ html { scroll-behavior: smooth; }
       // integradas como celdas más del propio bento -no una sección/carrusel aparte-.
       // Mercadeo rota estas piezas seguido; para cambiar cuáles se muestran aquí, solo
       // se edita este arreglo.
+      // NOTA TEMPORAL: img reemplazada por foto de stock genérica (picsum.photos, seed fijo
+      // para que no cambie en cada carga) a pedido explícito del usuario. Las piezas reales
+      // de Mercadeo (con datos de descuento reales) quedan comentadas abajo para restaurarlas
+      // cuando se conecte el banco de imágenes definitivo.
+      var campaigns = [
+        { img: 'https://picsum.photos/seed/uniremington-salud/1200/675',
+          href: 'https://apps.clientify.net/forms/simpleembed/#/forms/embedform/277097/105053', external: true,
+          label: 'Maestría en Ciencias de la Salud' },
+        { img: 'https://picsum.photos/seed/uniremington-vet/1200/675',
+          href: 'https://apps.clientify.net/forms/simpleembed/#/forms/embedform/277098/105053', external: true,
+          label: 'Maestría en Clínica y Cirugía Veterinaria' },
+        { img: 'https://picsum.photos/seed/uniremington-refiere/1200/675',
+          href: '/plan-refiere-y-gana-politicas-y-condiciones/', external: false,
+          label: 'Plan Refiere y Gana' },
+      ];
+      /* Piezas reales de Mercadeo (producción) — restaurar cuando corresponda:
       var campaigns = [
         { img: 'https://www.uniremington.edu.co/wp-content/uploads/2026/02/MAESTRIA-EN-CIENCIAS-DE-LA-SALUD-BANNER-ESCRITORIO.webp',
           href: 'https://apps.clientify.net/forms/simpleembed/#/forms/embedform/277097/105053', external: true,
@@ -1662,6 +1678,7 @@ html { scroll-behavior: smooth; }
           href: '/plan-refiere-y-gana-politicas-y-condiciones/', external: false,
           label: 'Plan Refiere y Gana' },
       ];
+      */
     %>
 
     <!-- Hero: bento grid (sin carrusel). Todo el contenido real visible a la vez. -->
