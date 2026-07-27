@@ -1655,6 +1655,7 @@ function catalogoProgramasPorModalidad() {
         // La sede solo aporta información real en modalidad Presencial (Virtual/Distancia
         // se ofrecen prácticamente en todas las sedes por igual, listarla ahí es ruido).
         if (mod === 'Presencial' && p.sedes?.length) datos.push(`sede(s): ${p.sedes.join(', ')}`);
+        datos.push(`pensum/plan de estudios (con botón para descargar PDF): ${SITE}/plan/${p.slug}`);
         return `    - ${nombre}${datos.length ? ' — ' + datos.join('; ') : ''}`;
       });
       return filas.length ? `  ${niv}:\n${filas.join('\n')}` : '';
@@ -1720,7 +1721,7 @@ DATOS REALES DE LA INSTITUCIÓN:
 FACULTADES Y DECANOS/AS REALES:
 ${facultadesYDecanos()}
 
-CATÁLOGO REAL DE PROGRAMAS POR MODALIDAD Y NIVEL, con duración entre corchetes y, en modalidad Presencial, la(s) sede(s) reales donde se ofrece (usa estos nombres tal cual cuando te pidan listar programas; el enlace del catálogo es un complemento, no un reemplazo de la respuesta):
+CATÁLOGO REAL DE PROGRAMAS POR MODALIDAD Y NIVEL, con duración entre corchetes y, en modalidad Presencial, la(s) sede(s) reales donde se ofrece (usa estos nombres tal cual cuando te pidan listar programas; el enlace del catálogo es un complemento, no un reemplazo de la respuesta). Cada programa incluye también su enlace real de "pensum/plan de estudios": cuando pregunten por el pensum, la malla curricular o el plan de estudios de un programa específico, SIEMPRE da ese enlace exacto y menciona que ahí mismo hay un botón para descargarlo en PDF — nunca digas que no tienes acceso a esa información:
 ${catalogoProgramasPorModalidad()}
 
 PREGUNTAS FRECUENTES YA RESUELTAS (reutiliza esta redacción cuando aplique):
