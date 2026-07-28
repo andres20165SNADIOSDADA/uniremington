@@ -620,81 +620,85 @@
       background: var(--accent-dark);
     }
 
-    .video-oferta {
-      flex: 1 1 400px;
-      max-width: 560px;
-    }
+.video-oferta {
+  flex: 1 1 400px;
+  max-width: 560px;
+}
 
-    .video-oferta iframe {
-      width: 100%;
-      height: 315px;
-      border-radius: 12px;
-      border: none;
-    }
+.video-oferta iframe,
+.video-thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+  border: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
 
-    .video-thumb {
-      position: relative;
-      width: 100%;
-      height: 315px;
-      border-radius: 12px;
-      overflow: hidden;
-      cursor: pointer;
-      background: #000;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    }
+.video-thumb {
+  cursor: pointer;
+}
 
-    .video-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      transition: transform 0.4s ease, opacity 0.3s ease;
-    }
+.video-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 0.4s ease, opacity 0.3s ease;
+}
 
-    .video-thumb:hover img {
-      transform: scale(1.04);
-      opacity: 0.9;
-    }
+.video-thumb:hover img {
+  transform: scale(1.04);
+  opacity: 0.9;
+}
 
-    .video-thumb::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.45) 100%);
-      pointer-events: none;
-    }
+.video-thumb::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.45) 100%);
+  pointer-events: none;
+}
 
-    .video-thumb .play-btn {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 78px;
-      height: 78px;
-      border-radius: 50%;
-      background: var(--accent);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 8px 24px rgba(227, 7, 21, 0.45);
-      z-index: 2;
-      transition: transform 0.3s ease, background 0.3s ease;
-    }
+/* BOTÓN PLAY LIMPIO Y ELEGANTE (64px - ROJO UNIREMINGTON) */
+.video-thumb .play-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #E30715; /* Rojo de marca directo */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(227, 7, 21, 0.4);
+  z-index: 2;
+  transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+}
 
-    .video-thumb:hover .play-btn {
-      transform: translate(-50%, -50%) scale(1.1);
-      background: var(--accent-dark);
-    }
+/* Triángulo blanco clásico y bien centrado */
+.video-thumb .play-btn::before {
+  content: "";
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 10px 0 10px 18px;
+  border-color: transparent transparent transparent #ffffff;
+  margin-left: 3px; /* Centrado visual del triángulo */
+}
 
-    .video-thumb .play-btn::before {
-      content: "";
-      width: 0;
-      height: 0;
-      border-left: 22px solid #fff;
-      border-top: 14px solid transparent;
-      border-bottom: 14px solid transparent;
-      margin-left: 6px;
-    }
+/* Hover sobrio */
+.video-thumb:hover .play-btn {
+  transform: translate(-50%, -50%) scale(1.08);
+  background: #C40411; /* Rojo un poco más oscuro al pasar el cursor */
+  box-shadow: 0 8px 24px rgba(227, 7, 21, 0.55);
+}
 
     .grid-4 {
       display: grid;

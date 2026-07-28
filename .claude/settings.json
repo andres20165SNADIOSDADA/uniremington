@@ -143,7 +143,25 @@
       "Bash(curl -s -m 10 -o /dev/null -w '%{http_code}' http://localhost:3000/facultad/facultad-de-medicina-veterinaria)",
       "Bash(echo \"$\\(curl -s -m 10 -o /dev/null -w '%{http_code}' http://localhost:3000/facultad/facultad-de-medicina-veterinaria\\)  medicina-veterinaria\")",
       "Bash(curl -s -m 10 -o /dev/null -w '%{http_code}' http://localhost:3000/facultad/facultad-medicina-veterinaria)",
-      "Bash(echo \"$\\(curl -s -m 10 -o /dev/null -w '%{http_code}' http://localhost:3000/facultad/facultad-medicina-veterinaria\\)  facultad-medicina-veterinaria\")"
+      "Bash(echo \"$\\(curl -s -m 10 -o /dev/null -w '%{http_code}' http://localhost:3000/facultad/facultad-medicina-veterinaria\\)  facultad-medicina-veterinaria\")",
+      "Bash(npx vercel *)",
+      "Bash(node measure-banner.js)",
+      "Bash(node shot.js \"http://localhost:3000/\" tablet1024.png 0)",
+      "Bash(node shot1024.js)",
+      "PowerShell(Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force; Start-Sleep -Milliseconds 500; Set-Location \"d:\\\\Remington\\\\OneDrive\\\\OneDrive - Corporacion Universitaria Remington\\\\Documents\\\\website\\\\app\"; Start-Process -FilePath node -ArgumentList \"server.js\" -WindowStyle Hidden -RedirectStandardOutput \"..\\\\server.out.log\" -RedirectStandardError \"..\\\\server.err.log\"; Start-Sleep -Seconds 2; try { \\(Invoke-WebRequest http://localhost:3000/ -UseBasicParsing\\).StatusCode } catch { $_.Exception.Message })",
+      "Bash(node chat-mobile.js)",
+      "Bash(node hero-mobile2.js)",
+      "Bash(git commit -m ' *)",
+      "Bash(curl -s -o /dev/null -w \"home: %{http_code}\\\\n\" \"https://uniremington.vercel.app/\")",
+      "Bash(curl -s -o /dev/null -w \"http:%{http_code}\\\\n\" \"http://localhost:3000/plan/medicina\")",
+      "Bash(curl -s -X POST \"https://uniremington.vercel.app/api/chat\" -H \"Content-Type: application/json\" -d '{\"message\":\"Cual es el pensum de medicina?\"}')",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" \"https://uniremington.vercel.app/plan/medicina\")",
+      "Bash(grep -viE \"^d|app$|\\\\.git$|\\\\.vercel$\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" \"http://localhost:3000/facultades/facultad-de-ciencias-empresariales/maestria-en-administracion/\")",
+      "Bash(node shot-media-full.js)",
+      "Bash(curl -s -o /dev/null -w \"img1: %{http_code}\\\\n\" \"https://uniremington.vercel.app/media/campanas/maestria-ciencias-salud.jpg\")",
+      "Bash(curl -s -o /dev/null -w \"img2: %{http_code}\\\\n\" \"https://uniremington.vercel.app/media/campanas/maestria-clinica-veterinaria.jpg\")",
+      "Bash(curl -s -o /dev/null -w \"img3: %{http_code}\\\\n\" \"https://uniremington.vercel.app/media/campanas/maestria-administracion.jpg\")"
     ]
   }
 }
