@@ -257,6 +257,25 @@ app.use((req, res, next) => {
   next();
 });
 
+// Límite de tasa general por IP (defensa básica contra flood/scraping agresivo a nivel de
+// aplicación; el volumen de red lo absorbe Vercel). Antes solo los formularios de leads y el
+// chat tenían límite propio — el resto del sitio (páginas, sitemap, etc.) no tenía ninguno.
+// Umbral generoso a propósito: no debe afectar a un visitante real navegando ni a un
+// crawler legítimo, solo cortar ráfagas claramente automatizadas.
+const GLOBAL_RATE_LIMIT = 300; // solicitudes
+const GLOBAL_RATE_WINDOW_MS = 60_000; // por minuto
+const globalRateMap = new Map();
+app.use((req, res, next) => {
+  const now = Date.now();
+  const hits = (globalRateMap.get(req.ip) || []).filter((t) => now - t < GLOBAL_RATE_WINDOW_MS);
+  hits.push(now);
+  globalRateMap.set(req.ip, hits);
+  if (hits.length > GLOBAL_RATE_LIMIT) {
+    return res.status(429).type('text/plain').send('Demasiadas solicitudes. Intenta de nuevo en un minuto.');
+  }
+  next();
+});
+
 // CSS fusionado para la home (standalone: no carga site.css). Une fonts.css + menu.css
 // en UNA sola respuesta para ahorrarse una solicitud de bloqueo de renderización bajo
 // conexiones lentas; se lee de los mismos archivos fuente en cada arranque, así que nunca
