@@ -229,6 +229,34 @@ app.set('views', join(__dirname, 'views'));
 // (igual para todas las visitas), lo que rompería el límite de tasa por IP del chat.
 app.set('trust proxy', 1);
 
+// Encabezados de seguridad en todas las respuestas. La CSP permite 'unsafe-inline' en
+// script/style porque el sitio usa bloques <script>/style="" inline en varias plantillas
+// (migración desde WordPress); igual bloquea clickjacking, sniffing de MIME, inyección de
+// <object>/plugins, y limita a qué orígenes puede conectarse/incrustar el navegador.
+const CSP = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline'",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: https:",
+  "font-src 'self' data:",
+  "connect-src 'self' https://api.rss2json.com",
+  "frame-src 'self' https://www.youtube.com https://apps.clientify.net",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'self'",
+  "upgrade-insecure-requests",
+].join('; ');
+app.use((req, res, next) => {
+  res.set('X-Frame-Options', 'SAMEORIGIN');
+  res.set('X-Content-Type-Options', 'nosniff');
+  res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+  res.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  res.set('Content-Security-Policy', CSP);
+  next();
+});
+
 // CSS fusionado para la home (standalone: no carga site.css). Une fonts.css + menu.css
 // en UNA sola respuesta para ahorrarse una solicitud de bloqueo de renderización bajo
 // conexiones lentas; se lee de los mismos archivos fuente en cada arranque, así que nunca
