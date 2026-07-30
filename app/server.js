@@ -2150,6 +2150,11 @@ app.get('/sitemap.xml', (req, res) => {
     `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${body}\n</urlset>\n`);
 });
 
+// "/derecho/" en WordPress apuntaba (mal) a la especialización de Derecho Laboral; en el
+// sitio migrado da 404. Redirige al pregrado de Derecho, que es lo que un visitante/buscador
+// espera encontrar en esa ruta.
+app.get('/derecho/', (req, res) => res.redirect(301, '/facultades/facultad-de-ciencias-juridicas-y-politicas/derecho-presencial/'));
+
 // ---------- OPCIÓN A: enrutador de las URLs originales de WordPress ----------
 // Debe ir al final: resuelve cualquier ruta contra el índice de URLs originales.
 app.get(/.*/, (req, res, next) => {
