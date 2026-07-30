@@ -1623,9 +1623,9 @@ function normalizarTelefono(tel) {
   return `+57${digitos}`;
 }
 
-async function enviarLeadAClientify({ nombre, correo, telefono, remarks, company }) {
+async function enviarLeadAClientify({ nombre, correo, telefono, remarks, company, sede }) {
   if (!CLIENTIFY_API_TOKEN) {
-    console.error('CLIENTIFY_API_TOKEN no está configurada; lead NO enviado a Clientify:', { nombre, correo, telefono, remarks, company });
+    console.error('CLIENTIFY_API_TOKEN no está configurada; lead NO enviado a Clientify:', { nombre, correo, telefono, remarks, company, sede });
     return;
   }
   try {
@@ -1633,10 +1633,11 @@ async function enviarLeadAClientify({ nombre, correo, telefono, remarks, company
     const res = await fetch(CLIENTIFY_CONTACTS_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Token ${CLIENTIFY_API_TOKEN}` },
-      // "company" es el campo confirmado que fija la sede/empresa del contacto (sin él,
-      // Clientify lo asocia con una sede por defecto). "remarks" no se refleja en ningún
-      // lado visible del contacto; se envía también como "description" por si ese es el
-      // campo real que Clientify sí guarda y muestra.
+      // "custom_fields" con field="Ciudad (Uniremington)" es el campo confirmado (viendo la
+      // respuesta real de la API sobre un contacto de prueba) que muestra la sede en el
+      // panel del contacto; "company" se deja también como respaldo visible. "remarks" y
+      // "description" sí se guardan (confirmado por API) aunque no aparezcan en la pestaña
+      // "Notas" de la interfaz.
       body: JSON.stringify({
         first_name, last_name,
         email: correo || undefined,
@@ -1644,6 +1645,7 @@ async function enviarLeadAClientify({ nombre, correo, telefono, remarks, company
         company: company || 'Uniremington',
         remarks,
         description: remarks,
+        custom_fields: sede ? [{ field: 'Ciudad (Uniremington)', value: sede }] : undefined,
       }),
     });
     if (!res.ok) console.error('Clientify rechazó el lead', res.status, await res.text().catch(() => ''));
@@ -1682,7 +1684,7 @@ app.post('/solicitar-info', async (req, res) => {
     // Con await: en serverless (Vercel), la función puede congelarse apenas se envía la
     // respuesta, así que un fire-and-forget aquí podía perder el envío a Clientify sin
     // dejar rastro. Se espera (con margen de solo unos cientos de ms) antes de responder.
-    await enviarLeadAClientify({ nombre, correo, telefono, remarks, company: sedeReal ? `Uniremington ${sedeReal}` : undefined });
+    await enviarLeadAClientify({ nombre, correo, telefono, remarks, company: sedeReal ? `Uniremington ${sedeReal}` : undefined, sede: sedeReal || undefined });
   }
   if (wantsJson(req)) {
     return res.json({ ok: true, message: 'Un asesor académico te contactará muy pronto.' });
