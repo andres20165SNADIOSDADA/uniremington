@@ -1623,7 +1623,74 @@ function normalizarTelefono(tel) {
   return `+57${digitos}`;
 }
 
-async function enviarLeadAClientify({ nombre, correo, telefono, remarks, company, sede }) {
+// Compara ignorando acentos/mayúsculas/espacios repetidos, para no depender de que el
+// catálogo y las opciones fijas de Clientify coincidan carácter por carácter.
+function normalizarTexto(s) {
+  return String(s || '')
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+}
+
+// Texto EXACTO de las opciones del campo "Seleccione un programa" en Clientify (lista de
+// selección fija, tal como la configuraron — no la tocamos, mapeamos hacia ella).
+const CLIENTIFY_OPCIONES_PROGRAMA = [
+  'Administración de Empresas', 'Administración de Empresas Agropecuarias',
+  'Administración de Empresas y Finanzas', 'Administración de Negocios',
+  'Contaduría Pública', 'Derecho', 'Diseño de Entornos y Espacios Virtuales', 'Enfermería',
+  'Ingeniería Ambiental', 'Ingeniería Civil', 'Ingeniería de Sistemas',
+  'Ingeniería en Seguridad y  Salud en el Trabajo', 'Ingeniería Industrial', 'Medicina',
+  'Medicina Veterinaria', 'Mercadeo y Estrategia Comercial', 'Nutrición y Dietética',
+  'Profesional en Diseño Gráfico', 'Tecnología en Desarrollo de Software',
+  'Tecnología en Regencia de Farmacia', 'Especialización en Alta Gerencia',
+  'Especialización en Analítica de Datos', 'Especialización en Auditoría y Control',
+  'Especialización en Ciencias Forenses Animales',
+  'Especialización en Cumplimiento Anti Lavado de Activos y Contra la Financiación del Terrorismo',
+  'Especialización en Derecho Laboral', 'Especialización en Derecho Penal',
+  'Especialización en Dirección de Operaciones y Mejoramiento Continuo',
+  'Especialización en Diagnóstico por Imagen de Pequeñas Especies',
+  'Especialización en Gerencia de proyectos', 'Especialización en Gerencia del Desarrollo Humano',
+  'Especialización en Ginecología y Obstetricia',
+  'Especialización en Gobierno de Tecnologías de la Información',
+  'Especialización en Medicina de Fauna Silvestre y Exóticos',
+  'Especialización en Medicina Deportiva Equina', 'Especialización en Medicina Familiar',
+  'Especialización en Pediatría', 'Especialización en Procedimientos en Derecho de Familia',
+  'Especialización en Psiquiatría',
+  'Especialización en Responsabilidad Contractual y Extracontractual Del Estado',
+  'Especialización en Sanidad y Producción Porcina', 'Maestría en Administración',
+  'Maestría en Ciencias de la Salud', 'Maestría en Clínica y Cirugía Veterinaria',
+  'Maestría en Gerencia de Tecnologías en la Información',
+  'Especialización en Derecho Penal y Procesal Penal',
+];
+const CLIENTIFY_PROGRAMA_POR_NORMALIZADO = new Map(
+  CLIENTIFY_OPCIONES_PROGRAMA.map((opcion) => [normalizarTexto(opcion), opcion])
+);
+// Casos donde el nombre del catálogo difiere en redacción (no solo mayúsculas/acentos) del
+// texto exacto que espera la opción de Clientify.
+const CLIENTIFY_PROGRAMA_ALIAS = {
+  [normalizarTexto('Diseño de Espacios y Entornos Virtuales')]: 'Diseño de Entornos y Espacios Virtuales',
+  [normalizarTexto('Maestría en Gerencia de Tecnologías de la Información')]: 'Maestría en Gerencia de Tecnologías en la Información',
+};
+
+// El título de la página trae el sufijo " - Presencial/Virtual/Distancia"; el campo de
+// Clientify solo lista el nombre base del programa.
+function mapearProgramaClientify(tituloPagina) {
+  const base = String(tituloPagina || '').replace(/\s*-\s*(Presencial|Virtual|Distancia)\s*$/i, '').trim();
+  const norm = normalizarTexto(base);
+  return CLIENTIFY_PROGRAMA_ALIAS[norm] || CLIENTIFY_PROGRAMA_POR_NORMALIZADO.get(norm);
+}
+
+// El campo "Modalidad" de Clientify solo tiene 2 opciones fijas ("Presencial - Distancia" y
+// "Virtual"), mientras el catálogo maneja 3 modalidades reales; Distancia se agrupa con
+// Presencial en esa única opción combinada.
+function mapearModalidadClientify(modalidad) {
+  if (modalidad === 'Virtual') return 'Virtual';
+  if (modalidad === 'Presencial' || modalidad === 'Distancia') return 'Presencial - Distancia';
+  return undefined;
+}
+
+async function enviarLeadAClientify({ nombre, correo, telefono, remarks, company, sede, programa, modalidad }) {
   if (!CLIENTIFY_API_TOKEN) {
     console.error('CLIENTIFY_API_TOKEN no está configurada; lead NO enviado a Clientify:', { nombre, correo, telefono, remarks, company, sede });
     return;
@@ -1637,7 +1704,8 @@ async function enviarLeadAClientify({ nombre, correo, telefono, remarks, company
       // respuesta real de la API sobre un contacto de prueba) que muestra la sede en el
       // panel del contacto; "company" se deja también como respaldo visible. "remarks" y
       // "description" sí se guardan (confirmado por API) aunque no aparezcan en la pestaña
-      // "Notas" de la interfaz.
+      // "Notas" de la interfaz. "Modalidad" y "Seleccione un programa" son listas fijas ya
+      // configuradas en Clientify; se mapean desde el catálogo en vez de tocar esas opciones.
       body: JSON.stringify({
         first_name, last_name,
         email: correo || undefined,
@@ -1645,7 +1713,11 @@ async function enviarLeadAClientify({ nombre, correo, telefono, remarks, company
         company: company || 'Uniremington',
         remarks,
         description: remarks,
-        custom_fields: sede ? [{ field: 'Ciudad (Uniremington)', value: sede }] : undefined,
+        custom_fields: [
+          sede && { field: 'Ciudad (Uniremington)', value: sede },
+          mapearModalidadClientify(modalidad) && { field: 'Modalidad', value: mapearModalidadClientify(modalidad) },
+          mapearProgramaClientify(programa) && { field: 'Seleccione un programa', value: mapearProgramaClientify(programa) },
+        ].filter(Boolean),
       }),
     });
     if (!res.ok) console.error('Clientify rechazó el lead', res.status, await res.text().catch(() => ''));
@@ -1684,7 +1756,13 @@ app.post('/solicitar-info', async (req, res) => {
     // Con await: en serverless (Vercel), la función puede congelarse apenas se envía la
     // respuesta, así que un fire-and-forget aquí podía perder el envío a Clientify sin
     // dejar rastro. Se espera (con margen de solo unos cientos de ms) antes de responder.
-    await enviarLeadAClientify({ nombre, correo, telefono, remarks, company: sedeReal ? `Uniremington ${sedeReal}` : undefined, sede: sedeReal || undefined });
+    await enviarLeadAClientify({
+      nombre, correo, telefono, remarks,
+      company: sedeReal ? `Uniremington ${sedeReal}` : undefined,
+      sede: sedeReal || undefined,
+      programa,
+      modalidad: modalidadPrograma,
+    });
   }
   if (wantsJson(req)) {
     return res.json({ ok: true, message: 'Un asesor académico te contactará muy pronto.' });
