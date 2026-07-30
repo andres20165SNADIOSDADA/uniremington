@@ -1634,7 +1634,7 @@ async function enviarLeadAClientify({ nombre, correo, telefono, remarks }) {
 }
 
 // solicitud de información de un programa (lead → Clientify)
-app.post('/solicitar-info', (req, res) => {
+app.post('/solicitar-info', async (req, res) => {
   if (leadRateLimited(req.ip)) {
     const msg = 'Ya recibimos varias solicitudes tuyas. Un asesor te contactará pronto; si es urgente, escríbenos por WhatsApp.';
     if (wantsJson(req)) return res.status(429).json({ ok: false, message: msg });
@@ -1645,7 +1645,10 @@ app.post('/solicitar-info', (req, res) => {
   if (!pf_hp) { // campo trampa para bots: si viene lleno, se descarta en silencio
     const remarks = `Formulario web: Solicitar información — Programa: ${programa || '(no especificado)'}` +
       (snies ? ` (SNIES ${snies})` : '') + (sede ? ` — Sede de interés: ${sede}` : '');
-    enviarLeadAClientify({ nombre, correo, telefono, remarks });
+    // Con await: en serverless (Vercel), la función puede congelarse apenas se envía la
+    // respuesta, así que un fire-and-forget aquí podía perder el envío a Clientify sin
+    // dejar rastro. Se espera (con margen de solo unos cientos de ms) antes de responder.
+    await enviarLeadAClientify({ nombre, correo, telefono, remarks });
   }
   if (wantsJson(req)) {
     return res.json({ ok: true, message: 'Un asesor académico te contactará muy pronto.' });
@@ -1673,7 +1676,7 @@ app.get('/contacto', (req, res) => {
       </form>` },
     seccion: null, relacionadas: [] });
 });
-app.post('/contacto', (req, res) => {
+app.post('/contacto', async (req, res) => {
   if (leadRateLimited(req.ip)) {
     const msg = 'Ya recibimos varios mensajes tuyos. Un asesor te contactará pronto; si es urgente, escríbenos por WhatsApp.';
     if (wantsJson(req)) return res.status(429).json({ ok: false, message: msg });
@@ -1683,7 +1686,7 @@ app.post('/contacto', (req, res) => {
   const { nombre, correo, telefono, mensaje, pf_hp } = req.body || {};
   if (!pf_hp) {
     const remarks = `Formulario web: Contacto general — Mensaje: ${mensaje || '(sin mensaje)'}`;
-    enviarLeadAClientify({ nombre, correo, telefono, remarks });
+    await enviarLeadAClientify({ nombre, correo, telefono, remarks });
   }
   if (wantsJson(req)) return res.json({ ok: true, message: 'Hemos recibido tu mensaje. Un asesor te contactará pronto.' });
   res.render('page', { ...base, title: 'Gracias — Uniremington',
