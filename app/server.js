@@ -551,6 +551,15 @@ function sedeContent(html, sedeSlug) {
       });
       return `<div class="hb-grid sede-ofertas">${out}</div>`;
     });
+  // 4 bis) En 5 sedes (Ipiales, Palmira, Pasto, Rionegro, Yopal) el encabezado "Noticias
+  //    Uniremington" quedó mal ubicado justo antes de los datos de contacto — se detecta porque,
+  //    a diferencia del real, este NO antecede al grid de noticias. Marca justo el punto donde
+  //    empieza la sección de contacto, así que se RENOMBRA (no se borra) a "Dirección y canales
+  //    de contacto" — salvo que esa sede ya traiga ese encabezado real en otro lado (Pasto/Yopal),
+  //    en cuyo caso solo se descarta para no duplicarlo.
+  html = html.replace(/(?:<hr>\s*)?<h2>Noticias Uniremington<\/h2>(?!\s*<div class="news")/i, (m) =>
+    /<h[1-4]\b[^>]*>[^<]*(?:Dirección y canales de contacto|Cómo llegar)[^<]*<\/h[1-4]>/i.test(html)
+      ? '' : '<h2>Dirección y canales de contacto</h2>');
   // 4b) "Dirección y canales de contacto" (o "¿Cómo llegar a…?", según la sede): se localiza
   //     por el último encabezado antes del mapa (el texto del título varía) y se reemplaza por
   //     la tarjeta unificada, sin importar qué formato traía el HTML original.
@@ -577,6 +586,10 @@ function sedeContent(html, sedeSlug) {
     const after = html.slice(mapEnd).replace(/<div class="callout">[\s\S]*?<\/div>/gi, '');
     html = before + after;
   }
+  // El "Noticias Uniremington" huérfano ya se quitó en el paso 4 bis (arriba); puede haber
+  // dejado un "</p>" o "<hr>" sueltos justo antes del encabezado real — se limpian aquí.
+  html = html.replace(/<\/p>\s*(?=<hr>\s*<h2>Noticias Uniremington<\/h2>)/i, '')
+             .replace(/(?:<hr>\s*){2,}(?=<h2>Noticias Uniremington<\/h2>)/i, '<hr>');
   return html;
 }
 // GEO: preguntas frecuentes del home (fuente única para el HTML visible y el schema FAQPage).
