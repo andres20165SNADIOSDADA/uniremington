@@ -21,8 +21,21 @@
           headers: { 'Accept': 'application/json', 'X-Requested-With': 'fetch' },
           body: new URLSearchParams(new FormData(form)),
         })
-          .then(function (r) { return r.json().catch(function () { return { ok: true }; }); })
-          .then(function (data) {
+          .then(function (r) {
+            return r.json().catch(function () { return {}; }).then(function (data) {
+              return { okHttp: r.ok, data: data };
+            });
+          })
+          .then(function (result) {
+            if (btn) { btn.disabled = false; btn.classList.remove('loading'); btn.innerHTML = orig; }
+            var data = result.data;
+            if (!result.okHttp || data.ok === false) {
+              var err = form.querySelector('.lead-err') || document.createElement('p');
+              err.className = 'lead-err';
+              err.textContent = (data && data.message) || 'No pudimos enviar el formulario. Intenta de nuevo en unos minutos.';
+              if (!err.parentNode) form.appendChild(err);
+              return;
+            }
             var ok = document.createElement('div');
             ok.className = 'lead-ok';
             ok.setAttribute('role', 'status');

@@ -1587,21 +1587,77 @@ const wantsJson = (req) =>
   req.xhr || req.get('x-requested-with') === 'fetch' ||
   (req.get('accept') || '').includes('application/json');
 
-// solicitud de información de un programa (lead) — se guardará en la BD (Fase 3)
+// ---------- Leads → CRM Clientify (mismo CRM que ya usan las campañas de Mercadeo) ----------
+// El token vive SOLO en la variable de entorno CLIENTIFY_API_TOKEN, nunca en el código.
+const CLIENTIFY_API_TOKEN = process.env.CLIENTIFY_API_TOKEN;
+const CLIENTIFY_CONTACTS_URL = 'https://api.clientify.net/v1/contacts/';
+
+// Límite de tasa por IP para los formularios de lead: antes no tenían ninguna protección
+// contra bots/spam más allá de los campos "required" del navegador.
+const LEAD_RATE_LIMIT = 5; // envíos
+const LEAD_RATE_WINDOW_MS = 60_000; // por minuto
+const leadRateMap = new Map();
+function leadRateLimited(ip) {
+  const now = Date.now();
+  const hits = (leadRateMap.get(ip) || []).filter((t) => now - t < LEAD_RATE_WINDOW_MS);
+  hits.push(now);
+  leadRateMap.set(ip, hits);
+  return hits.length > LEAD_RATE_LIMIT;
+}
+
+// Reparte "Nombre completo" en first_name/last_name (mejor esfuerzo: la API de Clientify
+// exige ambos campos por separado y el sitio solo pide un campo de nombre).
+function partirNombre(nombreCompleto) {
+  const partes = String(nombreCompleto || '').trim().split(/\s+/);
+  return { first_name: partes[0] || '(sin nombre)', last_name: partes.slice(1).join(' ') || '-' };
+}
+
+// Nunca deja que una falla de Clientify (caído, token vencido, límite de tasa) bloquee la
+// confirmación al estudiante: se registra el error en el log del servidor y se sigue.
+async function enviarLeadAClientify({ nombre, correo, telefono, remarks }) {
+  if (!CLIENTIFY_API_TOKEN) {
+    console.error('CLIENTIFY_API_TOKEN no está configurada; lead NO enviado a Clientify:', { nombre, correo, telefono, remarks });
+    return;
+  }
+  try {
+    const { first_name, last_name } = partirNombre(nombre);
+    const res = await fetch(CLIENTIFY_CONTACTS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Token ${CLIENTIFY_API_TOKEN}` },
+      body: JSON.stringify({ first_name, last_name, email: correo || undefined, phone: telefono || undefined, remarks }),
+    });
+    if (!res.ok) console.error('Clientify rechazó el lead', res.status, await res.text().catch(() => ''));
+  } catch (err) {
+    console.error('Error de red enviando lead a Clientify:', err);
+  }
+}
+
+// solicitud de información de un programa (lead → Clientify)
 app.post('/solicitar-info', (req, res) => {
-  console.log('Solicitud de información:', req.body);
+  if (leadRateLimited(req.ip)) {
+    const msg = 'Ya recibimos varias solicitudes tuyas. Un asesor te contactará pronto; si es urgente, escríbenos por WhatsApp.';
+    if (wantsJson(req)) return res.status(429).json({ ok: false, message: msg });
+    return res.status(429).render('page', { ...base, title: 'Espera un momento — Uniremington',
+      item: { title: 'Espera un momento', content_html: `<p>${msg}</p>` }, seccion: null, relacionadas: [] });
+  }
+  const { nombre, correo, telefono, programa, snies, sede, pf_hp } = req.body || {};
+  if (!pf_hp) { // campo trampa para bots: si viene lleno, se descarta en silencio
+    const remarks = `Formulario web: Solicitar información — Programa: ${programa || '(no especificado)'}` +
+      (snies ? ` (SNIES ${snies})` : '') + (sede ? ` — Sede de interés: ${sede}` : '');
+    enviarLeadAClientify({ nombre, correo, telefono, remarks });
+  }
   if (wantsJson(req)) {
     return res.json({ ok: true, message: 'Un asesor académico te contactará muy pronto.' });
   }
   res.render('page', { ...base, title: 'Solicitud enviada — Uniremington',
     item: { title: '¡Gracias por tu interés!', content_html:
-      `<p>Hemos recibido tu solicitud sobre <strong>${(req.body.programa || 'nuestro programa')}</strong>. ` +
+      `<p>Hemos recibido tu solicitud sobre <strong>${(programa || 'nuestro programa')}</strong>. ` +
       `Un asesor académico te contactará muy pronto.</p>` +
       `<p><a class="btn btn-oro" href="/programas">Ver más programas</a></p>` },
     seccion: null, relacionadas: [] });
 });
 
-// contacto (endpoint de formulario — se conectará a la base de datos)
+// contacto (endpoint de formulario → Clientify)
 app.get('/contacto', (req, res) => {
   res.render('page', { ...base, title: 'Contacto — Uniremington',
     item: { title:'Contacto', content_html: `
@@ -1611,13 +1667,23 @@ app.get('/contacto', (req, res) => {
         <input name="correo" type="email" placeholder="Correo electrónico" required autocomplete="email" style="padding:12px;border:1px solid #dbe3ec;border-radius:9px">
         <input name="telefono" type="tel" placeholder="Teléfono / WhatsApp" autocomplete="tel" style="padding:12px;border:1px solid #dbe3ec;border-radius:9px">
         <textarea name="mensaje" placeholder="Tu mensaje" rows="4" style="padding:12px;border:1px solid #dbe3ec;border-radius:9px"></textarea>
+        <input type="text" name="pf_hp" value="" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
         <button class="btn btn-oro" type="submit">Enviar</button>
       </form>` },
     seccion: null, relacionadas: [] });
 });
 app.post('/contacto', (req, res) => {
-  // TODO: guardar en la base de datos de leads (Fase 3)
-  console.log('Lead recibido:', req.body);
+  if (leadRateLimited(req.ip)) {
+    const msg = 'Ya recibimos varios mensajes tuyos. Un asesor te contactará pronto; si es urgente, escríbenos por WhatsApp.';
+    if (wantsJson(req)) return res.status(429).json({ ok: false, message: msg });
+    return res.status(429).render('page', { ...base, title: 'Espera un momento — Uniremington',
+      item: { title: 'Espera un momento', content_html: `<p>${msg}</p>` }, seccion: null, relacionadas: [] });
+  }
+  const { nombre, correo, telefono, mensaje, pf_hp } = req.body || {};
+  if (!pf_hp) {
+    const remarks = `Formulario web: Contacto general — Mensaje: ${mensaje || '(sin mensaje)'}`;
+    enviarLeadAClientify({ nombre, correo, telefono, remarks });
+  }
   if (wantsJson(req)) return res.json({ ok: true, message: 'Hemos recibido tu mensaje. Un asesor te contactará pronto.' });
   res.render('page', { ...base, title: 'Gracias — Uniremington',
     item: { title:'¡Gracias por escribirnos!', content_html:'<p>Hemos recibido tu mensaje. Un asesor te contactará pronto.</p><p><a class="btn btn-oro" href="/">Volver al inicio</a></p>' },
