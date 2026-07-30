@@ -63,7 +63,17 @@ function stripHtml(html){
 // Cuerpo limpio para la metadescripción: quita basura de extracción (fallback de visores,
 // CSS residual, "Descargar" suelto) que producía descripciones duplicadas/pobres.
 function cleanBody(item){
-  return stripHtml(item.excerpt || item.content_html)
+  // Las páginas de facultad empiezan con un menú de "enlaces rápidos" (íconos + texto de
+  // navegación, ej. "groups Nuestro equipo arrow_forward"); sin quitarlo, la metadescripción
+  // terminaba siendo ese menú en vez de una descripción real de la facultad.
+  const sinQuickLinks = (item.excerpt || item.content_html || '')
+    .replace(/<div class="quick-links">[\s\S]*?<\/div>/gi, ' ')
+    // caption "Decano/a <nombre>" bajo la foto del decano/a: no es una descripción de la facultad
+    .replace(/<strong>\s*Decan[oa]\s*[\s\S]*?<\/strong>/gi, ' ')
+    // botones de llamada a la acción (ej. "Más información", "Nuestro Equipo"): nunca son
+    // una descripción, solo el texto de un botón.
+    .replace(/<a class="btn[^"]*"[^>]*>[\s\S]*?<\/a>/gi, ' ');
+  return stripHtml(sinQuickLinks)
     .replace(/(?:ERROR:?\s*)?An iframe should be displayed here[^.]*\.?/gi, ' ')   // fallback de iframe
     .replace(/Please update your browser[^.]*\.?/gi, ' ')                          // fallback de flipbook/visor PDF
     .replace(/@media[^{]*\{[^}]*\}|[.#][\w-]+[^{]*\{[^}]*\}/g, ' ')                 // CSS residual
