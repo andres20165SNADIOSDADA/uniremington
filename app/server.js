@@ -1627,6 +1627,7 @@ async function enviarLeadAClientify({ nombre, correo, telefono, remarks }) {
       body: JSON.stringify({ first_name, last_name, email: correo || undefined, phone: telefono || undefined, remarks }),
     });
     if (!res.ok) console.error('Clientify rechazó el lead', res.status, await res.text().catch(() => ''));
+    else console.log('Lead creado en Clientify OK', res.status);
   } catch (err) {
     console.error('Error de red enviando lead a Clientify:', err);
   }
