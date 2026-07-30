@@ -34,6 +34,8 @@
     <form method="post" action="/solicitar-info" class="pf js-lead">
       <input type="hidden" name="programa" value="<%= item.title %>">
       <input type="hidden" name="snies" value="<%= ficha && ficha.snies ? ficha.snies : '' %>">
+      <input type="hidden" name="modalidad" value="<%= item.modalidad || '' %>">
+      <input type="hidden" name="sedes_disponibles" value="<%= (item.sedes || []).join(', ') %>">
       <input name="nombre" placeholder="Nombre completo" required aria-label="Nombre completo" autocomplete="name">
       <input name="correo" type="email" placeholder="Correo electrónico" required aria-label="Correo electrónico" autocomplete="email">
       <input name="telefono" type="tel" inputmode="tel" placeholder="Teléfono / WhatsApp" required aria-label="Teléfono o WhatsApp" autocomplete="tel">
@@ -188,10 +190,16 @@
     <p class="sub">Es gratis y sin compromiso.</p>
     <input type="hidden" name="programa" value="<%= item.title %>">
     <input type="hidden" name="snies" value="<%= ficha && ficha.snies ? ficha.snies : '' %>">
+    <input type="hidden" name="modalidad_pagina" value="<%= item.modalidad || '' %>">
+    <input type="hidden" name="sedes_disponibles" value="<%= (item.sedes || []).join(', ') %>">
     <div class="f">
       <input name="nombre" placeholder="Nombre completo" required aria-label="Nombre completo" autocomplete="name">
       <input name="correo" type="email" placeholder="Correo electrónico" required aria-label="Correo electrónico" autocomplete="email">
       <input name="telefono" type="tel" inputmode="tel" placeholder="Teléfono / WhatsApp" required aria-label="Teléfono o WhatsApp" autocomplete="tel">
+      <select name="sede" aria-label="Sede de interés">
+        <option value="">Sede de interés</option>
+        <% (item.sedes || []).forEach(function(s){ %><option><%= s %></option><% }) %>
+      </select>
       <select name="modalidad" aria-label="Modalidad de interés">
         <option value="">Modalidad de interés</option>
         <option>Presencial</option><option>Distancia</option><option>Virtual</option>

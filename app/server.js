@@ -1641,10 +1641,20 @@ app.post('/solicitar-info', async (req, res) => {
     return res.status(429).render('page', { ...base, title: 'Espera un momento — Uniremington',
       item: { title: 'Espera un momento', content_html: `<p>${msg}</p>` }, seccion: null, relacionadas: [] });
   }
-  const { nombre, correo, telefono, programa, snies, sede, pf_hp } = req.body || {};
+  const { nombre, correo, telefono, programa, snies, sede, modalidad, modalidad_pagina, sedes_disponibles, pf_hp } = req.body || {};
   if (!pf_hp) { // campo trampa para bots: si viene lleno, se descarta en silencio
-    const remarks = `Formulario web: Solicitar información — Programa: ${programa || '(no especificado)'}` +
-      (snies ? ` (SNIES ${snies})` : '') + (sede ? ` — Sede de interés: ${sede}` : '');
+    // modalidad = la modalidad fija de la página (form del hero) o vacío;
+    // modalidad_pagina = lo mismo pero desde el segundo formulario, que ya usa el nombre
+    // "modalidad" para la modalidad de interés seleccionable — se combinan aquí.
+    const modalidadPrograma = modalidad_pagina || modalidad || '';
+    const modalidadInteres = modalidad_pagina ? modalidad : ''; // solo el 2º form tiene ambas
+    const remarks = `Formulario web: Solicitar información` +
+      ` — Programa: ${programa || '(no especificado)'}` +
+      (snies ? ` (SNIES ${snies})` : '') +
+      (modalidadPrograma ? ` — Modalidad del programa: ${modalidadPrograma}` : '') +
+      (sede ? ` — Sede de interés: ${sede}` : '') +
+      (modalidadInteres ? ` — Modalidad de interés: ${modalidadInteres}` : '') +
+      (sedes_disponibles ? ` — Sedes donde se ofrece: ${sedes_disponibles}` : '');
     // Con await: en serverless (Vercel), la función puede congelarse apenas se envía la
     // respuesta, así que un fire-and-forget aquí podía perder el envío a Clientify sin
     // dejar rastro. Se espera (con margen de solo unos cientos de ms) antes de responder.
