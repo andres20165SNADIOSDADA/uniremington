@@ -250,7 +250,7 @@ const CSP = [
   "img-src 'self' data: https:",
   "font-src 'self' data:",
   "connect-src 'self' https://api.rss2json.com",
-  "frame-src 'self' https://www.youtube.com https://apps.clientify.net",
+  "frame-src 'self' https://www.youtube.com https://apps.clientify.net https://www.uniremington.edu.co",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
