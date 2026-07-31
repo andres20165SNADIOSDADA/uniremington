@@ -458,6 +458,36 @@
       border-radius: 999px;
     }
 
+    /* "SOY" en el drawer móvil: antes texto plano con línea divisoria; ahora ícono por
+       público + flecha, mismo lenguaje visual que el megamenú de escritorio (.mi). */
+    .m-soy-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-bottom: 4px;
+    }
+    .m-soy {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 4px;
+      border-radius: 12px;
+      color: var(--dark);
+      transition: background .18s ease;
+    }
+    .m-soy:active { background: color-mix(in srgb, var(--blue) 8%, #fff); }
+    .m-soy-ic {
+      flex: none;
+      width: 38px; height: 38px;
+      display: grid; place-items: center;
+      border-radius: 10px;
+      background: color-mix(in srgb, var(--blue) 9%, #fff);
+      color: var(--blue);
+    }
+    .m-soy-ic .msi { font-size: 1.2rem; }
+    .m-soy-tx { flex: 1; min-width: 0; font-weight: 700; font-size: .95rem; }
+    .m-soy-go { flex: none; font-size: 1rem; color: var(--blue); opacity: .55; }
+
     .drawer-backdrop {
       position: fixed;
       inset: 0;

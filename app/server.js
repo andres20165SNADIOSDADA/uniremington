@@ -705,6 +705,24 @@ Object.keys(INV_AREAS).forEach(slug => {
   if (hrefs.length) invAreaGroups[areaPath] = new Set(hrefs);
 });
 
+// "Volver a X" para las páginas que enlazan las tarjetas de las 4 landing "Soy
+// aspirante/estudiante/egresado/docente": esas páginas de destino suelen ser de un solo
+// nivel (p.ej. /certificados/), así que contentContext() no les arma sidebar/hermanas por
+// no compartir padre con nadie más, y quedaban sin ningún enlace de regreso. Se construye
+// aquí, a partir de las mismas tarjetas reales (si se agrega/edita una tarjeta, esto se
+// actualiza solo), un mapa ruta destino -> página "Soy" de origen.
+const SOY_SLUGS = ['soy-aspirante-uniremington', 'soy-estudiante-uniremington', 'soy-egresado-uniremington', 'soy-docente-uniremington'];
+const soyBacklink = {};
+SOY_SLUGS.forEach(slug => {
+  const item = pageIdx[slug];
+  if (!item) return;
+  const origen = { title: tituloBonito(item.title), href: normPath(item.url || item.orig_path || '') };
+  [...(item.content_html || '').matchAll(/class="btn btn-oro" href="(\/[^"]+)"/g)].forEach(m => {
+    const dest = normPath(m[1]);
+    if (!soyBacklink[dest]) soyBacklink[dest] = origen;
+  });
+});
+
 // Contexto de una página de contenido: breadcrumb multinivel + sidebar de hermanas.
 // Usa el Menú Principal cuando aplica; si no, deriva la jerarquía de la URL (/a/b/c/).
 function contentContext(item){
@@ -713,10 +731,15 @@ function contentContext(item){
   const h1 = labelForPath(path) || tituloBonito(item.title);
   if (sectionIndex[path]){                       // 1) página del menú principal
     const s = sectionIndex[path];
+    // El sidebar de sección no trae "href" (es un agrupador, no una página real) → si esta
+    // página también es destino de una tarjeta "Soy...", ese "Volver a X" es más útil que
+    // no tener ningún enlace de regreso al fondo de la página.
     return { h1, crumbs: [{ label: s.label, href: null }],
-             sidebar: { title: s.label, items: s.items.map(x => ({ ...x, current: x.href === path })) } };
+             sidebar: soyBacklink[path]
+               ? { title: soyBacklink[path].title, href: soyBacklink[path].href, items: [] }
+               : { title: s.label, items: s.items.map(x => ({ ...x, current: x.href === path })) } };
   }
-  if (segs.length < 2) return { h1, crumbs: [], sidebar: null };
+  if (segs.length < 2) return { h1, crumbs: [], sidebar: soyBacklink[path] ? { title: soyBacklink[path].title, href: soyBacklink[path].href, items: [] } : null };
   // 2) jerarquía derivada de la URL
   const crumbs = [];
   const firstAp = '/' + segs[0] + '/';
@@ -750,7 +773,7 @@ function contentContext(item){
   }
   const sidebar = siblings.length > 1
     ? { title: sbTitle, href: pageByPath[parent] ? parent : null, items: siblings }
-    : null;
+    : soyBacklink[path] ? { title: soyBacklink[path].title, href: soyBacklink[path].href, items: [] } : null;
   return { h1, crumbs, sidebar };
 }
 

@@ -23,6 +23,16 @@
   function navIcon(label, section){
     var t = (label || '').toLowerCase();
     var s = (section || '').trim().toUpperCase();
+    // Públicos objetivo (SOY): un ícono propio por audiencia, más específico que los
+    // genéricos de abajo (si no, aspirante/estudiante caían en el mismo "person").
+    if (s.indexOf('SOY') === 0) {
+      if (/aspirante/.test(t)) return 'how_to_reg';
+      if (/estudiante/.test(t)) return 'school';
+      if (/egresad/.test(t)) return 'workspace_premium';
+      if (/profesor|docente/.test(t)) return 'cast_for_education';
+      if (/emplead/.test(t)) return 'badge';
+      return 'person';
+    }
     if (s.indexOf('SEDE') === 0) return 'location_on';
     if (/veterinar|animal/.test(t)) return 'pets';
     if (/ingenier/.test(t)) return 'engineering';
@@ -148,9 +158,15 @@
   <% var soy = menuItems.find(function(x){ return (x.label || '').trim().toUpperCase() === 'SOY'; }); %>
   <% if (soy && soy.children && soy.children.length){ %>
   <span class="mega-eyebrow"><%= soy.label %></span>
-  <% soy.children.forEach(function(c){ %>
-  <a class="m-link" href="<%= c.href %>"<%- attrs(c) %>><%= c.label %></a>
-  <% }) %>
+  <div class="m-soy-list">
+    <% soy.children.forEach(function(c){ %>
+    <a class="m-soy" href="<%= c.href %>"<%- attrs(c) %>>
+      <span class="m-soy-ic"><span class="msi" aria-hidden="true"><%= navIcon(c.label, soy.label) %></span></span>
+      <span class="m-soy-tx"><%= c.label %></span>
+      <span class="m-soy-go msi" aria-hidden="true">arrow_forward</span>
+    </a>
+    <% }) %>
+  </div>
   <% } %>
 
   <a class="m-cta" href="/programas">Explorar Programas &rarr;</a>
