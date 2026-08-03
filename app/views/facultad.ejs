@@ -66,22 +66,26 @@
       <div class="t"><div class="k">Oferta académica</div><h2>Programas de la facultad</h2></div>
       <a class="verlink" href="/programas#<%= fac.slug %>">Ver en el buscador de programas →</a>
     </div>
-    <div class="prog-grid">
-      <% programas.forEach(function(p){ %>
-        <a class="pcard" href="<%= p.url %>" style="--c:<%= fac.color %>;--c2:<%= fac.colorDark %>">
-          <span class="cap">
-            <span class="ico"><span class="msi"><%= p.ico %></span></span>
-            <% if (p.nivel){ %><span class="niv"><%= p.nivel %></span><% } %>
-          </span>
-          <span class="bd">
-            <span class="fac"><%= fac.nombre %></span>
-            <h3><%= p.title %></h3>
-            <span class="chips"><% if (p.modalidad){ %><span class="c-mod"><%= p.modalidad %></span><% } %></span>
-            <span class="sede"><% if (p.sedes.length){ %><span class="msi">location_on</span> <%= p.sedes.length === 1 ? p.sedes[0] : p.sedes.length + ' sedes' %><% } else { %>&nbsp;<% } %></span>
-            <span class="go">Ver programa →</span>
-          </span>
-        </a>
-      <% }) %>
+    <div class="prog-carousel">
+      <button type="button" class="prog-arrow prog-arrow--prev" data-dir="-1" aria-label="Programas anteriores"><span class="msi">chevron_left</span></button>
+      <div class="prog-grid prog-grid--scroll" id="progGrid-<%= fac.slug %>">
+        <% programas.forEach(function(p){ %>
+          <a class="pcard" href="<%= p.url %>" style="--c:<%= fac.color %>;--c2:<%= fac.colorDark %>">
+            <span class="cap">
+              <span class="ico"><span class="msi"><%= p.ico %></span></span>
+              <% if (p.nivel){ %><span class="niv"><%= p.nivel %></span><% } %>
+            </span>
+            <span class="bd">
+              <span class="fac"><%= fac.nombre %></span>
+              <h3><%= p.title %></h3>
+              <span class="chips"><% if (p.modalidad){ %><span class="c-mod"><%= p.modalidad %></span><% } %></span>
+              <span class="sede"><% if (p.sedes.length){ %><span class="msi">location_on</span> <%= p.sedes.length === 1 ? p.sedes[0] : p.sedes.length + ' sedes' %><% } else { %>&nbsp;<% } %></span>
+              <span class="go">Ver programa →</span>
+            </span>
+          </a>
+        <% }) %>
+      </div>
+      <button type="button" class="prog-arrow prog-arrow--next" data-dir="1" aria-label="Más programas"><span class="msi">chevron_right</span></button>
     </div>
   </section>
   <% } %>
@@ -110,4 +114,5 @@
 
 </div>
 
+<script src="/js/prog-carousel.js" defer></script>
 <%- include('partials/foot') %>
