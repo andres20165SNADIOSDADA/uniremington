@@ -565,44 +565,27 @@
       color: rgba(255, 255, 255, 0.85);
     }
 
-    /* ═══════════════════════ LEAD-CTA: "ticket" de admisión ═══════════════════════
-       Concepto: en vez del banner genérico de "CTA azul + checks", el formulario se
-       presenta como un ticket/tiquete de admisión real — con sello, folio, y una
-       perforación troquelada antes del talonario (el botón). Ancho completo, plano
-       (sin degradado ruidoso) y fundido con el footer que viene justo después. */
+    /* ═══════════════════════ LEAD-CTA: solicita información ═══════════════════════ */
+    .lead-final {
+      padding: 20px 0 56px;
+    }
+
     .lead-cta {
       position: relative;
       overflow: hidden;
-      background: var(--dark);
-      padding: 64px 0 54px;
+      border-radius: 28px;
+      background: linear-gradient(155deg, var(--dark) 0%, #0d3854 55%, var(--blue) 100%);
+      padding: 52px 48px;
       color: #fff;
+      box-shadow: 0 30px 70px rgba(0, 20, 50, 0.28);
     }
 
-    /* El footer ya trae su propio fondo oscuro: que no quede un salto en blanco. */
-    main + footer {
-      margin-top: 0;
-    }
-
-    /* Textura de puntos, como el papel de un mostrador de check-in */
     .lead-cta::before {
       content: "";
       position: absolute;
       inset: 0;
-      background-image: radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px);
-      background-size: 22px 22px;
-      pointer-events: none;
-    }
-
-    /* Halo suave detrás del ticket, para que se sienta iluminado */
-    .lead-cta::after {
-      content: "";
-      position: absolute;
-      width: 620px;
-      height: 620px;
-      right: 4%;
-      top: 50%;
-      transform: translateY(-50%);
-      background: radial-gradient(circle, rgba(15, 111, 158, 0.4), transparent 70%);
+      background: radial-gradient(38vw 38vw at 92% 8%, rgba(227, 6, 19, 0.22), transparent 65%),
+                  radial-gradient(30vw 30vw at 4% 100%, rgba(15, 111, 158, 0.3), transparent 70%);
       pointer-events: none;
     }
 
@@ -647,157 +630,92 @@
       line-height: 1.65;
       font-size: 1.02rem;
       max-width: 480px;
-      margin-bottom: 30px;
+      margin-bottom: 26px;
     }
 
-    /* CTA secundario: contacto directo por WhatsApp, para quien prefiere no llenar
-       un formulario — una segunda vía de conversión más rápida que el ticket. */
-    .lead-cta-whatsapp {
-      position: relative;
-      overflow: hidden;
-      isolation: isolate;
+    .lead-cta-checks {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+      margin-bottom: 28px;
+    }
+
+    .lead-cta-checks li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.96rem;
+      color: #e7f0f6;
+    }
+
+    .lead-cta-checks .msi {
+      flex-shrink: 0;
+      font-size: 1.25rem;
+      color: var(--accent);
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
       display: inline-flex;
       align-items: center;
-      gap: 12px;
-      background: #1ea952;
-      color: #fff;
-      padding: 14px 20px;
-      border-radius: 12px;
+      justify-content: center;
+    }
+
+    .lead-cta-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      padding: 10px 18px;
+      border-radius: 30px;
       font-weight: 700;
-      font-size: 0.94rem;
-      box-shadow: 0 12px 26px rgba(30, 169, 82, 0.35);
-      transition: background 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+      font-size: 0.88rem;
     }
 
-    .lead-cta-whatsapp:hover {
-      background: #17903f;
-      transform: translateY(-2px);
-      box-shadow: 0 16px 32px rgba(30, 169, 82, 0.45);
+    .lead-cta-badge .msi {
+      color: #ffc069;
+      font-size: 1.1rem;
     }
 
-    .lead-cta-whatsapp svg {
-      width: 22px;
-      height: 22px;
-      flex-shrink: 0;
-    }
-
-    .lead-cta-whatsapp strong {
-      display: block;
-      font-weight: 800;
-    }
-
-    .lead-cta-whatsapp .msi {
-      margin-left: 2px;
-      transition: transform 0.25s ease;
-    }
-
-    .lead-cta-whatsapp:hover .msi {
-      transform: translateX(3px);
-    }
-
-    .lead-cta-whatsapp::after {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: -60%;
-      width: 45%;
-      height: 100%;
-      background: linear-gradient(115deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-      transform: skewX(-20deg);
-      transition: left 0.65s ease;
-      pointer-events: none;
-    }
-
-    .lead-cta-whatsapp:hover::after {
-      left: 130%;
-    }
-
-    /* ── El ticket ── */
-    .ticket {
+    .lead-cta-card {
       position: relative;
       background: #fff;
-      border-radius: 16px;
-      padding: 26px 30px 22px;
+      border-radius: 18px;
+      padding: 24px 26px;
       box-shadow: 0 30px 70px rgba(0, 10, 30, 0.45);
       color: var(--dark);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    .ticket:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 36px 80px rgba(0, 10, 30, 0.5);
-    }
-
-    .ticket-stamp {
-      position: absolute;
-      top: -16px;
-      right: 24px;
-      width: 62px;
-      height: 62px;
-      border-radius: 50%;
-      border: 2px dashed var(--accent);
-      color: var(--accent);
-      background: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.62rem;
+    .lead-cta-card h3 {
+      font-size: 1.25rem;
       font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-      line-height: 1.2;
-      transform: rotate(-10deg);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.14);
-    }
-
-    .ticket-head {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      max-width: calc(100% - 70px);
-      padding-bottom: 10px;
-      margin-bottom: 12px;
-      border-bottom: 1px solid #eef1f5;
-    }
-
-    .ticket-eyebrow {
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
       color: var(--blue);
+      margin-bottom: 3px;
     }
 
-    .ticket-serial {
-      font-size: 0.68rem;
+    .lead-cta-card .sub {
       color: var(--muted);
-      font-variant-numeric: tabular-nums;
-      letter-spacing: 0.03em;
-    }
-
-    .ticket-title {
-      font-size: 1.2rem;
-      font-weight: 800;
-      color: var(--dark);
+      font-size: 0.86rem;
       margin-bottom: 14px;
     }
 
     /* Grid de 2 columnas: nombre/correo/teléfono/programa en pares, y lo que
-       necesita más espacio (sede, mensaje) ocupa la fila entera. */
-    .ticket-fields {
+       necesita más espacio (sede, mensaje, botón, aviso legal) ocupa la fila entera. */
+    .lead-cta-card form {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px 12px;
     }
 
-    .ticket-fields .wide {
+    .lead-cta-card form .wide {
       grid-column: 1 / -1;
     }
 
-    .ticket input,
-    .ticket select,
-    .ticket textarea {
+    .lead-cta-card input,
+    .lead-cta-card select,
+    .lead-cta-card textarea {
       padding: 11px 13px;
       border: 1px solid #dbe3ec;
       border-radius: 9px;
@@ -809,48 +727,18 @@
       resize: vertical;
     }
 
-    .ticket textarea {
+    .lead-cta-card textarea {
       min-height: 44px;
     }
 
-    .ticket input:focus,
-    .ticket select:focus,
-    .ticket textarea:focus {
+    .lead-cta-card input:focus,
+    .lead-cta-card select:focus,
+    .lead-cta-card textarea:focus {
       outline: 2px solid var(--blue-soft);
       background: #fff;
     }
 
-    /* Línea de perforación troquelada, con las muescas circulares "punzadas" en el
-       mismo color del fondo de la sección para que se vean caladas de verdad. */
-    .ticket-perf {
-      position: relative;
-      border-top: 2px dashed #d7dee6;
-      margin: 18px -30px 0;
-      height: 0;
-    }
-
-    .ticket-perf::before,
-    .ticket-perf::after {
-      content: "";
-      position: absolute;
-      top: -11px;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background: var(--dark);
-    }
-
-    .ticket-perf::before { left: -11px; }
-    .ticket-perf::after { right: -11px; }
-
-    .ticket-stub {
-      padding-top: 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .ticket-submit {
+    .lead-cta-submit {
       position: relative;
       overflow: hidden;
       isolation: isolate;
@@ -870,15 +758,16 @@
       cursor: pointer;
       box-shadow: 0 10px 24px rgba(227, 7, 21, 0.3);
       transition: background 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+      margin-top: 4px;
     }
 
-    .ticket-submit:hover {
+    .lead-cta-submit:hover {
       background: var(--accent-dark);
       transform: translateY(-2px);
       box-shadow: 0 14px 30px rgba(227, 7, 21, 0.4);
     }
 
-    .ticket-submit::after {
+    .lead-cta-submit::after {
       content: "";
       position: absolute;
       top: 0;
@@ -891,25 +780,16 @@
       pointer-events: none;
     }
 
-    .ticket-submit:hover::after {
+    .lead-cta-submit:hover::after {
       left: 130%;
     }
 
-    .ticket-submit .msi {
-      font-size: 1.1rem;
-      transition: transform 0.25s ease;
-    }
-
-    .ticket-submit:hover .msi {
-      transform: translateX(3px);
-    }
-
-    .ticket-submit.loading {
+    .lead-cta-submit.loading {
       opacity: 0.85;
       cursor: progress;
     }
 
-    .ticket-submit .spin {
+    .lead-cta-submit .spin {
       display: inline-block;
       width: 15px;
       height: 15px;
@@ -975,39 +855,26 @@
 
     @media (max-width: 860px) {
       .lead-cta {
-        padding: 42px 0 36px;
+        padding: 34px 22px;
+        border-radius: 22px;
       }
       .lead-cta-grid {
         grid-template-columns: 1fr;
-        gap: 34px;
+        gap: 32px;
       }
       .lead-cta-copy h2 {
         font-size: 1.8rem;
       }
-      .lead-cta-whatsapp {
-        width: 100%;
-      }
-      .ticket {
-        margin-top: 8px;
-      }
     }
 
     @media (max-width: 420px) {
-      .ticket-fields {
+      .lead-cta-card form {
         grid-template-columns: 1fr;
-      }
-      .ticket-stamp {
-        width: 52px;
-        height: 52px;
-        font-size: 0.55rem;
-        top: -12px;
-        right: 16px;
       }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .ticket-submit .spin { animation: none; }
-      .ticket, .ticket-submit, .ticket-submit .msi { transition: none; }
+      .lead-cta-submit .spin { animation: none; }
     }
 
     .cta-row {
@@ -2371,73 +2238,69 @@ html { scroll-behavior: smooth; }
       </div>
     </section>
 
-    <!-- Sección Solicita información: formulario-ticket de admisión -->
-    <section class="lead-cta" id="quiero-informacion">
-      <div class="wrap lead-cta-grid">
-        <div class="lead-cta-copy">
-          <div class="lead-cta-eyebrow">Admisiones 2026</div>
-          <h2>Tu cupo en Uniremington está a un formulario de distancia</h2>
-          <p>Cuéntanos qué quieres estudiar y un asesor académico te contacta hoy mismo para resolver tus dudas sobre costos, becas y modalidades. Sin filas, sin trámites.</p>
-          <a class="lead-cta-whatsapp" href="https://wa.me/573208701818?text=<%= encodeURIComponent('Hola, quiero una asesoría gratuita sobre programas de Uniremington.') %>" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/></svg>
-            <span>¿Prefieres hablar ya? <strong>Escríbenos por WhatsApp</strong></span>
-            <span class="msi" aria-hidden="true">arrow_forward</span>
-          </a>
-        </div>
+    <!-- Sección Solicita información: form de captación de leads -->
+    <section class="lead-final">
+      <div class="wrap">
+        <div class="lead-cta" id="quiero-informacion">
+          <div class="lead-cta-grid">
+            <div class="lead-cta-copy">
+              <div class="lead-cta-eyebrow">Asesoría gratuita</div>
+              <h2>Empieza tu carrera universitaria hoy mismo</h2>
+              <p>Habla gratis con un asesor académico de Uniremington y resuelve todas tus dudas sobre programas, costos, becas y modalidades. Sin compromiso.</p>
+              <ul class="lead-cta-checks">
+                <li><span class="msi" aria-hidden="true">check_circle</span> Programas con registro calificado del Ministerio de Educación</li>
+                <li><span class="msi" aria-hidden="true">check_circle</span> Modalidad presencial, virtual y a distancia en 19 sedes</li>
+                <li><span class="msi" aria-hidden="true">check_circle</span> Descuentos y créditos educativos disponibles</li>
+              </ul>
+              <div class="lead-cta-badge"><span class="msi" aria-hidden="true">support_agent</span> Asesoría personalizada, sin compromiso</div>
+            </div>
 
-        <div class="ticket">
-          <div class="ticket-stamp">100%<br>gratis</div>
-          <div class="ticket-head">
-            <span class="ticket-eyebrow">Solicitud de información</span>
-            <span class="ticket-serial">N.º WEB-2026</span>
+            <div class="lead-cta-card">
+              <h3>Solicita información gratis</h3>
+              <p class="sub">Un asesor académico te contacta muy pronto.</p>
+              <form method="post" action="/solicitar-info" class="js-lead">
+                <input name="nombre" placeholder="Nombre completo" required aria-label="Nombre completo" autocomplete="name">
+                <input name="correo" type="email" placeholder="Correo electrónico" required aria-label="Correo electrónico" autocomplete="email">
+                <input name="telefono" type="tel" inputmode="tel" placeholder="Teléfono / WhatsApp" required aria-label="Teléfono o WhatsApp" autocomplete="tel">
+                <select name="programa" required aria-label="¿Qué te interesa estudiar?">
+                  <option value="">¿Qué te interesa estudiar?</option>
+                  <option value="Pregrado (Técnico, Tecnológico o Universitario)">Pregrado (Técnico, Tecnológico o Universitario)</option>
+                  <option value="Especialización">Especialización</option>
+                  <option value="Maestría">Maestría</option>
+                  <option value="Diplomados y educación continua">Diplomados y educación continua</option>
+                  <option value="Aún no lo sé, quiero asesoría">Aún no lo sé, quiero asesoría</option>
+                </select>
+                <select name="sede" class="wide" aria-label="Sede de tu interés">
+                  <option value="">Sede de tu interés (opcional)</option>
+                  <option value="Virtual / A distancia">Virtual / A distancia</option>
+                  <option>Apartadó</option>
+                  <option>Armenia</option>
+                  <option>Bucaramanga</option>
+                  <option>Cali</option>
+                  <option>Caucasia</option>
+                  <option>Cúcuta</option>
+                  <option>Ibagué</option>
+                  <option>Ipiales</option>
+                  <option>Manizales</option>
+                  <option>Medellín</option>
+                  <option>Montería</option>
+                  <option>Palmira</option>
+                  <option>Pasto</option>
+                  <option>Pereira</option>
+                  <option>Rionegro</option>
+                  <option>Sahagún</option>
+                  <option>Sincelejo</option>
+                  <option>Tuluá</option>
+                  <option>Yopal</option>
+                  <option value="No estoy seguro/a">No estoy seguro/a</option>
+                </select>
+                <textarea name="mensaje" class="wide" placeholder="Cuéntanos en qué podemos ayudarte (opcional)" rows="2" aria-label="Mensaje (opcional)"></textarea>
+                <input type="text" name="pf_hp" value="" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+                <button class="lead-cta-submit wide" type="submit">Quiero mi asesoría gratis</button>
+                <span class="pf-fine wide"><span class="msi" aria-hidden="true">lock</span> Tus datos están protegidos conforme a nuestra política de tratamiento de datos.</span>
+              </form>
+            </div>
           </div>
-          <h3 class="ticket-title">Reserva tu asesoría</h3>
-          <form method="post" action="/solicitar-info" class="js-lead">
-            <div class="ticket-fields">
-              <input name="nombre" placeholder="Nombre completo" required aria-label="Nombre completo" autocomplete="name">
-              <input name="correo" type="email" placeholder="Correo electrónico" required aria-label="Correo electrónico" autocomplete="email">
-              <input name="telefono" type="tel" inputmode="tel" placeholder="Teléfono / WhatsApp" required aria-label="Teléfono o WhatsApp" autocomplete="tel">
-              <select name="programa" required aria-label="¿Qué te interesa estudiar?">
-                <option value="">¿Qué te interesa estudiar?</option>
-                <option value="Pregrado (Técnico, Tecnológico o Universitario)">Pregrado (Técnico, Tecnológico o Universitario)</option>
-                <option value="Especialización">Especialización</option>
-                <option value="Maestría">Maestría</option>
-                <option value="Diplomados y educación continua">Diplomados y educación continua</option>
-                <option value="Aún no lo sé, quiero asesoría">Aún no lo sé, quiero asesoría</option>
-              </select>
-              <select name="sede" class="wide" aria-label="Sede de tu interés">
-                <option value="">Sede de tu interés (opcional)</option>
-                <option value="Virtual / A distancia">Virtual / A distancia</option>
-                <option>Apartadó</option>
-                <option>Armenia</option>
-                <option>Bucaramanga</option>
-                <option>Cali</option>
-                <option>Caucasia</option>
-                <option>Cúcuta</option>
-                <option>Ibagué</option>
-                <option>Ipiales</option>
-                <option>Manizales</option>
-                <option>Medellín</option>
-                <option>Montería</option>
-                <option>Palmira</option>
-                <option>Pasto</option>
-                <option>Pereira</option>
-                <option>Rionegro</option>
-                <option>Sahagún</option>
-                <option>Sincelejo</option>
-                <option>Tuluá</option>
-                <option>Yopal</option>
-                <option value="No estoy seguro/a">No estoy seguro/a</option>
-              </select>
-              <textarea name="mensaje" class="wide" placeholder="Cuéntanos en qué podemos ayudarte (opcional)" rows="2" aria-label="Mensaje (opcional)"></textarea>
-            </div>
-            <div class="ticket-perf" aria-hidden="true"></div>
-            <div class="ticket-stub">
-              <input type="text" name="pf_hp" value="" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
-              <button class="ticket-submit" type="submit">Quiero mi asesoría gratis <span class="msi" aria-hidden="true">arrow_forward</span></button>
-              <span class="pf-fine"><span class="msi" aria-hidden="true">lock</span> Tus datos están protegidos conforme a nuestra política de tratamiento de datos.</span>
-            </div>
-          </form>
         </div>
       </div>
     </section>
