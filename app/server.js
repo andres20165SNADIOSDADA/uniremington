@@ -1615,6 +1615,28 @@ function contentTheme(html) {
   return { c: darken(a, 0.74), c2: darken(a, 0.44), accent: a };
 }
 
+// SEO/GEO de la página "Postulación a Grados": título limpio, descripción real (la
+// autogenerada quedaba cortada a la mitad de una frase) y schema HowTo con los 4 pasos
+// de pregrado — el contenido es literalmente una guía paso a paso, el caso ideal para
+// que Google/los asistentes de IA la entiendan como un instructivo, no solo texto suelto.
+function gradosJsonld(item) {
+  const url = SITE + (item.url || '');
+  const steps = ['Requisitos para grados', 'Documentos de postulación',
+    'Diligencia el formulario y carga tus documentos', 'Pago de los derechos de grado'];
+  return [
+    { '@context': 'https://schema.org', '@type': 'HowTo',
+      name: 'Cómo postularte a grados en Uniremington',
+      description: 'Pasos para postularte a la ceremonia de grados colectiva o a grados extemporáneos en la Corporación Universitaria Remington.',
+      step: steps.map((s, i) => ({ '@type': 'HowToStep', position: i + 1, name: `Paso ${i + 1}: ${s}` })),
+    },
+    { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Inicio', item: SITE + '/' },
+      { '@type': 'ListItem', position: 2, name: 'Estudiante', item: SITE + '/soy-estudiante-uniremington/' },
+      { '@type': 'ListItem', position: 3, name: 'Postulación a grados', item: url },
+    ] },
+  ];
+}
+
 function renderPageContent(res, item) {
   const curUrl = normPath(item.url || '');
   const ctx = contentContext(item);
@@ -1625,14 +1647,18 @@ function renderPageContent(res, item) {
   const sedeDesc = sedeSlug && SEDES[sedeSlug]
     ? `Uniremington en ${SEDES[sedeSlug].city}, ${SEDES[sedeSlug].region}: oferta académica, dirección, canales de contacto y programas de pregrado y posgrado. Más de 100 años formando profesionales.`
     : null;
+  const isGrados = item.slug === 'grados';
   res.render('page', { ...base,
-    title: sedeSlug && SEDES[sedeSlug] ? `Sede ${SEDES[sedeSlug].city} — Uniremington` : `${ctx.h1} — Uniremington`,
-    desc: sedeDesc || metaDesc(item),
+    title: isGrados ? 'Postulación a Grados 2026-II — Uniremington'
+      : sedeSlug && SEDES[sedeSlug] ? `Sede ${SEDES[sedeSlug].city} — Uniremington` : `${ctx.h1} — Uniremington`,
+    desc: isGrados
+      ? 'Postúlate a grados en Uniremington: calendario de ceremonia colectiva y grados extemporáneos, requisitos y el paso a paso para pregrado y posgrado.'
+      : (sedeDesc || metaDesc(item)),
     canonical: SITE + (item.url || ''),
-    item, h1: ctx.h1, crumbs: ctx.crumbs, sidebar: ctx.sidebar, curUrl,
+    item, h1: isGrados ? 'Postulación a Grados 2026-II' : ctx.h1, crumbs: ctx.crumbs, sidebar: ctx.sidebar, curUrl,
     bodyScripts: scripts, theme: contentTheme(item.content_html),
     contentOverride: sedeSlug ? sedeContent(item.content_html, sedeSlug) : undefined,
-    jsonld: sedeSlug ? sedeJsonld(sedeSlug, item) : undefined,
+    jsonld: sedeSlug ? sedeJsonld(sedeSlug, item) : (isGrados ? gradosJsonld(item) : undefined),
   });
 }
 // Etiqueta "Semestres X a Y" a partir de los encabezados de una tabla de pénsum.
