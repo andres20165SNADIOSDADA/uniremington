@@ -1828,7 +1828,7 @@ app.post('/solicitar-info', async (req, res) => {
     return res.status(429).render('page', { ...base, title: 'Espera un momento — Uniremington',
       item: { title: 'Espera un momento', content_html: `<p>${msg}</p>` }, seccion: null, relacionadas: [] });
   }
-  const { nombre, correo, telefono, programa, snies, sede, modalidad, modalidad_pagina, sedes_disponibles, pf_hp } = req.body || {};
+  const { nombre, correo, telefono, programa, snies, sede, modalidad, modalidad_pagina, sedes_disponibles, mensaje, pf_hp } = req.body || {};
   if (!pf_hp) { // campo trampa para bots: si viene lleno, se descarta en silencio
     // modalidad = la modalidad fija de la página (form del hero) o vacío;
     // modalidad_pagina = lo mismo pero desde el segundo formulario, que ya usa el nombre
@@ -1841,7 +1841,8 @@ app.post('/solicitar-info', async (req, res) => {
       (modalidadPrograma ? ` — Modalidad del programa: ${modalidadPrograma}` : '') +
       (sede ? ` — Sede de interés: ${sede}` : '') +
       (modalidadInteres ? ` — Modalidad de interés: ${modalidadInteres}` : '') +
-      (sedes_disponibles ? ` — Sedes donde se ofrece: ${sedes_disponibles}` : '');
+      (sedes_disponibles ? ` — Sedes donde se ofrece: ${sedes_disponibles}` : '') +
+      (mensaje ? ` — Mensaje: ${mensaje}` : '');
     // La sede real del contacto: la que el estudiante eligió como interés; si no eligió
     // ninguna pero el programa solo se ofrece en una sede, se usa esa. Sin esto Clientify
     // asociaba todos los contactos a una sede por defecto (Pereira).
