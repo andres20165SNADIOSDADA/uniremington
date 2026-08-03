@@ -566,26 +566,28 @@
     }
 
     /* ═══════════════════════ LEAD-CTA: solicita información ═══════════════════════ */
-    .lead-final {
-      padding: 20px 0 56px;
-    }
-
+    /* Ancho completo, sin radio: se funde directo con el footer (mismo tono al pie
+       del degradado que el arranque del footer, para que no se note la costura). */
     .lead-cta {
       position: relative;
       overflow: hidden;
-      border-radius: 28px;
-      background: linear-gradient(155deg, var(--dark) 0%, #0d3854 55%, var(--blue) 100%);
-      padding: 52px 48px;
+      background: linear-gradient(165deg, var(--blue) 0%, #0d3854 45%, var(--dark) 100%);
+      padding: 54px 0 46px;
       color: #fff;
-      box-shadow: 0 30px 70px rgba(0, 20, 50, 0.28);
+    }
+
+    /* El footer ya trae su propio degradado oscuro: si empieza justo donde este
+       termina, no debe quedar un salto de margen en blanco entre los dos. */
+    main + footer {
+      margin-top: 0;
     }
 
     .lead-cta::before {
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(38vw 38vw at 92% 12%, rgba(227, 6, 19, 0.22), transparent 65%),
-                  radial-gradient(30vw 30vw at 4% 96%, rgba(15, 111, 158, 0.35), transparent 70%);
+      background: radial-gradient(38vw 38vw at 92% 8%, rgba(227, 6, 19, 0.22), transparent 65%),
+                  radial-gradient(30vw 30vw at 4% 100%, rgba(15, 111, 158, 0.3), transparent 70%);
       pointer-events: none;
     }
 
@@ -682,43 +684,53 @@
     .lead-cta-card {
       position: relative;
       background: #fff;
-      border-radius: 20px;
-      padding: 30px;
+      border-radius: 18px;
+      padding: 24px 26px;
       box-shadow: 0 30px 70px rgba(0, 10, 30, 0.45);
       color: var(--dark);
     }
 
     .lead-cta-card h3 {
-      font-size: 1.35rem;
+      font-size: 1.25rem;
       font-weight: 800;
       color: var(--blue);
-      margin-bottom: 4px;
+      margin-bottom: 3px;
     }
 
     .lead-cta-card .sub {
       color: var(--muted);
-      font-size: 0.88rem;
-      margin-bottom: 20px;
+      font-size: 0.86rem;
+      margin-bottom: 14px;
     }
 
+    /* Grid de 2 columnas: nombre/correo/teléfono/programa en pares, y lo que
+       necesita más espacio (sede, mensaje, botón, aviso legal) ocupa la fila entera. */
     .lead-cta-card form {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 12px;
+    }
+
+    .lead-cta-card form .wide {
+      grid-column: 1 / -1;
     }
 
     .lead-cta-card input,
     .lead-cta-card select,
     .lead-cta-card textarea {
-      padding: 13px 15px;
+      padding: 11px 13px;
       border: 1px solid #dbe3ec;
-      border-radius: 10px;
+      border-radius: 9px;
       font: inherit;
-      font-size: 0.94rem;
+      font-size: 0.9rem;
       background: #f5f8fa;
       color: var(--dark);
       width: 100%;
       resize: vertical;
+    }
+
+    .lead-cta-card textarea {
+      min-height: 44px;
     }
 
     .lead-cta-card input:focus,
@@ -828,15 +840,20 @@
 
     @media (max-width: 860px) {
       .lead-cta {
-        padding: 34px 22px;
-        border-radius: 22px;
+        padding: 38px 0 34px;
       }
       .lead-cta-grid {
         grid-template-columns: 1fr;
-        gap: 36px;
+        gap: 32px;
       }
       .lead-cta-copy h2 {
         font-size: 1.8rem;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .lead-cta-card form {
+        grid-template-columns: 1fr;
       }
     }
 
@@ -2195,69 +2212,65 @@ html { scroll-behavior: smooth; }
       </div>
     </section>
 
-    <!-- Sección Solicita información: form de captación de leads -->
-    <section class="lead-final">
-      <div class="wrap">
-        <div class="lead-cta" id="quiero-informacion">
-          <div class="lead-cta-grid">
-            <div class="lead-cta-copy">
-              <div class="lead-cta-eyebrow">Asesoría gratuita</div>
-              <h2>Empieza tu carrera universitaria hoy mismo</h2>
-              <p>Habla gratis con un asesor académico de Uniremington y resuelve todas tus dudas sobre programas, costos, becas y modalidades. Sin compromiso.</p>
-              <ul class="lead-cta-checks">
-                <li><span class="msi" aria-hidden="true">check_circle</span> Programas con registro calificado del Ministerio de Educación</li>
-                <li><span class="msi" aria-hidden="true">check_circle</span> Modalidad presencial, virtual y a distancia en 19 sedes</li>
-                <li><span class="msi" aria-hidden="true">check_circle</span> Descuentos y créditos educativos disponibles</li>
-              </ul>
-              <div class="lead-cta-badge"><span class="msi" aria-hidden="true">support_agent</span> Asesoría personalizada, sin compromiso</div>
-            </div>
+    <!-- Sección Solicita información: form de captación de leads (fondo a ancho completo, se funde con el footer) -->
+    <section class="lead-cta" id="quiero-informacion">
+      <div class="wrap lead-cta-grid">
+        <div class="lead-cta-copy">
+          <div class="lead-cta-eyebrow">Asesoría gratuita</div>
+          <h2>Empieza tu carrera universitaria hoy mismo</h2>
+          <p>Habla gratis con un asesor académico de Uniremington y resuelve todas tus dudas sobre programas, costos, becas y modalidades. Sin compromiso.</p>
+          <ul class="lead-cta-checks">
+            <li><span class="msi" aria-hidden="true">check_circle</span> Programas con registro calificado del Ministerio de Educación</li>
+            <li><span class="msi" aria-hidden="true">check_circle</span> Modalidad presencial, virtual y a distancia en 19 sedes</li>
+            <li><span class="msi" aria-hidden="true">check_circle</span> Descuentos y créditos educativos disponibles</li>
+          </ul>
+          <div class="lead-cta-badge"><span class="msi" aria-hidden="true">support_agent</span> Asesoría personalizada, sin compromiso</div>
+        </div>
 
-            <div class="lead-cta-card">
-              <h3>Solicita información gratis</h3>
-              <p class="sub">Un asesor académico te contacta muy pronto.</p>
-              <form method="post" action="/solicitar-info" class="js-lead">
-                <input name="nombre" placeholder="Nombre completo" required aria-label="Nombre completo" autocomplete="name">
-                <input name="correo" type="email" placeholder="Correo electrónico" required aria-label="Correo electrónico" autocomplete="email">
-                <input name="telefono" type="tel" inputmode="tel" placeholder="Teléfono / WhatsApp" required aria-label="Teléfono o WhatsApp" autocomplete="tel">
-                <select name="programa" required aria-label="¿Qué te interesa estudiar?">
-                  <option value="">¿Qué te interesa estudiar?</option>
-                  <option value="Pregrado (Técnico, Tecnológico o Universitario)">Pregrado (Técnico, Tecnológico o Universitario)</option>
-                  <option value="Especialización">Especialización</option>
-                  <option value="Maestría">Maestría</option>
-                  <option value="Diplomados y educación continua">Diplomados y educación continua</option>
-                  <option value="Aún no lo sé, quiero asesoría">Aún no lo sé, quiero asesoría</option>
-                </select>
-                <select name="sede" aria-label="Sede de tu interés">
-                  <option value="">Sede de tu interés (opcional)</option>
-                  <option value="Virtual / A distancia">Virtual / A distancia</option>
-                  <option>Apartadó</option>
-                  <option>Armenia</option>
-                  <option>Bucaramanga</option>
-                  <option>Cali</option>
-                  <option>Caucasia</option>
-                  <option>Cúcuta</option>
-                  <option>Ibagué</option>
-                  <option>Ipiales</option>
-                  <option>Manizales</option>
-                  <option>Medellín</option>
-                  <option>Montería</option>
-                  <option>Palmira</option>
-                  <option>Pasto</option>
-                  <option>Pereira</option>
-                  <option>Rionegro</option>
-                  <option>Sahagún</option>
-                  <option>Sincelejo</option>
-                  <option>Tuluá</option>
-                  <option>Yopal</option>
-                  <option value="No estoy seguro/a">No estoy seguro/a</option>
-                </select>
-                <textarea name="mensaje" placeholder="Cuéntanos en qué podemos ayudarte (opcional)" rows="3" aria-label="Mensaje (opcional)"></textarea>
-                <input type="text" name="pf_hp" value="" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
-                <button class="lead-cta-submit" type="submit">Quiero mi asesoría gratis</button>
-                <span class="pf-fine"><span class="msi" aria-hidden="true">lock</span> Tus datos están protegidos conforme a nuestra política de tratamiento de datos.</span>
-              </form>
-            </div>
-          </div>
+        <div class="lead-cta-card">
+          <h3>Solicita información gratis</h3>
+          <p class="sub">Un asesor académico te contacta muy pronto.</p>
+          <form method="post" action="/solicitar-info" class="js-lead lead-cta-form">
+            <input name="nombre" placeholder="Nombre completo" required aria-label="Nombre completo" autocomplete="name">
+            <input name="correo" type="email" placeholder="Correo electrónico" required aria-label="Correo electrónico" autocomplete="email">
+            <input name="telefono" type="tel" inputmode="tel" placeholder="Teléfono / WhatsApp" required aria-label="Teléfono o WhatsApp" autocomplete="tel">
+            <select name="programa" required aria-label="¿Qué te interesa estudiar?">
+              <option value="">¿Qué te interesa estudiar?</option>
+              <option value="Pregrado (Técnico, Tecnológico o Universitario)">Pregrado (Técnico, Tecnológico o Universitario)</option>
+              <option value="Especialización">Especialización</option>
+              <option value="Maestría">Maestría</option>
+              <option value="Diplomados y educación continua">Diplomados y educación continua</option>
+              <option value="Aún no lo sé, quiero asesoría">Aún no lo sé, quiero asesoría</option>
+            </select>
+            <select name="sede" class="wide" aria-label="Sede de tu interés">
+              <option value="">Sede de tu interés (opcional)</option>
+              <option value="Virtual / A distancia">Virtual / A distancia</option>
+              <option>Apartadó</option>
+              <option>Armenia</option>
+              <option>Bucaramanga</option>
+              <option>Cali</option>
+              <option>Caucasia</option>
+              <option>Cúcuta</option>
+              <option>Ibagué</option>
+              <option>Ipiales</option>
+              <option>Manizales</option>
+              <option>Medellín</option>
+              <option>Montería</option>
+              <option>Palmira</option>
+              <option>Pasto</option>
+              <option>Pereira</option>
+              <option>Rionegro</option>
+              <option>Sahagún</option>
+              <option>Sincelejo</option>
+              <option>Tuluá</option>
+              <option>Yopal</option>
+              <option value="No estoy seguro/a">No estoy seguro/a</option>
+            </select>
+            <textarea name="mensaje" class="wide" placeholder="Cuéntanos en qué podemos ayudarte (opcional)" rows="2" aria-label="Mensaje (opcional)"></textarea>
+            <input type="text" name="pf_hp" value="" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+            <button class="lead-cta-submit wide" type="submit">Quiero mi asesoría gratis</button>
+            <span class="pf-fine wide"><span class="msi" aria-hidden="true">lock</span> Tus datos están protegidos conforme a nuestra política de tratamiento de datos.</span>
+          </form>
         </div>
       </div>
     </section>
