@@ -565,6 +565,272 @@
       color: rgba(255, 255, 255, 0.85);
     }
 
+    /* ═══════════════════════ LEAD-CTA: solicita información ═══════════════════════ */
+    .lead-cta {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(155deg, var(--dark) 0%, #0d3854 55%, var(--blue) 100%);
+      padding: 66px 0;
+      color: #fff;
+    }
+
+    .lead-cta::before {
+      content: "";
+      position: absolute;
+      inset: -20%;
+      background: radial-gradient(38vw 38vw at 92% 12%, rgba(227, 6, 19, 0.22), transparent 65%),
+                  radial-gradient(30vw 30vw at 4% 96%, rgba(15, 111, 158, 0.35), transparent 70%);
+      pointer-events: none;
+    }
+
+    .lead-cta-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 54px;
+      align-items: center;
+    }
+
+    .lead-cta-eyebrow {
+      color: #ff8f7a;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .lead-cta-eyebrow::before {
+      content: "";
+      width: 28px;
+      height: 2px;
+      background: #ff8f7a;
+      display: inline-block;
+    }
+
+    .lead-cta-copy h2 {
+      font-size: 2.3rem;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    .lead-cta-copy > p {
+      color: #cfe0ec;
+      line-height: 1.65;
+      font-size: 1.02rem;
+      max-width: 480px;
+      margin-bottom: 26px;
+    }
+
+    .lead-cta-checks {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+      margin-bottom: 28px;
+    }
+
+    .lead-cta-checks li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.96rem;
+      color: #e7f0f6;
+    }
+
+    .lead-cta-checks .msi {
+      flex-shrink: 0;
+      font-size: 1.25rem;
+      color: var(--accent);
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lead-cta-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      padding: 10px 18px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+
+    .lead-cta-badge .msi {
+      color: #ffc069;
+      font-size: 1.1rem;
+    }
+
+    .lead-cta-card {
+      position: relative;
+      background: #fff;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 30px 70px rgba(0, 10, 30, 0.45);
+      color: var(--dark);
+    }
+
+    .lead-cta-card h3 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--blue);
+      margin-bottom: 4px;
+    }
+
+    .lead-cta-card .sub {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-bottom: 20px;
+    }
+
+    .lead-cta-card form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .lead-cta-card input,
+    .lead-cta-card select {
+      padding: 13px 15px;
+      border: 1px solid #dbe3ec;
+      border-radius: 10px;
+      font: inherit;
+      font-size: 0.94rem;
+      background: #f5f8fa;
+      color: var(--dark);
+      width: 100%;
+    }
+
+    .lead-cta-card input:focus,
+    .lead-cta-card select:focus {
+      outline: 2px solid var(--blue-soft);
+      background: #fff;
+    }
+
+    .lead-cta-submit {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: 0;
+      padding: 15px 20px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(227, 7, 21, 0.3);
+      transition: background 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+      margin-top: 4px;
+    }
+
+    .lead-cta-submit:hover {
+      background: var(--accent-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(227, 7, 21, 0.4);
+    }
+
+    .lead-cta-submit.loading {
+      opacity: 0.85;
+      cursor: progress;
+    }
+
+    .lead-cta-submit .spin {
+      display: inline-block;
+      width: 15px;
+      height: 15px;
+      border: 2px solid rgba(255, 255, 255, 0.45);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: leadSpin 0.7s linear infinite;
+      vertical-align: -2px;
+    }
+
+    @keyframes leadSpin {
+      to { transform: rotate(360deg); }
+    }
+
+    .pf-fine {
+      font-size: 0.74rem;
+      color: var(--muted);
+      line-height: 1.4;
+      margin-top: 2px;
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .pf-fine .msi {
+      font-size: 0.95rem;
+      flex-shrink: 0;
+    }
+
+    .lead-ok {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      background: #e9f7ef;
+      border: 1px solid #b7e6cf;
+      border-radius: 14px;
+      padding: 22px;
+      color: #14603f;
+    }
+
+    .lead-ok .msi {
+      font-size: 2rem;
+      color: #1e9e5f;
+    }
+
+    .lead-ok strong {
+      font-size: 1.1rem;
+      color: #0f4f34;
+    }
+
+    .lead-ok p {
+      margin: 2px 0 0;
+      font-size: 0.9rem;
+      color: #2c6a4e;
+    }
+
+    .lead-err {
+      margin: 10px 0 0;
+      color: #ffd7d7;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .lead-cta-card .lead-err {
+      color: var(--accent);
+    }
+
+    @media (max-width: 860px) {
+      .lead-cta-grid {
+        grid-template-columns: 1fr;
+        gap: 36px;
+      }
+      .lead-cta-copy h2 {
+        font-size: 1.8rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .lead-cta-submit .spin { animation: none; }
+    }
+
     .cta-row {
       display: flex;
       gap: 12px;
@@ -1854,6 +2120,68 @@ html { scroll-behavior: smooth; }
       </div>
     </section>
 
+    <!-- Sección Solicita información: form de captación de leads -->
+    <section class="lead-cta" id="quiero-informacion">
+      <div class="wrap lead-cta-grid">
+        <div class="lead-cta-copy">
+          <div class="lead-cta-eyebrow">Asesoría gratuita</div>
+          <h2>Empieza tu carrera universitaria hoy mismo</h2>
+          <p>Habla gratis con un asesor académico de Uniremington y resuelve todas tus dudas sobre programas, costos, becas y modalidades. Sin compromiso.</p>
+          <ul class="lead-cta-checks">
+            <li><span class="msi" aria-hidden="true">check_circle</span> Programas con registro calificado del Ministerio de Educación</li>
+            <li><span class="msi" aria-hidden="true">check_circle</span> Modalidad presencial, virtual y a distancia en 19 sedes</li>
+            <li><span class="msi" aria-hidden="true">check_circle</span> Descuentos y créditos educativos disponibles</li>
+          </ul>
+          <div class="lead-cta-badge"><span class="msi" aria-hidden="true">schedule</span> Respuesta garantizada en menos de 24 horas</div>
+        </div>
+
+        <div class="lead-cta-card">
+          <h3>Solicita información gratis</h3>
+          <p class="sub">Un asesor académico te contacta hoy mismo.</p>
+          <form method="post" action="/solicitar-info" class="js-lead">
+            <input name="nombre" placeholder="Nombre completo" required aria-label="Nombre completo" autocomplete="name">
+            <input name="correo" type="email" placeholder="Correo electrónico" required aria-label="Correo electrónico" autocomplete="email">
+            <input name="telefono" type="tel" inputmode="tel" placeholder="Teléfono / WhatsApp" required aria-label="Teléfono o WhatsApp" autocomplete="tel">
+            <select name="programa" required aria-label="¿Qué te interesa estudiar?">
+              <option value="">¿Qué te interesa estudiar?</option>
+              <option value="Pregrado (Técnico, Tecnológico o Universitario)">Pregrado (Técnico, Tecnológico o Universitario)</option>
+              <option value="Especialización">Especialización</option>
+              <option value="Maestría">Maestría</option>
+              <option value="Diplomados y educación continua">Diplomados y educación continua</option>
+              <option value="Aún no lo sé, quiero asesoría">Aún no lo sé, quiero asesoría</option>
+            </select>
+            <select name="sede" aria-label="Sede de tu interés">
+              <option value="">Sede de tu interés (opcional)</option>
+              <option value="Virtual / A distancia">Virtual / A distancia</option>
+              <option>Apartadó</option>
+              <option>Armenia</option>
+              <option>Bucaramanga</option>
+              <option>Cali</option>
+              <option>Caucasia</option>
+              <option>Cúcuta</option>
+              <option>Ibagué</option>
+              <option>Ipiales</option>
+              <option>Manizales</option>
+              <option>Medellín</option>
+              <option>Montería</option>
+              <option>Palmira</option>
+              <option>Pasto</option>
+              <option>Pereira</option>
+              <option>Rionegro</option>
+              <option>Sahagún</option>
+              <option>Sincelejo</option>
+              <option>Tuluá</option>
+              <option>Yopal</option>
+              <option value="No estoy seguro/a">No estoy seguro/a</option>
+            </select>
+            <input type="text" name="pf_hp" value="" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+            <button class="lead-cta-submit" type="submit">Quiero mi asesoría gratis</button>
+            <span class="pf-fine"><span class="msi" aria-hidden="true">lock</span> Tus datos están protegidos conforme a nuestra política de tratamiento de datos.</span>
+          </form>
+        </div>
+      </div>
+    </section>
+
     <!-- Sección Noticias y eventos -->
     <section>
       <div class="act-container">
@@ -2516,6 +2844,7 @@ html { scroll-behavior: smooth; }
   })();
 </script>
 
+<script src="/js/lead.js"></script>
 <%- include('partials/whatsapp') %>
 <%- include('partials/totop') %>
 <%- include('partials/chat-widget') %>
