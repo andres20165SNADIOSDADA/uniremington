@@ -62,8 +62,8 @@
       <% } %>
       <div class="widget cta-widget" style="--c:<%= C %>;--c2:<%= C2 %>">
         <span class="msi cta-ic">school</span>
-        <h4>Estudia en Uniremington</h4>
-        <p>Explora nuestra oferta académica y da el primer paso hacia tu futuro profesional.</p>
+        <h4><%= (typeof ctaTitle !== 'undefined' && ctaTitle) ? ctaTitle : 'Estudia en Uniremington' %></h4>
+        <p><%= (typeof ctaText !== 'undefined' && ctaText) ? ctaText : 'Explora nuestra oferta académica y da el primer paso hacia tu futuro profesional.' %></p>
         <a class="btn btn-oro" href="/programas">Ver programas</a>
         <a class="btn btn-ghost" href="<%= inscripcionUrl %>" target="_blank" rel="noopener">Inscríbete</a>
       </div>

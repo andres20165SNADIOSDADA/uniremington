@@ -1648,6 +1648,18 @@ function renderPageContent(res, item) {
     ? `Uniremington en ${SEDES[sedeSlug].city}, ${SEDES[sedeSlug].region}: oferta académica, dirección, canales de contacto y programas de pregrado y posgrado. Más de 100 años formando profesionales.`
     : null;
   const isGrados = item.slug === 'grados';
+  // En "grados" la barra lateral genérica (hermanos de /soy-estudiante-uniremington/)
+  // trae ~30 enlaces sin curar (calendarios, prácticas, convocatorias...) — para quien
+  // ya se está por graduar, solo unos pocos son realmente relevantes.
+  let sidebar = ctx.sidebar;
+  if (isGrados && sidebar && sidebar.items) {
+    const relevantes = ['reglamento-estudiantil-pregrado', 'reglamento-estudiantil-posgrado',
+      'calendario-academico-uniremington-2026-i', 'admisiones'];
+    const curados = relevantes
+      .map(slug => sidebar.items.find(s => s.href.endsWith('/' + slug + '/')))
+      .filter(Boolean);
+    if (curados.length) sidebar = { ...sidebar, items: curados };
+  }
   res.render('page', { ...base,
     title: isGrados ? 'Postulación a Grados 2026-II — Uniremington'
       : sedeSlug && SEDES[sedeSlug] ? `Sede ${SEDES[sedeSlug].city} — Uniremington` : `${ctx.h1} — Uniremington`,
@@ -1655,10 +1667,14 @@ function renderPageContent(res, item) {
       ? 'Postúlate a grados en Uniremington: calendario de ceremonia colectiva y grados extemporáneos, requisitos y el paso a paso para pregrado y posgrado.'
       : (sedeDesc || metaDesc(item)),
     canonical: SITE + (item.url || ''),
-    item, h1: isGrados ? 'Postulación a Grados 2026-II' : ctx.h1, crumbs: ctx.crumbs, sidebar: ctx.sidebar, curUrl,
+    item, h1: isGrados ? 'Postulación a Grados 2026-II' : ctx.h1, crumbs: ctx.crumbs, sidebar, curUrl,
     bodyScripts: scripts, theme: contentTheme(item.content_html),
     contentOverride: sedeSlug ? sedeContent(item.content_html, sedeSlug) : undefined,
     jsonld: sedeSlug ? sedeJsonld(sedeSlug, item) : (isGrados ? gradosJsonld(item) : undefined),
+    ctaTitle: isGrados ? '¿Y ahora qué sigue?' : undefined,
+    ctaText: isGrados
+      ? 'Ya que llegaste hasta aquí, sigue creciendo profesionalmente: explora nuestras especializaciones y maestrías.'
+      : undefined,
   });
 }
 // Etiqueta "Semestres X a Y" a partir de los encabezados de una tabla de pénsum.
