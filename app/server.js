@@ -42,7 +42,14 @@ function assignUrl(kind, item, fallback) {
     item.url = p;
     contentIndex[p] = { kind, item };
   } else {
-    item.url = fallback;
+    // Sin orig_path (o ya tomado): la ruta de reserva también debe quedar indexada,
+    // si no, el ítem queda inalcanzable — /noticias/:slug, /eventos/:slug y /pagina/:slug
+    // redirigen a item.url, pero si esa MISMA ruta no está en contentIndex, el router
+    // de abajo (Opción A) no la resuelve y el visitante cae en 404 (o, sin la guarda de
+    // auto-redirect, en un bucle infinito, porque item.url === la ruta que la disparó).
+    const fb = normPath(fallback);
+    item.url = fb;
+    if (!contentIndex[fb]) contentIndex[fb] = { kind, item };
   }
 }
 pages.forEach(p => assignUrl(p.is_program ? 'programa' : 'page', p, '/pagina/' + p.slug));
@@ -1387,14 +1394,19 @@ function renderArticle(res, item, kind) {
   });
 }
 // Rutas antiguas -> 301 a la URL original (consolida el SEO)
+// Guarda: si item.url YA es esta misma ruta (pasa con unos pocos posts/eventos cuyo
+// permalink real siempre llevó el prefijo), redirigir sería un bucle infinito — se
+// deja pasar con next() para que el router de abajo (Opción A) la resuelva y renderice.
 app.get('/noticias/:slug', (req, res, next) => {
   const item = postIdx[req.params.slug];
   if (!item) return next();
+  if (!item.url || normPath(item.url) === normPath(req.path)) return next();
   res.redirect(301, item.url);
 });
 app.get('/eventos/:slug', (req, res, next) => {
   const item = eventIdx[req.params.slug];
   if (!item) return next();
+  if (!item.url || normPath(item.url) === normPath(req.path)) return next();
   res.redirect(301, item.url);
 });
 
@@ -1672,6 +1684,7 @@ app.get('/plan/:slug', (req, res, next) => {
 app.get('/pagina/:slug', (req, res, next) => {
   const item = pageIdx[req.params.slug];
   if (!item) return next();
+  if (!item.url || normPath(item.url) === normPath(req.path)) return next();
   res.redirect(301, item.url);
 });
 
