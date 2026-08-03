@@ -249,7 +249,7 @@ const CSP = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https:",
   "font-src 'self' data:",
-  "connect-src 'self' https://api.rss2json.com",
+  "connect-src 'self' https://api.rss2json.com https://webmasteruniremington-oss.github.io",
   "frame-src 'self' https://www.youtube.com https://apps.clientify.net https://www.uniremington.edu.co",
   "object-src 'none'",
   "base-uri 'self'",
