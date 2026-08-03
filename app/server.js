@@ -35,6 +35,44 @@ const STRAY_TAB_LABEL_RE = /<p>\s*(?:Noticias|Eventos)\s*(?:<br\s*\/?>|\s)\s*Uni
   }
 }));
 
+// 19 sedes: ciudad + departamento curados (fiables); calle solo donde se conoce con certeza.
+// Se define aquí (temprano) porque la limpieza de abajo y dedupeMeta() la necesitan.
+const SEDES = {
+  apartado:    { city: 'Apartadó',    region: 'Antioquia' },
+  armenia:     { city: 'Armenia',     region: 'Quindío' },
+  bucaramanga: { city: 'Bucaramanga', region: 'Santander' },
+  cali:        { city: 'Cali',        region: 'Valle del Cauca' },
+  caucasia:    { city: 'Caucasia',    region: 'Antioquia' },
+  cucuta:      { city: 'Cúcuta',      region: 'Norte de Santander' },
+  ibague:      { city: 'Ibagué',      region: 'Tolima' },
+  ipiales:     { city: 'Ipiales',     region: 'Nariño' },
+  manizales:   { city: 'Manizales',   region: 'Caldas' },
+  medellin:    { city: 'Medellín',    region: 'Antioquia', street: 'Cra. 51 #51-27' },
+  monteria:    { city: 'Montería',    region: 'Córdoba' },
+  palmira:     { city: 'Palmira',     region: 'Valle del Cauca' },
+  pasto:       { city: 'Pasto',       region: 'Nariño' },
+  pereira:     { city: 'Pereira',     region: 'Risaralda' },
+  rionegro:    { city: 'Rionegro',    region: 'Antioquia', street: 'Transversal 49 #39A-170' },
+  sahagun:     { city: 'Sahagún',     region: 'Córdoba' },
+  sincelejo:   { city: 'Sincelejo',   region: 'Sucre' },
+  tulua:       { city: 'Tuluá',       region: 'Valle del Cauca' },
+  yopal:       { city: 'Yopal',       region: 'Casanare' },
+};
+// El mismo encabezado huérfano "Quiero ser contactado por un asesor" aparece también en
+// páginas que NO son una de las 19 sedes activas (soy-aspirante-uniremington, sedes ya
+// discontinuadas, páginas de prueba) — sedeContent() ya lo resuelve con un formulario
+// real para las sedes activas; aquí solo se quita el texto muerto en el resto, sin tocar
+// las páginas de sede (esas ya lo reemplazan más abajo, en tiempo de render). Debe correr
+// ANTES de dedupeMeta() para que la metadescripción no herede el texto muerto.
+const ORPHAN_CONTACT_RE = /<(h[1-4]|p)\b[^>]*>\s*Quiero ser contactad[\s\S]*?<\/\1>/gi;
+pages.forEach(p => {
+  if (SEDES[p.slug] || !p.content_html) return;
+  if (ORPHAN_CONTACT_RE.test(p.content_html)) {
+    ORPHAN_CONTACT_RE.lastIndex = 0;
+    p.content_html = p.content_html.replace(ORPHAN_CONTACT_RE, '');
+  }
+});
+
 // Equipos recuperados de producción (fotos/bios que el backup WXR perdió, p. ej. Diseño
 // usa un widget WPBakery "hoverbox" con la foto como background-image inline). Clave: facSlug.
 const EQUIPOS_REC = (() => { try { return load('equipos-recuperados.json'); } catch { return {}; } })();
@@ -407,28 +445,6 @@ const ORG_JSONLD = {
     availableLanguage: 'es',
   },
 };
-// 19 sedes: ciudad + departamento curados (fiables); calle solo donde se conoce con certeza.
-const SEDES = {
-  apartado:    { city: 'Apartadó',    region: 'Antioquia' },
-  armenia:     { city: 'Armenia',     region: 'Quindío' },
-  bucaramanga: { city: 'Bucaramanga', region: 'Santander' },
-  cali:        { city: 'Cali',        region: 'Valle del Cauca' },
-  caucasia:    { city: 'Caucasia',    region: 'Antioquia' },
-  cucuta:      { city: 'Cúcuta',      region: 'Norte de Santander' },
-  ibague:      { city: 'Ibagué',      region: 'Tolima' },
-  ipiales:     { city: 'Ipiales',     region: 'Nariño' },
-  manizales:   { city: 'Manizales',   region: 'Caldas' },
-  medellin:    { city: 'Medellín',    region: 'Antioquia', street: 'Cra. 51 #51-27' },
-  monteria:    { city: 'Montería',    region: 'Córdoba' },
-  palmira:     { city: 'Palmira',     region: 'Valle del Cauca' },
-  pasto:       { city: 'Pasto',       region: 'Nariño' },
-  pereira:     { city: 'Pereira',     region: 'Risaralda' },
-  rionegro:    { city: 'Rionegro',    region: 'Antioquia', street: 'Transversal 49 #39A-170' },
-  sahagun:     { city: 'Sahagún',     region: 'Córdoba' },
-  sincelejo:   { city: 'Sincelejo',   region: 'Sucre' },
-  tulua:       { city: 'Tuluá',       region: 'Valle del Cauca' },
-  yopal:       { city: 'Yopal',       region: 'Casanare' },
-};
 // correo/teléfono limpios extraídos del contenido de la sede (cuando existen)
 function sedeContacto(item){
   const text = (item.content_html || '').replace(/<[^>]+>/g, ' ');
@@ -528,8 +544,24 @@ function renderSedeContact(seg, sedeCity) {
 function sedeContent(html, sedeSlug) {
   if (!html) return html;
   const sedeCity = sedeSlug && SEDES[sedeSlug] ? SEDES[sedeSlug].city : '';
-  // 1) Encabezado "Quiero ser contactado por un asesor" sin formulario debajo → se quita.
-  html = html.replace(/<(h[1-4])\b[^>]*>\s*Quiero ser contactad[\s\S]*?<\/\1>/gi, '');
+  // 1) "Quiero ser contactado por un asesor": quedaba como encabezado o como <p> suelto,
+  //    en ambos casos sin el formulario real (se perdió en la extracción). Como es la señal
+  //    de mayor intención de toda la página, se reemplaza por un mini-formulario real
+  //    (mismo endpoint/CRM que el resto del sitio) en vez de solo borrarlo.
+  const leadForm = sedeCity ? (
+    `<aside class="phero-form sede-lead"><h3>Solicita información</h3>`
+    + `<p class="sub">Un asesor de la sede ${sedeCity} te contacta pronto.</p>`
+    + `<form method="post" action="/solicitar-info" class="pf js-lead">`
+    + `<input type="hidden" name="sede" value="${sedeCity}">`
+    + `<input name="nombre" placeholder="Nombre completo" required aria-label="Nombre completo" autocomplete="name">`
+    + `<input name="correo" type="email" placeholder="Correo electrónico" required aria-label="Correo electrónico" autocomplete="email">`
+    + `<input name="telefono" type="tel" inputmode="tel" placeholder="Teléfono / WhatsApp" required aria-label="Teléfono o WhatsApp" autocomplete="tel">`
+    + `<input type="text" name="pf_hp" value="" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">`
+    + `<button class="btn btn-oro" type="submit">Quiero que me contacten</button>`
+    + `<span class="pf-fine"><span class="msi">lock</span> Tus datos están protegidos conforme a la política de tratamiento de datos.</span>`
+    + `</form></aside>`
+  ) : '';
+  html = html.replace(/<(h[1-4]|p)\b[^>]*>\s*Quiero ser contactad[\s\S]*?<\/\1>/gi, leadForm);
   // 2) Director/a de la sede. El grid de oferta ya está en .hb-card, así que el único <figure>
   //    suelto es la foto del director/a. Su leyenda (nombre + cargo) viene en 4+ formatos según
   //    la sede (<strong>, <h6>, <p> separados, con o sin <br>) → se toma todo el bloque desde la
