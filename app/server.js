@@ -544,24 +544,9 @@ function renderSedeContact(seg, sedeCity) {
 function sedeContent(html, sedeSlug) {
   if (!html) return html;
   const sedeCity = sedeSlug && SEDES[sedeSlug] ? SEDES[sedeSlug].city : '';
-  // 1) "Quiero ser contactado por un asesor": quedaba como encabezado o como <p> suelto,
-  //    en ambos casos sin el formulario real (se perdió en la extracción). Como es la señal
-  //    de mayor intención de toda la página, se reemplaza por un mini-formulario real
-  //    (mismo endpoint/CRM que el resto del sitio) en vez de solo borrarlo.
-  const leadForm = sedeCity ? (
-    `<aside class="phero-form sede-lead"><h3>Solicita información</h3>`
-    + `<p class="sub">Un asesor de la sede ${sedeCity} te contacta pronto.</p>`
-    + `<form method="post" action="/solicitar-info" class="pf js-lead">`
-    + `<input type="hidden" name="sede" value="${sedeCity}">`
-    + `<input name="nombre" placeholder="Nombre completo" required aria-label="Nombre completo" autocomplete="name">`
-    + `<input name="correo" type="email" placeholder="Correo electrónico" required aria-label="Correo electrónico" autocomplete="email">`
-    + `<input name="telefono" type="tel" inputmode="tel" placeholder="Teléfono / WhatsApp" required aria-label="Teléfono o WhatsApp" autocomplete="tel">`
-    + `<input type="text" name="pf_hp" value="" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">`
-    + `<button class="btn btn-oro" type="submit">Quiero que me contacten</button>`
-    + `<span class="pf-fine"><span class="msi">lock</span> Tus datos están protegidos conforme a la política de tratamiento de datos.</span>`
-    + `</form></aside>`
-  ) : '';
-  html = html.replace(/<(h[1-4]|p)\b[^>]*>\s*Quiero ser contactad[\s\S]*?<\/\1>/gi, leadForm);
+  // 1) Encabezado "Quiero ser contactado por un asesor" sin formulario debajo (se perdió
+  //    en la extracción) → se quita. Quedaba como <h1-4> o como <p> suelto según la sede.
+  html = html.replace(/<(h[1-4]|p)\b[^>]*>\s*Quiero ser contactad[\s\S]*?<\/\1>/gi, '');
   // 2) Director/a de la sede. El grid de oferta ya está en .hb-card, así que el único <figure>
   //    suelto es la foto del director/a. Su leyenda (nombre + cargo) viene en 4+ formatos según
   //    la sede (<strong>, <h6>, <p> separados, con o sin <br>) → se toma todo el bloque desde la
