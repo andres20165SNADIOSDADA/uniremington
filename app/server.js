@@ -14,6 +14,27 @@ const pages  = load('page.json').filter(p => p.status === 'publish');
 const posts  = load('post.json').filter(p => p.status === 'publish');
 const events = load('tribe_events.json').filter(p => p.status === 'publish');
 
+// Fix de extracción: en sedes/facultades/páginas "Soy…" el encabezado de la sección
+// de noticias embebida quedó duplicado dos veces seguidas (<h2>Noticias Uniremington</h2>
+// <hr><h2>Noticias Uniremington</h2>) — se colapsa a una sola ocurrencia, en cualquier
+// página que lo traiga.
+const DUPE_HEADING_RE = /(<h([1-3])>([^<]{1,80})<\/h\2>)(?:\s*<[^>]+>\s*)*<h\2>\3<\/h\2>/gi;
+// Etiquetas de pestañas huérfanas ("Noticias" / "Eventos" sueltas en su propio <p>, del
+// widget de tabs original) que quedaban como párrafo visible antes del <h2> real y
+// además ensuciaban la metadescripción autogenerada.
+const STRAY_TAB_LABEL_RE = /<p>\s*(?:Noticias|Eventos)\s*(?:<br\s*\/?>|\s)\s*Uniremington\s*<\/p>\s*/gi;
+[pages, posts, events].forEach(arr => arr.forEach(item => {
+  if (!item.content_html) return;
+  if (DUPE_HEADING_RE.test(item.content_html)) {
+    DUPE_HEADING_RE.lastIndex = 0;
+    item.content_html = item.content_html.replace(DUPE_HEADING_RE, '$1');
+  }
+  if (STRAY_TAB_LABEL_RE.test(item.content_html)) {
+    STRAY_TAB_LABEL_RE.lastIndex = 0;
+    item.content_html = item.content_html.replace(STRAY_TAB_LABEL_RE, '');
+  }
+}));
+
 // Equipos recuperados de producción (fotos/bios que el backup WXR perdió, p. ej. Diseño
 // usa un widget WPBakery "hoverbox" con la foto como background-image inline). Clave: facSlug.
 const EQUIPOS_REC = (() => { try { return load('equipos-recuperados.json'); } catch { return {}; } })();
