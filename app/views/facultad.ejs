@@ -67,8 +67,7 @@
       <a class="verlink" href="/programas#<%= fac.slug %>">Ver en el buscador de programas →</a>
     </div>
     <div class="prog-carousel">
-      <button type="button" class="prog-arrow prog-arrow--prev" data-dir="-1" aria-label="Programas anteriores"><span class="msi">chevron_left</span></button>
-      <div class="prog-grid prog-grid--scroll" id="progGrid-<%= fac.slug %>">
+      <div class="prog-grid" id="progGrid-<%= fac.slug %>">
         <% programas.forEach(function(p){ %>
           <a class="pcard" href="<%= p.url %>" style="--c:<%= fac.color %>;--c2:<%= fac.colorDark %>">
             <span class="cap">
@@ -85,7 +84,11 @@
           </a>
         <% }) %>
       </div>
-      <button type="button" class="prog-arrow prog-arrow--next" data-dir="1" aria-label="Más programas"><span class="msi">chevron_right</span></button>
+      <div class="prog-pager">
+        <button type="button" class="prog-arrow prog-arrow--prev" aria-label="Página anterior"><span class="msi">chevron_left</span></button>
+        <div class="prog-dots" role="tablist" aria-label="Páginas de programas"></div>
+        <button type="button" class="prog-arrow prog-arrow--next" aria-label="Página siguiente"><span class="msi">chevron_right</span></button>
+      </div>
     </div>
   </section>
   <% } %>

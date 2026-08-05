@@ -1,32 +1,80 @@
 (function(){
   document.querySelectorAll('.prog-carousel').forEach(function(carousel){
-    var track = carousel.querySelector('.prog-grid--scroll');
-    var prev = carousel.querySelector('.prog-arrow--prev');
-    var next = carousel.querySelector('.prog-arrow--next');
-    if (!track || !prev || !next) return;
+    var grid = carousel.querySelector('.prog-grid');
+    var pager = carousel.querySelector('.prog-pager');
+    if (!grid || !pager) return;
+    var prev = pager.querySelector('.prog-arrow--prev');
+    var next = pager.querySelector('.prog-arrow--next');
+    var dotsWrap = pager.querySelector('.prog-dots');
+    var cards = Array.prototype.slice.call(grid.querySelectorAll('.pcard'));
+    if (!cards.length) { pager.hidden = true; return; }
 
-    function step(){
-      var card = track.querySelector('.pcard');
-      var gap = parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap || '20') || 20;
-      var w = card ? card.getBoundingClientRect().width : 260;
-      return Math.round((w + gap) * 2);
+    var perPage = cards.length, pages = 1, page = 0;
+
+    function columns(){
+      cards.forEach(function(c){ c.style.display = ''; });
+      var top0 = cards[0].offsetTop, n = 0;
+      for (var i = 0; i < cards.length; i++){
+        if (Math.abs(cards[i].offsetTop - top0) < 2) n++; else break;
+      }
+      return Math.max(n, 1);
     }
 
-    function refresh(){
-      var max = track.scrollWidth - track.clientWidth;
-      if (max <= 4){
-        prev.hidden = true; next.hidden = true;
+    function renderDots(){
+      dotsWrap.innerHTML = '';
+      if (pages > 6){
+        dotsWrap.classList.add('prog-dots--count');
+        var span = document.createElement('span');
+        span.className = 'prog-count';
+        dotsWrap.appendChild(span);
         return;
       }
-      prev.hidden = false; next.hidden = false;
-      prev.disabled = track.scrollLeft <= 4;
-      next.disabled = track.scrollLeft >= max - 4;
+      dotsWrap.classList.remove('prog-dots--count');
+      for (var i = 0; i < pages; i++){
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'prog-dot';
+        b.setAttribute('aria-label', 'Página ' + (i + 1) + ' de ' + pages);
+        b.addEventListener('click', (function(idx){ return function(){ page = idx; show(); }; })(i));
+        dotsWrap.appendChild(b);
+      }
     }
 
-    prev.addEventListener('click', function(){ track.scrollBy({ left: -step(), behavior: 'smooth' }); });
-    next.addEventListener('click', function(){ track.scrollBy({ left: step(), behavior: 'smooth' }); });
-    track.addEventListener('scroll', refresh, { passive: true });
-    window.addEventListener('resize', refresh);
-    refresh();
+    function show(){
+      cards.forEach(function(c, i){
+        c.style.display = (i >= page * perPage && i < (page + 1) * perPage) ? '' : 'none';
+      });
+      prev.disabled = page === 0;
+      next.disabled = page >= pages - 1;
+      if (dotsWrap.classList.contains('prog-dots--count')){
+        var span = dotsWrap.querySelector('.prog-count');
+        if (span) span.textContent = (page + 1) + ' / ' + pages;
+      } else {
+        Array.prototype.forEach.call(dotsWrap.children, function(d, i){
+          d.classList.toggle('is-active', i === page);
+          d.setAttribute('aria-current', i === page ? 'true' : 'false');
+        });
+      }
+    }
+
+    function layout(){
+      var rows = columns() === 1 ? 4 : 2;
+      perPage = columns() * rows;
+      pages = Math.max(Math.ceil(cards.length / perPage), 1);
+      pager.hidden = pages <= 1;
+      if (page >= pages) page = pages - 1;
+      renderDots();
+      show();
+    }
+
+    prev.addEventListener('click', function(){ if (page > 0){ page--; show(); } });
+    next.addEventListener('click', function(){ if (page < pages - 1){ page++; show(); } });
+
+    var resizeTimer;
+    window.addEventListener('resize', function(){
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(layout, 200);
+    });
+    layout();
   });
 })();
