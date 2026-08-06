@@ -1,26 +1,32 @@
-import { DatabaseSync } from 'node:sqlite';
 import { existsSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DB_PATH = join(__dirname, '..', 'data', 'cms.sqlite');
 
 // En un entorno sin disco persistente (ej. Vercel, filesystem de solo lectura) abrir o
-// crear el archivo falla. Eso NUNCA debe tumbar el sitio público entero — server.js
-// importa este módulo de forma incondicional — así que el error se contiene aquí: se
-// exporta un `db` que solo falla en el momento en que alguien intenta USARLO (es decir,
-// dentro de una ruta de /admin), no al arrancar. contentStore.js ya sabe recurrir al
-// JSON estático de respaldo si `reloadPostsAndEvents()` no puede leer de esta base.
+// crear el archivo falla, y en un runtime de Node más viejo `node:sqlite` ni siquiera
+// existe como módulo. Ninguno de los dos casos debe tumbar el sitio público entero —
+// server.js importa este módulo de forma incondicional. Un `import` estático de
+// `node:sqlite` no se puede envolver en try/catch (se evalúa antes que cualquier otro
+// código), así que se carga con `require` (vía createRequire) precisamente porque eso sí
+// se puede capturar de forma síncrona. Si falla por cualquier motivo, se exporta un `db`
+// que solo lanza error en el momento en que alguien intenta USARLO (dentro de una ruta de
+// /admin), no al arrancar. contentStore.js ya sabe recurrir al JSON estático de respaldo
+// si `reloadPostsAndEvents()` no puede leer de esta base.
 let db;
 try {
+  const require = createRequire(import.meta.url);
+  const { DatabaseSync } = require('node:sqlite');
   if (!existsSync(dirname(DB_PATH))) mkdirSync(dirname(DB_PATH), { recursive: true });
   db = new DatabaseSync(DB_PATH);
   db.exec('PRAGMA journal_mode = WAL');
   db.exec('PRAGMA foreign_keys = ON');
 } catch (e) {
-  console.error('[cms] No se pudo abrir la base de datos del panel (¿filesystem de solo lectura?):', e.message);
-  const unavailable = () => { throw new Error('El panel de administración no está disponible en este entorno (falta disco persistente).'); };
+  console.error('[cms] Panel de administración no disponible en este entorno (¿node:sqlite inexistente o filesystem de solo lectura?):', e.message);
+  const unavailable = () => { throw new Error('El panel de administración no está disponible en este entorno.'); };
   db = { prepare: unavailable, exec() {} };
 }
 export { db };
