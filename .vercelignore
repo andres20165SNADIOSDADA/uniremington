@@ -1,0 +1,6 @@
+# Blindaje explícito: aunque vercel.json incluye "data/**" para empaquetar los JSON del
+# contenido migrado, esto asegura que la base de datos del panel (contraseñas, sesiones,
+# secretos 2FA) y los archivos subidos por el equipo editorial nunca viajen a Vercel bajo
+# ninguna circunstancia — ese entorno no tiene disco persistente y no debe tener estos datos.
+app/data/cms.sqlite*
+app/public/uploads/**
