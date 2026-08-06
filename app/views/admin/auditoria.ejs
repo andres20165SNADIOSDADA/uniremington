@@ -1,0 +1,40 @@
+<%- include('partials/head', { title: 'Auditoría' }) %>
+<%- include('partials/nav', { active, user, csrfToken }) %>
+  <div class="admin-top">
+    <div>
+      <h1>Auditoría</h1>
+      <div class="sub"><%= total %> eventos registrados</div>
+    </div>
+  </div>
+
+  <div class="card" style="padding:0">
+    <% if (!rows.length){ %>
+      <div class="empty-state"><span class="msi">history</span><p>Todavía no hay actividad registrada.</p></div>
+    <% } else { %>
+    <div style="overflow-x:auto">
+    <table class="tbl">
+      <thead><tr><th>Fecha</th><th>Usuario</th><th>Acción</th><th>Detalle</th><th>IP</th></tr></thead>
+      <tbody>
+        <% rows.forEach(function(r){ %>
+          <tr>
+            <td style="white-space:nowrap;font-variant-numeric:tabular-nums"><%= r.created_at %></td>
+            <td><%= r.username || '—' %></td>
+            <td><%= r.actionLabel %></td>
+            <td><%= r.detail || '—' %></td>
+            <td style="font-variant-numeric:tabular-nums"><%= r.ip || '—' %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    </div>
+    <% } %>
+  </div>
+
+  <% if (pages > 1){ %>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:18px">
+    <% for (let i = 1; i <= pages; i++){ %>
+      <a class="btn <%= i === page ? 'btn-primary' : 'btn-ghost' %> btn-sm" href="?p=<%= i %>"><%= i %></a>
+    <% } %>
+  </div>
+  <% } %>
+<%- include('partials/foot') %>

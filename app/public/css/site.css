@@ -251,6 +251,10 @@ section.blk.alt{background:var(--gris)}
 .article .tabla-wrap{overflow-x:auto;margin:16px 0;border:1px solid var(--linea);border-radius:10px}
 .article .tabla-wrap table{margin:0;border:0;display:table;min-width:100%}
 .article hr{border:0;border-top:1px solid var(--linea);margin:26px 0}
+/* Alineación de texto desde el editor del panel de administración (noticias/eventos) */
+.article .ql-align-center,.blog-body .ql-align-center{text-align:center}
+.article .ql-align-right,.blog-body .ql-align-right{text-align:right}
+.article .ql-align-justify,.blog-body .ql-align-justify{text-align:justify}
 /* cabecera de programa */
 .prog-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
 .prog-meta .chip{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff;padding:5px 14px;border-radius:999px;font-size:.8rem;font-weight:700}

@@ -2,6 +2,12 @@ import express from 'express';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { adminRouter } from './admin/router.js';
+import {
+  normPath, contentIndex, assignUrl, primaryCat, catSlug,
+  posts, events, postIdx, eventIdx, postsByDate, eventsSorted, catIndex, catList,
+  reloadPostsAndEvents,
+} from './lib/contentStore.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DATA = join(__dirname, 'data');
@@ -11,19 +17,20 @@ const load = (f) => JSON.parse(readFileSync(join(DATA, f), 'utf-8'));
 const SITE = (process.env.SITE_URL || 'https://www.uniremington.edu.co').replace(/\/$/, '');
 
 const pages  = load('page.json').filter(p => p.status === 'publish');
-const posts  = load('post.json').filter(p => p.status === 'publish');
-const events = load('tribe_events.json').filter(p => p.status === 'publish');
+// Noticias y eventos viven en SQLite (editables desde /admin) — ver app/lib/contentStore.js.
+reloadPostsAndEvents();
 
 // Fix de extracción: en sedes/facultades/páginas "Soy…" el encabezado de la sección
 // de noticias embebida quedó duplicado dos veces seguidas (<h2>Noticias Uniremington</h2>
 // <hr><h2>Noticias Uniremington</h2>) — se colapsa a una sola ocurrencia, en cualquier
-// página que lo traiga.
+// página que lo traiga. (El mismo fix para posts/events vive en contentStore.js, ya que
+// se reaplica en cada reload.)
 const DUPE_HEADING_RE = /(<h([1-3])>([^<]{1,80})<\/h\2>)(?:\s*<[^>]+>\s*)*<h\2>\3<\/h\2>/gi;
 // Etiquetas de pestañas huérfanas ("Noticias" / "Eventos" sueltas en su propio <p>, del
 // widget de tabs original) que quedaban como párrafo visible antes del <h2> real y
 // además ensuciaban la metadescripción autogenerada.
 const STRAY_TAB_LABEL_RE = /<p>\s*(?:Noticias|Eventos)\s*(?:<br\s*\/?>|\s)\s*Uniremington\s*<\/p>\s*/gi;
-[pages, posts, events].forEach(arr => arr.forEach(item => {
+pages.forEach(item => {
   if (!item.content_html) return;
   if (DUPE_HEADING_RE.test(item.content_html)) {
     DUPE_HEADING_RE.lastIndex = 0;
@@ -33,7 +40,7 @@ const STRAY_TAB_LABEL_RE = /<p>\s*(?:Noticias|Eventos)\s*(?:<br\s*\/?>|\s)\s*Uni
     STRAY_TAB_LABEL_RE.lastIndex = 0;
     item.content_html = item.content_html.replace(STRAY_TAB_LABEL_RE, '');
   }
-}));
+});
 
 // 19 sedes: ciudad + departamento curados (fiables); calle solo donde se conoce con certeza.
 // Se define aquí (temprano) porque la limpieza de abajo y dedupeMeta() la necesitan.
@@ -77,43 +84,14 @@ pages.forEach(p => {
 // usa un widget WPBakery "hoverbox" con la foto como background-image inline). Clave: facSlug.
 const EQUIPOS_REC = (() => { try { return load('equipos-recuperados.json'); } catch { return {}; } })();
 
-// índices por slug para búsqueda O(1)
+// índices por slug para búsqueda O(1) (posts/events: ver contentStore.js)
 const bySlug = (arr) => Object.fromEntries(arr.map(x => [x.slug, x]));
 const pageIdx = bySlug(pages);
-const postIdx = bySlug(posts);
-const eventIdx = bySlug(events);
 
 // ---------- OPCIÓN A: preservar las URLs originales de WordPress ----------
-// Normaliza a la forma de WordPress: con "/" inicial y "/" final.
-function normPath(p) {
-  if (!p) return '/';
-  p = decodeURIComponent(p.split('?')[0].split('#')[0]);
-  if (!p.startsWith('/')) p = '/' + p;
-  if (p.length > 1 && !p.endsWith('/')) p += '/';
-  return p;
-}
-// Cada contenido responde en su URL original (orig_path). Se guarda en item.url
-// y se indexa para el enrutador. Fallback a la ruta interna si faltara.
-const contentIndex = {};
-function assignUrl(kind, item, fallback) {
-  const p = item.orig_path ? normPath(item.orig_path) : '';
-  if (p && p !== '/' && !contentIndex[p]) {
-    item.url = p;
-    contentIndex[p] = { kind, item };
-  } else {
-    // Sin orig_path (o ya tomado): la ruta de reserva también debe quedar indexada,
-    // si no, el ítem queda inalcanzable — /noticias/:slug, /eventos/:slug y /pagina/:slug
-    // redirigen a item.url, pero si esa MISMA ruta no está en contentIndex, el router
-    // de abajo (Opción A) no la resuelve y el visitante cae en 404 (o, sin la guarda de
-    // auto-redirect, en un bucle infinito, porque item.url === la ruta que la disparó).
-    const fb = normPath(fallback);
-    item.url = fb;
-    if (!contentIndex[fb]) contentIndex[fb] = { kind, item };
-  }
-}
+// normPath/contentIndex/assignUrl viven en contentStore.js (los comparten posts/events,
+// que se re-indexan en reloadPostsAndEvents()); aquí solo se asignan páginas/programas.
 pages.forEach(p => assignUrl(p.is_program ? 'programa' : 'page', p, '/pagina/' + p.slug));
-posts.forEach(p => assignUrl('post', p, '/noticias/' + p.slug));
-events.forEach(e => assignUrl('event', e, '/eventos/' + e.slug));
 
 // ---------- helpers ----------
 const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
@@ -185,13 +163,7 @@ function toCard(p){
   return { slug:p.slug, url:p.url, title:p.title, ico:icoFor(p.title), tag, resumen:resumen(p, 120) };
 }
 function isoDate(s){ const d = parseDate(s); return d ? d.toISOString().slice(0,10) : ''; }
-// Categoría principal legible (descarta las genéricas/internas)
-function primaryCat(p){
-  const cats = (p.categories || []).filter(c => !/^(uncategorized|nobuscar|blog|sin categor)/i.test(c));
-  let c = cats[0] || 'Noticias';
-  c = c.replace(/^noticias?\s+/i, '').trim();
-  return c ? c.charAt(0).toUpperCase() + c.slice(1) : 'Noticias';
-}
+// primaryCat/catSlug: ver contentStore.js (compartidas con reloadPostsAndEvents()).
 function realImg(p){ const m = (p.content_html || '').match(/<img[^>]+src="([^"]+)"/i); return m ? m[1] : ''; }
 function toNews(p){
   return { slug:p.slug, url:p.url, title:p.title,
@@ -283,19 +255,8 @@ const nav = [
   { label:'Eventos', url:'/eventos' },
 ];
 
-// posts y eventos ordenados por fecha (desc / próximos)
-const postsByDate = [...posts].sort((a,b) => (parseDate(b.date)||0) - (parseDate(a.date)||0));
-const eventsSorted = [...events].sort((a,b) => (parseDate(a.date)||0) - (parseDate(b.date)||0));
-
-// índice de categorías de noticias (para el filtro y la barra lateral del blog)
-function catSlug(c){ return (c||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')
-  .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
-const catIndex = {};
-postsByDate.forEach(p => {
-  const name = primaryCat(p), slug = catSlug(name);
-  (catIndex[slug] = catIndex[slug] || { name, slug, count: 0 }).count++;
-});
-const catList = Object.values(catIndex).sort((a,b) => b.count - a.count);
+// posts/events ordenados, índice de categorías: ver contentStore.js (reloadPostsAndEvents()
+// los recalcula también cada vez que el panel de administración guarda un cambio).
 
 // ---------- app ----------
 const app = express();
@@ -392,6 +353,10 @@ app.use((req, res, next) => {
   if (!isCanonicalHost(req)) res.set('X-Robots-Tag', 'noindex, nofollow');
   next();
 });
+
+// Panel de administración (Noticias/Eventos): login propio, sesiones y CSRF — ver
+// app/admin/router.js. Nunca se indexa (noindex propio) ni aparece en el sitemap.
+app.use('/admin', adminRouter);
 
 // Páginas basura de WooCommerce / pruebas / stands de feria: siguen respondiendo (por si
 // tienen enlaces entrantes) pero se marcan noindex y se excluyen del sitemap para no diluir
@@ -2209,7 +2174,7 @@ app.get('/robots.txt', (req, res) => {
     return res.type('text/plain').send('User-agent: *\nDisallow: /\n');
   }
   res.type('text/plain').send(
-    `User-agent: *\nAllow: /\n\nSitemap: ${SITE}/sitemap.xml\n# LLMs: ${SITE}/llms.txt\n`);
+    `User-agent: *\nAllow: /\nDisallow: /admin/\n\nSitemap: ${SITE}/sitemap.xml\n# LLMs: ${SITE}/llms.txt\n`);
 });
 
 // GEO (motores generativos / IA): resumen legible por LLMs del sitio y su oferta.

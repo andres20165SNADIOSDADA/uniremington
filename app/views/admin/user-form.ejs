@@ -1,0 +1,41 @@
+<%- include('partials/head', { title: (target ? 'Editar' : 'Nuevo') + ' usuario' }) %>
+<%- include('partials/nav', { active, user, csrfToken }) %>
+  <div class="admin-top">
+    <div><h1><%= target ? 'Editar' : 'Nuevo' %> usuario</h1></div>
+    <a class="btn btn-ghost" href="/admin/usuarios"><span class="msi">arrow_back</span> Volver al listado</a>
+  </div>
+
+  <% if (error){ %><div class="flash flash-error"><span class="msi">error</span> <span><%= error %></span></div><% } %>
+
+  <div class="card" style="max-width:480px">
+    <form method="post" action="/admin/usuarios/<%= target ? target.id + '/editar' : 'nuevo' %>">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="field">
+        <label for="username">Usuario</label>
+        <% if (target){ %>
+          <input type="text" id="username" value="<%= target.username %>" disabled>
+        <% } else { %>
+          <input type="text" id="username" name="username" required placeholder="ej: mgomez">
+          <p class="hint">Solo letras, números, punto o guion. No se puede cambiar después.</p>
+        <% } %>
+      </div>
+      <div class="field">
+        <label for="name">Nombre completo</label>
+        <input type="text" id="name" name="name" required value="<%= target ? target.name : '' %>">
+      </div>
+      <div class="field">
+        <label for="role">Rol</label>
+        <select id="role" name="role">
+          <option value="editor" <%= (!target || target.role === 'editor') ? 'selected' : '' %>>Editor — solo noticias y eventos</option>
+          <option value="admin" <%= target && target.role === 'admin' ? 'selected' : '' %>>Administrador — todo, incluida gestión de usuarios</option>
+        </select>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label for="password"><%= target ? 'Nueva contraseña' : 'Contraseña' %></label>
+        <input type="password" id="password" name="password" <%= target ? '' : 'required' %> autocomplete="new-password">
+        <p class="hint"><%= target ? 'Déjalo vacío para no cambiarla. Mínimo 12 caracteres si la cambias.' : 'Mínimo 12 caracteres, con letras y números.' %></p>
+      </div>
+      <button class="btn btn-primary" type="submit" style="margin-top:6px"><span class="msi">save</span> Guardar</button>
+    </form>
+  </div>
+<%- include('partials/foot') %>

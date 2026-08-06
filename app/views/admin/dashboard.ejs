@@ -1,0 +1,24 @@
+<%- include('partials/head', { title: 'Inicio' }) %>
+<%- include('partials/nav', { active: 'dashboard', user, csrfToken }) %>
+  <div class="admin-top">
+    <div>
+      <h1>Hola, <%= user.name.split(' ')[0] %></h1>
+      <div class="sub">Panel de administración de Noticias y Eventos.</div>
+    </div>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat"><div class="n"><%= stats.posts %></div><div class="l">Noticias publicadas</div></div>
+    <div class="stat"><div class="n"><%= stats.events %></div><div class="l">Eventos publicados</div></div>
+    <div class="stat"><div class="n"><%= stats.drafts %></div><div class="l">Borradores</div></div>
+    <div class="stat"><div class="n"><%= stats.users %></div><div class="l">Usuarios del panel</div></div>
+  </div>
+
+  <div class="card">
+    <p style="margin:0;color:var(--texto-sua)">
+      El panel está en construcción por fases. Ya puedes iniciar sesión de forma segura
+      (usuario + contraseña + verificación en dos pasos). La creación y edición de
+      noticias y eventos llega en la siguiente entrega.
+    </p>
+  </div>
+<%- include('partials/foot') %>

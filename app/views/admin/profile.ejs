@@ -1,0 +1,46 @@
+<%- include('partials/head', { title: 'Mi perfil' }) %>
+<%- include('partials/nav', { active, user, csrfToken }) %>
+  <div class="admin-top"><div><h1>Mi perfil</h1></div></div>
+
+  <% if (error){ %><div class="flash flash-error"><span class="msi">error</span> <span><%= error %></span></div><% } %>
+  <% if (ok){ %><div class="flash flash-ok"><span class="msi">check_circle</span> <span><%= ok %></span></div><% } %>
+
+  <div class="card" style="max-width:480px;margin-bottom:18px">
+    <h3><span class="msi">person</span> Datos de la cuenta</h3>
+    <div class="field"><label>Usuario</label><div class="manual-key"><%= user.username %></div></div>
+    <div class="field" style="margin-bottom:0"><label>Rol</label><span class="badge badge-<%= user.role %>"><%= user.role === 'admin' ? 'Administrador' : 'Editor' %></span></div>
+  </div>
+
+  <div class="card" style="max-width:480px;margin-bottom:18px">
+    <h3><span class="msi">lock</span> Cambiar contraseña</h3>
+    <form method="post" action="/admin/perfil/password">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="field">
+        <label for="current_password">Contraseña actual</label>
+        <input type="password" id="current_password" name="current_password" required autocomplete="current-password">
+      </div>
+      <div class="field">
+        <label for="new_password">Contraseña nueva</label>
+        <input type="password" id="new_password" name="new_password" required autocomplete="new-password">
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label for="confirm_password">Confirma la contraseña nueva</label>
+        <input type="password" id="confirm_password" name="confirm_password" required autocomplete="new-password">
+      </div>
+      <button class="btn btn-primary" type="submit" style="margin-top:14px"><span class="msi">save</span> Actualizar contraseña</button>
+    </form>
+  </div>
+
+  <div class="card" style="max-width:480px">
+    <h3><span class="msi">verified_user</span> Verificación en dos pasos</h3>
+    <p class="hint" style="margin-top:0">Actualmente <strong><%= user.totp_enabled ? 'activa' : 'sin activar' %></strong>.</p>
+    <form method="post" action="/admin/perfil/resetear-2fa" onsubmit="return confirm('Vas a tener que escanear un nuevo código QR con tu app de autenticación. ¿Continuar?');">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="field" style="margin-bottom:0">
+        <label for="current_password2">Confirma tu contraseña actual</label>
+        <input type="password" id="current_password2" name="current_password" required autocomplete="current-password">
+      </div>
+      <button class="btn btn-ghost" type="submit" style="margin-top:14px"><span class="msi">history</span> Resetear mi 2FA</button>
+    </form>
+  </div>
+<%- include('partials/foot') %>

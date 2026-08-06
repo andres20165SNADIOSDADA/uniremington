@@ -1,0 +1,29 @@
+<div class="admin-shell">
+  <aside class="admin-side">
+    <div class="brand">
+      <span class="crest">R</span>
+      <span class="t">Uniremington<small>Panel de administración</small></span>
+    </div>
+    <nav class="admin-nav">
+      <a href="/admin" class="<%= active === 'dashboard' ? 'on' : '' %>"><span class="msi">dashboard</span> Inicio</a>
+      <div class="grp">Contenido</div>
+      <a href="/admin/noticias" class="<%= active === 'noticias' ? 'on' : '' %>"><span class="msi">newspaper</span> Noticias</a>
+      <a href="/admin/eventos" class="<%= active === 'eventos' ? 'on' : '' %>"><span class="msi">event</span> Eventos</a>
+      <% if (user.role === 'admin'){ %>
+      <div class="grp">Administración</div>
+      <a href="/admin/usuarios" class="<%= active === 'usuarios' ? 'on' : '' %>"><span class="msi">group</span> Usuarios</a>
+      <a href="/admin/auditoria" class="<%= active === 'auditoria' ? 'on' : '' %>"><span class="msi">history</span> Auditoría</a>
+      <% } %>
+      <div class="grp">Cuenta</div>
+      <a href="/admin/perfil" class="<%= active === 'perfil' ? 'on' : '' %>"><span class="msi">person</span> Mi perfil</a>
+    </nav>
+    <div class="who">
+      <b><%= user.name %></b>
+      <span class="badge badge-<%= user.role %>"><%= user.role === 'admin' ? 'Administrador' : 'Editor' %></span>
+      <form method="post" action="/admin/logout">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button class="btn btn-ghost btn-sm btn-block" type="submit"><span class="msi">logout</span> Cerrar sesión</button>
+      </form>
+    </div>
+  </aside>
+  <main class="admin-main">

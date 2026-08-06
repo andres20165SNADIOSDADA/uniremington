@@ -1,0 +1,92 @@
+<%- include('partials/head', { title: labelPlural }) %>
+<%- include('partials/nav', { active, user, csrfToken }) %>
+  <div class="admin-top">
+    <div>
+      <h1><%= labelPlural %></h1>
+      <div class="sub"><%= total %> en total<%= status ? ' · filtrando por ' + ({publish:'publicadas',draft:'borradores',trash:'papelera'}[status]) : '' %></div>
+    </div>
+    <a class="btn btn-oro" href="/admin/<%= section %>/nueva"><span class="msi">add</span> Nueva <%= (labelPlural === 'Noticias' ? 'noticia' : 'evento') %></a>
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <form method="get" style="display:flex;gap:10px;flex-wrap:wrap;align-items:end">
+      <div class="field" style="flex:1;min-width:220px;margin-bottom:0">
+        <label for="q">Buscar por título</label>
+        <input type="text" id="q" name="q" value="<%= q %>" placeholder="Escribe para buscar…">
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label for="status">Estado</label>
+        <select id="status" name="status">
+          <option value="" <%= !status ? 'selected' : '' %>>Todos</option>
+          <option value="publish" <%= status === 'publish' ? 'selected' : '' %>>Publicadas</option>
+          <option value="draft" <%= status === 'draft' ? 'selected' : '' %>>Borradores</option>
+          <option value="trash" <%= status === 'trash' ? 'selected' : '' %>>Papelera</option>
+        </select>
+      </div>
+      <button class="btn btn-ghost" type="submit"><span class="msi">search</span> Filtrar</button>
+    </form>
+  </div>
+
+  <div class="card" style="padding:0">
+    <% if (!items.length){ %>
+      <div class="empty-state">
+        <span class="msi">inbox</span>
+        <p>No hay resultados con estos filtros.</p>
+      </div>
+    <% } else { %>
+    <div style="overflow-x:auto">
+    <table class="tbl">
+      <thead><tr><th>Título</th><th>Fecha</th><th>Estado</th><th>Actualizado por</th><th></th></tr></thead>
+      <tbody>
+        <% items.forEach(function(it){ %>
+          <tr>
+            <td><a href="/admin/<%= section %>/<%= it.id %>/editar"><%= it.title %></a></td>
+            <td><%= it.date ? it.date.slice(0,10) : '' %></td>
+            <td><span class="badge badge-<%= it.status %>"><%= ({publish:'Publicada',draft:'Borrador',trash:'Papelera'})[it.status] %></span></td>
+            <td><%= it.legacy_source ? 'Migrado (WordPress)' : '—' %></td>
+            <td style="text-align:right;white-space:nowrap">
+              <a class="btn btn-ghost btn-sm" href="/admin/<%= section %>/<%= it.id %>/editar">Editar</a>
+              <% if (it.status !== 'publish'){ %>
+              <form style="display:inline" method="post" action="/admin/<%= section %>/<%= it.id %>/publicar">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button class="btn btn-primary btn-sm" type="submit">Publicar</button>
+              </form>
+              <% } else { %>
+              <form style="display:inline" method="post" action="/admin/<%= section %>/<%= it.id %>/despublicar">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button class="btn btn-ghost btn-sm" type="submit">Despublicar</button>
+              </form>
+              <% } %>
+              <% if (it.status !== 'trash'){ %>
+              <form style="display:inline" method="post" action="/admin/<%= section %>/<%= it.id %>/papelera" onsubmit="return confirm('¿Enviar a la papelera?');">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button class="btn btn-ghost btn-sm" type="submit"><span class="msi">delete</span></button>
+              </form>
+              <% } else { %>
+              <form style="display:inline" method="post" action="/admin/<%= section %>/<%= it.id %>/restaurar">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button class="btn btn-ghost btn-sm" type="submit">Restaurar</button>
+              </form>
+              <form style="display:inline" method="post" action="/admin/<%= section %>/<%= it.id %>/eliminar" onsubmit="return confirm('Esto borra el contenido para siempre. ¿Continuar?');">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button class="btn btn-peligro btn-sm" type="submit">Eliminar</button>
+              </form>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    </div>
+    <% } %>
+  </div>
+
+  <% if (pages > 1){ %>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:18px">
+    <% for (let i = 1; i <= pages; i++){ %>
+      <a class="btn <%= i === page ? 'btn-primary' : 'btn-ghost' %> btn-sm"
+         href="?p=<%= i %><%= q ? '&q=' + encodeURIComponent(q) : '' %><%= status ? '&status=' + status : '' %>"><%= i %></a>
+    <% } %>
+  </div>
+  <% } %>
+<%- include('partials/foot') %>

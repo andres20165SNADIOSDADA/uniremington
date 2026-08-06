@@ -1,0 +1,83 @@
+<%- include('partials/head', { title: (item ? 'Editar' : 'Nueva') + ' ' + label.toLowerCase() }) %>
+<link rel="stylesheet" href="/vendor/quill/quill.snow.css">
+<%- include('partials/nav', { active, user, csrfToken }) %>
+  <div class="admin-top">
+    <div>
+      <h1><%= item ? 'Editar' : 'Nueva' %> <%= label.toLowerCase() %></h1>
+      <% if (item && item.legacy_source){ %><div class="sub"><span class="badge" style="background:#eef2ff;color:#4338ca">Migrado de WordPress</span> el enlace original se conserva</div><% } %>
+    </div>
+    <a class="btn btn-ghost" href="/admin/<%= section %>"><span class="msi">arrow_back</span> Volver al listado</a>
+  </div>
+
+  <% if (error){ %><div class="flash flash-error"><span class="msi">error</span> <span><%= error %></span></div><% } %>
+
+  <form method="post" enctype="multipart/form-data" action="/admin/<%= section %>/<%= item ? item.id + '/editar' : 'nueva' %>"
+        data-preview-url="/admin/<%= section %>/vista-previa">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <div class="content-editor">
+      <div class="ce-main">
+        <input class="ce-title" type="text" id="title" name="title" required placeholder="Título de la <%= label.toLowerCase() %>…" value="<%= item ? item.title : '' %>">
+
+        <div class="card ce-editor-card">
+          <label class="ce-label"><span class="msi">edit_note</span> Contenido</label>
+          <div id="editor"><%- item ? item.bodyForEditor : '' %></div>
+          <textarea name="content_body" id="content_body_input" style="display:none"></textarea>
+        </div>
+
+        <div class="card">
+          <label class="ce-label" for="excerpt"><span class="msi">description</span> Extracto (resumen corto)</label>
+          <textarea id="excerpt" name="excerpt" rows="2" placeholder="Si lo dejas vacío, se genera automáticamente a partir del contenido."><%= item ? item.excerpt : '' %></textarea>
+        </div>
+      </div>
+
+      <aside class="ce-aside">
+        <div class="card">
+          <h3><span class="msi">rocket_launch</span> Publicar</h3>
+          <div class="field">
+            <label for="status">Estado</label>
+            <select id="status" name="status">
+              <option value="draft" <%= (!item || item.status === 'draft' || item.status === 'trash') ? 'selected' : '' %>>Borrador</option>
+              <option value="publish" <%= item && item.status === 'publish' ? 'selected' : '' %>>Publicado</option>
+            </select>
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label for="date">Fecha</label>
+            <input type="datetime-local" id="date" name="date" value="<%= item ? item.dateForm : '' %>">
+          </div>
+          <% if (item){ %>
+          <div class="field" style="margin:14px 0 0">
+            <label>Enlace público</label>
+            <div class="manual-key" style="font-size:.76rem;user-select:text"><%= item.orig_path || ('/' + section + '/' + item.slug + '/') %></div>
+            <p class="hint">No se puede cambiar, para no romper el posicionamiento en buscadores.</p>
+          </div>
+          <% } %>
+          <button class="btn btn-primary btn-block" type="submit" style="margin-top:16px"><span class="msi">save</span> Guardar</button>
+          <button class="btn btn-ghost btn-block" type="button" id="previewBtn" style="margin-top:8px"><span class="msi">visibility</span> Vista previa</button>
+        </div>
+
+        <div class="card">
+          <h3><span class="msi">image</span> Imagen de portada</h3>
+          <label class="cover-upload" for="cover_image">
+            <img src="<%= item && item.cover_image ? item.cover_image : '' %>" alt="" class="cover-preview" id="coverPreview" <%= !(item && item.cover_image) ? 'hidden' : '' %>>
+            <div class="cover-empty" id="coverEmpty" <%= (item && item.cover_image) ? 'hidden' : '' %>>
+              <span class="msi">add_photo_alternate</span>
+              <span>Subir imagen</span>
+            </div>
+            <input type="file" id="cover_image" name="cover_image" class="cover-input" accept="image/png,image/jpeg,image/webp,image/gif">
+          </label>
+          <p class="hint">Se optimiza automáticamente al subirla. <%= item && item.cover_image ? 'Sube otra para reemplazarla.' : '' %></p>
+        </div>
+
+        <div class="card">
+          <h3><span class="msi">sell</span> Categoría(s)</h3>
+          <input type="text" id="categories" name="categories" placeholder="Ej: Convenios, Internacional"
+                 value="<%= item ? item.categories.join(', ') : '' %>">
+          <p class="hint">Sepáralas con comas.</p>
+        </div>
+      </aside>
+    </div>
+  </form>
+
+<script src="/vendor/quill/quill.js"></script>
+<script src="/js/admin-editor.js" defer></script>
+<%- include('partials/foot') %>

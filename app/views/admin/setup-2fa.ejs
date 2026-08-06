@@ -1,0 +1,28 @@
+<%- include('partials/head', { title: 'Activar verificación en dos pasos' }) %>
+<div class="auth-screen">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <span class="crest">R</span>
+      <span class="t">Uniremington<small>Panel de administración</small></span>
+    </div>
+    <h1>Activa la verificación en dos pasos</h1>
+    <p class="sub">Es obligatoria para todas las cuentas. Escanea el código con Google Authenticator, Microsoft Authenticator o similar.</p>
+    <% if (typeof error !== 'undefined' && error){ %>
+      <div class="flash flash-error"><span class="msi">error</span> <span><%= error %></span></div>
+    <% } %>
+    <div class="qr-box">
+      <img src="<%= qrDataUrl %>" alt="Código QR para activar la verificación en dos pasos" width="200" height="200">
+    </div>
+    <p class="hint">¿No puedes escanear el código? Ingresa esta clave manualmente en tu app:</p>
+    <p class="manual-key"><%= manualKey %></p>
+    <form method="post" action="/admin/2fa/setup">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="field">
+        <label for="token">Código de 6 dígitos</label>
+        <input class="otp-input" type="text" id="token" name="token" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" required autofocus>
+      </div>
+      <button class="btn btn-primary btn-block" type="submit"><span class="msi">verified_user</span> Activar y continuar</button>
+    </form>
+  </div>
+</div>
+<%- include('partials/foot-auth') %>

@@ -23,3 +23,9 @@ Thumbs.db
 
 # Vínculo local del proyecto Vercel (IDs de org/proyecto, específico de esta máquina)
 .vercel
+
+# Panel de administración: base de datos (contraseñas/2FA) y archivos subidos por el
+# equipo editorial — datos, no código; viven en el disco del servidor, no en git.
+app/data/cms.sqlite*
+app/public/uploads/**/*
+!app/public/uploads/.gitkeep

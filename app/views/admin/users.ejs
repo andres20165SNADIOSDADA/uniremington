@@ -1,0 +1,51 @@
+<%- include('partials/head', { title: 'Usuarios' }) %>
+<%- include('partials/nav', { active, user, csrfToken }) %>
+  <div class="admin-top">
+    <div>
+      <h1>Usuarios</h1>
+      <div class="sub"><%= users.length %> cuenta<%= users.length === 1 ? '' : 's' %> del panel</div>
+    </div>
+    <a class="btn btn-oro" href="/admin/usuarios/nuevo"><span class="msi">add</span> Nuevo usuario</a>
+  </div>
+
+  <div class="card" style="padding:0">
+    <div style="overflow-x:auto">
+    <table class="tbl">
+      <thead><tr><th>Usuario</th><th>Nombre</th><th>Rol</th><th>2FA</th><th>Estado</th><th></th></tr></thead>
+      <tbody>
+        <% users.forEach(function(u){ %>
+          <tr>
+            <td><a href="/admin/usuarios/<%= u.id %>/editar"><%= u.username %></a><%= u.id === user.id ? ' (tú)' : '' %></td>
+            <td><%= u.name %></td>
+            <td><span class="badge badge-<%= u.role %>"><%= u.role === 'admin' ? 'Administrador' : 'Editor' %></span></td>
+            <td><%= u.totp_enabled ? '✅ Activo' : '— Sin activar' %></td>
+            <td><span class="badge <%= u.disabled ? 'badge-trash' : 'badge-publish' %>"><%= u.disabled ? 'Deshabilitado' : 'Activo' %></span></td>
+            <td style="text-align:right;white-space:nowrap">
+              <a class="btn btn-ghost btn-sm" href="/admin/usuarios/<%= u.id %>/editar">Editar</a>
+              <% if (u.totp_enabled){ %>
+              <form style="display:inline" method="post" action="/admin/usuarios/<%= u.id %>/resetear-2fa" onsubmit="return confirm('¿Resetear el 2FA de este usuario? Tendrá que activarlo de nuevo en su próximo ingreso.');">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button class="btn btn-ghost btn-sm" type="submit">Resetear 2FA</button>
+              </form>
+              <% } %>
+              <% if (u.id !== user.id){ %>
+                <% if (!u.disabled){ %>
+                <form style="display:inline" method="post" action="/admin/usuarios/<%= u.id %>/deshabilitar" onsubmit="return confirm('¿Deshabilitar a este usuario? No podrá iniciar sesión.');">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                  <button class="btn btn-peligro btn-sm" type="submit">Deshabilitar</button>
+                </form>
+                <% } else { %>
+                <form style="display:inline" method="post" action="/admin/usuarios/<%= u.id %>/habilitar">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                  <button class="btn btn-primary btn-sm" type="submit">Habilitar</button>
+                </form>
+                <% } %>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    </div>
+  </div>
+<%- include('partials/foot') %>
